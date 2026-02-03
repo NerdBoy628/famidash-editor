@@ -2,6 +2,10 @@
     <meta charset="UTF-8"><title>Famidash Editor</title>
     <link rel="icon" type="image/png" href="icon/cube.png">
     <style>
+        @font-face {
+            font-family: 'Pusab';
+            src: url('pusab.otf') format('opentype');
+        }
         :root {
             --br: 15px;
         }
@@ -130,6 +134,46 @@
         #spritesContainer::-webkit-scrollbar {
             display: none;
         }
+        #jsonContainer {
+            position: absolute;
+            left: 30vw;
+            top: 10vh;
+            width: 40vw;
+            height: 60vh;
+            padding-left: 15px;
+            background-color: #222;
+            border: 2px solid #aaa;
+            border-radius: var(--br);
+            corner-shape: squircle;
+            box-shadow: 0px 0px 50vw black;
+            overflow: auto;
+        }
+        #jsonOutput {
+            font-size: 11px;
+            width: 18vw;
+            height: 25vh;
+            background-color: #111;
+            border: 2px solid #aaa;
+            color: white;
+            border-radius: var(--br);
+            corner-shape: squircle;
+            box-shadow: 0px 0px 50vw black;
+            resize: none;
+            tab-size: 2;
+        }
+        #colorSelector {
+            position: absolute;
+            left: 35vw;
+            top: 30vh;
+            width: 30vw;
+            height: 20vh;
+            border: 2px solid #aaa;
+            color: white;
+            border-radius: var(--br);
+            corner-shape: squircle;
+            box-shadow: 0px 0px 50vw black;
+            image-rendering:pixelated;image-rendering:-moz-crisp-edges;image-rendering:crisp-edges;
+        }
     </style>
 </head>
 <body>
@@ -174,25 +218,6 @@
                 <input class="menuGroupItem" id="heightInput" type="range" value=32 min=16 max=57>
             </div>
             <div class="menuGroup">
-                Blocks:<select id="blockSet">
-                    <option value="a" selected>A</option>
-                    <option value="b">B</option>
-                    <option value="c">C</option>
-                    <option value="d">D</option>
-                </select>
-                <p style="margin: 5px"></p>
-                Spikes:<select id="spikeSet">
-                    <option value="a" selected>A</option>
-                    <option value="b">B</option>
-                    <option value="c">C</option>
-                </select>
-                <p style="margin: 5px"></p>
-                Slopes:<select id="slopeSet">
-                    <option value="a">Yes</option>
-                    <option value="none" selected>No</option>
-                </select>
-            </div>
-            <div class="menuGroup">
                 <button id="saveButton">Save TMX</button>
                 <p style="margin: 5px"></p>
                 <button id="loadButton">Load TMX</button>
@@ -200,21 +225,93 @@
                 <button id="clearButton">Clear</button>
             </div>
             <div class="menuGroup">
+                <button id="editJsonButton">Level Options</button>
+                <p style="margin: 5px"></p>
+                <button id="audioUploadButton">Upload Audio</button>
+            </div>
+            <div class="menuGroup">
                 <button id="splashEnable">Splash Screen On</button>
                 <button id="autosaveEnable">Autosave On</button>
                 <p style="margin: 5px"></p>
                 <button id="gridlineEnable">Gridlines On</button>
                 <button id="attemptEnable">Attempt Counter On</button>
-            </div>
-            <div class="menuGroup">
+                <p style="margin: 5px"></p>
                 <button id="colorPreviewEnable">Color Preview On</button>
-                <p style="margin: 5px"></p>
                 <button id="previewEnable">Sprite Preview Off</button>
-                <p style="margin: 5px"></p>
-                <button id="audioUploadButton">Upload Audio</button>
             </div>
         </div>
     </div>
+    <div id="jsonContainer" style="visibility: hidden">
+        <h1 style="text-align: center">
+            Level Options
+        </h1>
+        <table style="margin-left: auto; margin-right: auto"><tr><td>
+            Blocks: <select id="blockSet">
+                <option value="A" selected>A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select><br><br>
+            Spikes: <select id="spikeSet">
+                <option value="A" selected>A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </select><br><br>
+            Sprites: <select id="spriteSet">
+                <option value="DECO1" selected>Deco1</option>
+                <option value="DECOCLOUD">DecoCloud</option>
+                <option value="EXTRASPRITES1">ExtraSprites</option>
+            </select><br><br>
+            Slopes: <input type="checkbox" id="slopeSet"><br><br>
+            Platformer Mode <input type="checkbox" id="jsonPlatformer">
+            <br><br>
+            Starting BG Color: <button id="jsonBg">Set</button>
+            <br><br>
+            Starting Ground Color: <button id="jsonGround">Set</button>
+            <br><br>
+            Starting Gamemode: <select id="jsonGamemode">
+                <option value=0 selected>Cube</option>
+                <option value=1>Ship</option>
+                <option value=2>Ball</option>
+                <option value=3>UFO</option>
+                <option value=4>Robot</option>
+                <option value=5>Spider</option>
+                <option value=6>Wave</option>
+                <option value=7>Swing</option>
+                <option value=8>Ninja</option>
+            </select><br><br>
+            Starting Speed: <select id="jsonSpeed">
+                <option value=5>.25</option>
+                <option value=1>.5</option>
+                <option value=0 selected>1</option>
+                <option value=2>2</option>
+                <option value=3>3</option>
+                <option value=4>4</option>
+            </select><br><br>
+            Max fall speed: <select id="jsonMaxSpeed">
+                <option value="6">6</option>
+                <option value="7" selected>7</option>
+            </select>
+        </td><td style="vertical-align: top">
+            Stars: <input type="range" id="jsonStars" min="1" max="15" value="3" step="1">
+            <br><br>
+            Difficulty: <select id="jsonDifficulty">
+                <option value="AUTO">Auto</option>
+                <option value="EASY">Easy</option>
+                <option value="NORMAL" selected>Normal</option>
+                <option value="HARD">Hard</option>
+                <option value="HARDER">Harder</option>
+                <option value="INSANE">Insane</option>
+                <option value="&#x44;&#x45;&#x4D;&#x4F;&#x4E;">&#x44;&#x65;&#x6D;&#x6F;&#x6E;</option>
+            </select><br><br>
+            Upper Text: <input type="text" id="jsonUpperText" maxlength=15 style="font-family: Pusab; text-align: center; width: 160px;" value="LEVEL"><br>
+            Lower Text: <input type="text" id="jsonLowerText" maxlength=15 style="font-family: Pusab; text-align: center; width: 160px;" value="NAME">
+            <br><br><textarea id="jsonOutput" readonly></textarea>
+            <br><button id="jsonLoad">Load from Clipboard</button>
+        </td></tr></table>
+<!-- to add: scrollY / spawnY (hi+lo)-->
+    </div>
+    <img id="colorSelector" src="colors.png" style="visibility: hidden">
     <a id="fileSave" hidden></a>
     <input type="file" id="fileLoad" accept=".tmx,.xml" hidden>
     <input type="file" id="audioLoad" accept="audio/*" hidden>
@@ -268,18 +365,34 @@
         const clearButton = document.getElementById('clearButton');
         const fileSave = document.getElementById('fileSave');
         const fileLoad = document.getElementById('fileLoad');
+        const editJsonButton = document.getElementById('editJsonButton');
         const audioLoad = document.getElementById('audioLoad');
         const blockSet = document.getElementById('blockSet');
         const spikeSet = document.getElementById('spikeSet');
         const slopeSet = document.getElementById('slopeSet');
+        const spriteSet = document.getElementById('spriteSet');
+        const jsonPlatformer = document.getElementById('jsonPlatformer');
+        const jsonBg = document.getElementById('jsonBg');
+        const jsonGround = document.getElementById('jsonGround');
+        const jsonGamemode = document.getElementById('jsonGamemode');
+        const jsonSpeed = document.getElementById('jsonSpeed');
+        const jsonMaxSpeed = document.getElementById('jsonMaxSpeed');
+        const jsonStars = document.getElementById('jsonStars');
+        const jsonDifficulty = document.getElementById('jsonDifficulty');
+        const jsonUpperText = document.getElementById('jsonUpperText');
+        const jsonLowerText = document.getElementById('jsonLowerText');
         const splashEnable = document.getElementById('splashEnable');
         const autosaveEnable = document.getElementById('autosaveEnable');
         const colorPreviewEnable = document.getElementById('colorPreviewEnable');
         const gridlineEnable = document.getElementById('gridlineEnable');
         const attemptEnable = document.getElementById('attemptEnable');
         const audioUploadButton = document.getElementById('audioUploadButton');
+        const jsonContainer = document.getElementById('jsonContainer');
+        const jsonOutput = document.getElementById('jsonOutput');
+        const jsonLoad = document.getElementById('jsonLoad');
+        const colorSelector = document.getElementById('colorSelector');
 
-        const assets = ['parallax.bmp','ground.bmp','attempt.png','player.png','startpos.png'];
+        const assets = ['parallax.bmp','ground.bmp','attempt.png','icon/cube.png','startpos.png'];
         const [parallaxImg,groundImg,attemptImg,playerImg,startPosImg] = assets.map(i => Object.assign(new Image(), {src: i}));
         let tileImg = new Image(); tileImg.src = `tilesets/BlocksaSpikesaSawsaSlopesa.png`;
         let spriteImg = new Image(); spriteImg.src = `sprites.png`;
@@ -306,17 +419,31 @@
         let selectedTile = [16,0];
         let selectionGrid = false;
         const cellSize = 400/9;
-        let tileset = ['a','a','none'];
+        let options = [
+            'A', //block set
+            'A', //spike set
+            false, //slopes
+            'DECO1', // sprite set
+            false, //platformer
+            18, //bg color
+            2, //ground color
+            0, //gamemode
+            0, //speed
+            7, //maxfallspeed
+            3, //stars
+            'NORMAL', //difficulty
+            'LEVEL', 'NAME'
+        ];
         // next two lines are AI assisted, they basically create 2D arrays with the grid size and fill them with empty cells
         let tileGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(0));
         let spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
-        if (localStorage.getItem('famidash_editor_version')!=2) {
-            localStorage.setItem('famidash_editor_version',2);
-            localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,tileset]));
+        if (localStorage.getItem('famidash_editor_version')!=3) {
+            localStorage.setItem('famidash_editor_version',3);
+            localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
         }
         if (localStorage.getItem('famidash_editor_prefs')) prefs = JSON.parse(localStorage.getItem('famidash_editor_prefs'));
-        if (localStorage.getItem('famidash_editor_autosave')&&prefs[1]) [tileGrid,spriteGrid,gridSize,tileset]=JSON.parse(localStorage.getItem('famidash_editor_autosave'));
+        if (localStorage.getItem('famidash_editor_autosave')&&prefs[1]) [tileGrid,spriteGrid,gridSize,options]=JSON.parse(localStorage.getItem('famidash_editor_autosave'));
         let fileHandle, autosaveTimeout;
         let history = [];
         let historyIndex = -1;
@@ -325,6 +452,7 @@
         let groundColor = 130;
         let objColor = 176;
         let prevColors = [0,0,0];
+        let selectingColor = 0; //if the user is changing the starting bg/ground color
         let simulatorOpen = false;
         let levelAudio = false;
         let jump = false;
@@ -402,7 +530,7 @@
             0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,
         ];
 // PRELOAD IMAGES
-        const imgPreload = [];
+        let imgPreload = [];
         for (let i of ['parallax.bmp','noparallax.bmp']) {
             const img = new Image();
             img.src = i;
@@ -414,25 +542,21 @@
                     const img = new Image();
                     img.src = `tilesets/Blocks${blocks}Spikes${spikes}SawsaSlopes${slopes}.png`;
                     imgPreload.push(img);
-                }
-            }
-        }
+                }}}
         for (let i = 0; i < 128; i++) {
             if (spriteFrames[i]) {
                 for (let j = 0; j < spriteFrames[i]; j++) {
                     const img = new Image();
                     img.src = `sprites/${i}_${j}.png`;
                     imgPreload.push(img);
-                }
-            }
-        }
+                }}}
 
 //MENU INPUT LISTENERS
         tilesButton.addEventListener('click', ()=>{tabButton(0)});
         spritesButton.addEventListener('click', ()=>{tabButton(1)});
         settingsButton.addEventListener('click', ()=>{tabButton(2)});
         function tabButton(i) {
-            if (i<2) openTab = i;
+            if (i<2) {openTab = i; jsonContainer.style.visibility = 'hidden'};
             const tabButtons = [tilesButton,spritesButton,settingsButton];
             const containers = [tilesContainer,spritesContainer,settingsContainer];
             for (let i=0; i<3; i++) {
@@ -494,26 +618,72 @@
             spriteGrid = newSpriteGrid;
             draw();
         });
-        blockSet.value = tileset[0];
-        spikeSet.value = tileset[1];
-        slopeSet.value = tileset[2];
-        blockSet.addEventListener('change', ()=>{
-            tileset[0] = blockSet.value;
-            updateTilesets(tileset);
+        editJsonButton.addEventListener('click', (e)=>{
+            jsonContainer.style.visibility = (jsonContainer.style.visibility=='hidden')?'visible':'hidden';
         });
-        spikeSet.addEventListener('change', ()=>{
-            tileset[1] = spikeSet.value;
-            updateTilesets(tileset);
-        });
-        slopeSet.addEventListener('change', ()=>{
-            tileset[2] = slopeSet.value;
-            updateTilesets(tileset);
-        });
+        blockSet.addEventListener('change', ()=>{ updateJson(0,blockSet.value) });
+        spikeSet.addEventListener('change', ()=>{ updateJson(1,spikeSet.value) });
+        slopeSet.addEventListener('change', ()=>{ updateJson(2,slopeSet.checked) });
+        spriteSet.addEventListener('change', ()=>{ updateJson(3,spriteSet.value) });
+        jsonPlatformer.addEventListener('change', ()=>{ updateJson(4,jsonPlatformer.checked) });
+        jsonBg.addEventListener('click', ()=>{ colorSelector.style.visibility = 'visible'; selectingColor = 1 });
+        jsonGround.addEventListener('click', ()=>{ colorSelector.style.visibility = 'visible'; selectingColor = 2 });
+        jsonGamemode.addEventListener('change', ()=>{ updateJson(7,jsonGamemode.value) });
+        jsonSpeed.addEventListener('change', ()=>{ updateJson(8,jsonSpeed.value) });
+        jsonMaxSpeed.addEventListener('change', ()=>{ updateJson(9,jsonMaxSpeed.value) });
+        jsonStars.addEventListener('change', ()=>{ updateJson(10,jsonStars.value); });
+        jsonDifficulty.addEventListener('change', ()=>{ updateJson(11,jsonDifficulty.value); });
+        jsonUpperText.addEventListener('change', ()=>{ updateJson(12,jsonUpperText.value); });
+        jsonLowerText.addEventListener('change', ()=>{ updateJson(13,jsonLowerText.value); });
+        colorSelector.addEventListener('click', (e)=>{
+            colorSelector.style.visibility = 'hidden';
+            const rect = colorSelector.getBoundingClientRect();
+            const x = Math.floor((e.clientX-rect.left)*(colorSelector.naturalWidth/rect.width));
+            const y = Math.floor((e.clientY-rect.top)*(colorSelector.naturalHeight/rect.height));
+            console.log(`${x},${y}`);
+            if (x==0) {
+                result = [15,0,16,32][Math.floor(y/3)];
+            } else {
+                result = Math.floor(y/4)*16+x;
+            };
+            if (selectingColor==1) {bgColor = result; updateJson(5,bgColor)}
+            if (selectingColor==2) {groundColor = result; updateJson(6,groundColor)}
+            selectingColor = 0;
+        })
+        jsonLoad.addEventListener('click', ()=>{
+            navigator.clipboard.readText().then((pastedText)=>{
+                try {
+                    let input = pastedText;
+                    input = pastedText.replaceAll('{').replaceAll('}').replaceAll('\n','')
+                    .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split(',');
+                    for (let i = 0; i < input.length; i++) {input[i] = input[i].split(': ')};
+                    input = Object.fromEntries(input);
+                    if (input.blockSet) options[0] = input.blockSet;
+                    if (input.spikeSet) options[1] = input.spikeSet;
+options[2] = false; if (input.parallaxDisable) options[2] = input.parallaxDisable=='true';
+                    if (input.decoType) options[3] = input.decoType;
+options[4] = false; if (input.forcePlatformer) options[4] = input.forcePlatformer=='true';
+                    if (input.startingBackgroundColor) options[5] = parseInt(input.startingBackgroundColor,16);
+                    if (input.startingGroundColor) options[6] = parseInt(input.startingGroundColor,16);
+                    if (input.startingGameMode) options[7] = parseInt(input.startingGameMode);
+                    if (input.startingSpeed) options[8] = parseInt(input.startingSpeed);
+                    if (input.maxFallSpeed) options[9] = parseInt(input.maxFallSpeed);
+                    if (input.stars) options[10] = parseInt(input.stars);
+                    if (input.difficulty) options[11] = input.difficulty;
+options[12] = '';   if (input.upperText) options[12] = input.upperText;
+options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
+                    updateJson(0,options[0]);
+                } catch (e) {
+                    alert(`JSON load failed! Make sure the clipboard contains valid data.\n${e}`);
+                    return;
+                }
+            });
+        })
         undoButton.addEventListener('click', undo);
         redoButton.addEventListener('click', redo);
         saveButton.addEventListener('click', save);
         loadButton.addEventListener('click', ()=>{fileLoad.click()});
-        fileLoad.addEventListener('change', (e)=>{load(e)});
+        fileLoad.addEventListener('change', (e)=>{load(e.target.files[0])});
         clearButton.addEventListener('click', ()=>{
             if (window.confirm('Are you sure you want to clear all tiles and sprites?')) {
                 gridSize = [128,32];
@@ -564,7 +734,8 @@
                 document.getElementById('audioPlayer').src = data;
             }
             reader.readAsDataURL(data);
-        })
+        });
+
 //CANVAS/DOCUMENT LISTENERS
         canvas.addEventListener('wheel', (e)=>{
             e.preventDefault();
@@ -650,7 +821,7 @@
                 e.preventDefault();
                 navigator.clipboard.writeText(JSON.stringify(selectionGrid));
             };
-            if (e.key == 'v' && (e.ctrlKey||e.metaKey)) {
+            if (e.key == 'v' && (e.ctrlKey||e.metaKey) && jsonContainer.style.visibility=='hidden') {
                 e.preventDefault();
                 navigator.clipboard.readText().then((pastedText)=>{selectionGrid = JSON.parse(pastedText)});
             };
@@ -658,14 +829,23 @@
         });
         document.addEventListener('keyup', (e)=>{
             if ([' ','ArrowUp'].includes(e.key)) jump = false;
-        })
+        });
         window.addEventListener('resize', ()=>{
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             ctx.imageSmoothingEnabled = false;
             draw();
-        })
+        });
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            let droppedFile = e.dataTransfer.files[0];
+            if (droppedFile.name.endsWith('.tmx')) load(droppedFile);
+        });
 //MAIN
+        updateJson(0,options[0]);
         updateTilesets();
         draw();
         saveHistory();
@@ -884,6 +1064,7 @@
             if (simulatorOpen) return;
             if (!prefs[2]) {bgColor = 146; groundColor = 130; objColor = 176};
             setColor();
+            if (camera.x*cellSize*camera.z>=0) {bgColor = options[5]+128; groundColor = options[6]+128};
             widthText.textContent = `Width: ${widthInput.value}`;
             heightText.textContent = `Height: ${heightInput.value}`;
             ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -1136,7 +1317,7 @@
             groundCtx.clearRect(0,0,64,128);
             tilesetCtx.clearRect(0,0,256,256);
             attemptCtx.clearRect(0,0,119,8);
-            parallaxImg.src = `${tileset[2]=='a'?'no':''}parallax.bmp`;
+            parallaxImg.src = `${options[2]?'no':''}parallax.bmp`;
             parallaxCtx.drawImage(parallaxImg,0,0);
             groundCtx.drawImage(groundImg,0,0);
             tilesetCtx.drawImage(tileImg,0,0);
@@ -1183,7 +1364,7 @@
         };
 
         function updateTilesets() {
-            tileImg.src = `tilesets/Blocks${tileset[0]}Spikes${tileset[1]}SawsaSlopes${tileset[2]}.png`;
+            tileImg.src = `tilesets/Blocks${options[0]}Spikes${options[1]}SawsaSlopes${options[2]?'a':'none'}.png`;
             tilesContainer.innerHTML = '';
             spritesContainer.innerHTML = '';
             tileImg.onload = () => {
@@ -1247,7 +1428,7 @@
             if (historyIndex < history.length-1) history = history.slice(0, historyIndex + 1);
             history.push(structuredClone([tileGrid,spriteGrid,gridSize]));
             historyIndex++;
-            localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,tileset]));
+            localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             if (fileHandle) {
                 clearTimeout(autosaveTimeout);
                 autosaveTimeout = setTimeout(()=>{save()},1000);
@@ -1307,7 +1488,6 @@ ${spriteData.slice(1,-1)}
         };
 
         function load(data) {
-            data = data.target.files[0];
             const reader = new FileReader();
             reader.onload = (e)=>{
                 data = e.target.result;
@@ -1330,7 +1510,7 @@ ${spriteData.slice(1,-1)}
                 [tileGrid, spriteGrid, gridSize] = structuredClone(history[historyIndex]);
                 [widthInput.value, heightInput.value] = gridSize;
                 draw();
-                localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,tileset]));
+                localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             }
         };
 
@@ -1340,8 +1520,42 @@ ${spriteData.slice(1,-1)}
                 [tileGrid, spriteGrid, gridSize] = structuredClone(history[historyIndex]);
                 [widthInput.value, heightInput.value] = gridSize;
                 draw();
-                localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,tileset]));
+                localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             }
+        };
+        
+        function updateJson(item, value) {
+            options[item] = value;
+            updateTilesets(options);
+            setColor(true);
+            localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
+            jsonOutput.textContent = `{
+	level: "${options[12].toLowerCase().replaceAll(' ','')}${options[13].toLowerCase().replaceAll(' ','')}",
+	upperText: "${options[12].toUpperCase()}",
+	lowerText: "${options[13].toUpperCase()}",
+	decoType: "${options[3]}",
+	spikeSet: "${options[1]}",
+	blockSet: "${options[0]}",
+	sawSet: "A",
+	difficulty: "${options[11]}",
+	stars: ${options[10]},
+	songID: "song_${(options[12]+' '+options[13]).toLowerCase().replace(/  +/g, ' ').trim().replaceAll(' ','_')}",
+	startingGameMode: ${options[7]},
+	startingSpeed: ${options[8]},
+	startingBackgroundColor: 0x${options[5].toString(16).padStart(2,'0')},
+	startingGroundColor: 0x${options[6].toString(16).padStart(2,'0')},
+	maxFallSpeed: 0x0${options[9]},
+	parallaxDisable: ${options[2]?'true':'false'},
+	forcePlatformer: ${options[4]},
+	objectOffsets: []
+}`;
+            [blockSet.value, spikeSet.value, slopeSet.checked, spriteSet.value, jsonPlatformer.checked,
+            , , jsonGamemode.value, jsonSpeed.value, jsonMaxSpeed.value,
+            jsonStars.value, jsonDifficulty.value, jsonUpperText.value, jsonLowerText.value] = options;
+            if (camera.x*cellSize*camera.z>=0) {bgColor = options[5]+128; groundColor = options[6]+128};
+            jsonBg.style.backgroundColor = `rgb(${JSON.stringify(bgColors[bgTriggers.indexOf(options[5]+128)][0]).replace('[','').replace(']','')})`;
+            jsonGround.style.backgroundColor = `rgb(${JSON.stringify(bgColors[bgTriggers.indexOf(options[6]+128)][0]).replace('[','').replace(']','')})`;
+            draw();
         };
 
         function mod(a,b) { return ((a%b)+b)%b };
