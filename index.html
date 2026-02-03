@@ -640,14 +640,13 @@
             const rect = colorSelector.getBoundingClientRect();
             const x = Math.floor((e.clientX-rect.left)*(colorSelector.naturalWidth/rect.width));
             const y = Math.floor((e.clientY-rect.top)*(colorSelector.naturalHeight/rect.height));
-            console.log(`${x},${y}`);
             if (x==0) {
                 result = [15,0,16,32][Math.floor(y/3)];
             } else {
                 result = Math.floor(y/4)*16+x;
             };
-            if (selectingColor==1) {bgColor = result; updateJson(5,bgColor)}
-            if (selectingColor==2) {groundColor = result; updateJson(6,groundColor)}
+            if (selectingColor==1) {bgColor = result+128; updateJson(5,result)}
+            if (selectingColor==2) {groundColor = result+192; updateJson(6,result)}
             selectingColor = 0;
         })
         jsonLoad.addEventListener('click', ()=>{
