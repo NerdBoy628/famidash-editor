@@ -1363,7 +1363,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
         };
 
         function updateTilesets() {
-            tileImg.src = `tilesets/Blocks${options[0]}Spikes${options[1]}SawsaSlopes${options[2]?'a':'none'}.png`;
+            tileImg.src = `tilesets/Blocks${options[0].toLowerCase()}Spikes${options[1].toLowerCase()}SawsaSlopes${options[2]?'a':'none'}.png`;
             tilesContainer.innerHTML = '';
             spritesContainer.innerHTML = '';
             tileImg.onload = () => {
