@@ -8,6 +8,7 @@
         }
         :root {
             --br: 15px;
+            --paletteSize: 50px;
         }
         @supports (corner-shape: squircle) {
             :root {
@@ -61,7 +62,7 @@
             border-radius: 10px;
             box-shadow: 0px 0px 100vw black
         }
-        #menu {
+        .menuLayoutA {
             position: absolute;
             display: flex;
             flex-direction: row;
@@ -73,10 +74,29 @@
             border: 2px solid #aaa;
             border-radius: var(--br);
             corner-shape: squircle;
-            box-shadow: 0px 4px 30px #fff5;
+            box-shadow: 0px 4px 30px #000;
+        }
+        .menuLayoutB {
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;  
+            top: 50px;
+            left: 10px;
+            width: 400px;
+            height: 100px;
+            background-color: #111;
+            border: 2px solid #aaa;
+            border-radius: var(--br);
+            corner-shape: squircle;
+            box-shadow: 0px 4px 30px black;
         }
         .menuGroup {
-            display: inline-block;
+            display: grid;
             vertical-align: top;
             align-content: center;
             text-align: center;
@@ -92,7 +112,7 @@
         .menuGroupItem {
             margin: 0px;
         }
-        #tabs {
+        .tabsLayoutA {
             position: absolute;
             bottom: 100px;
             left: 3vw;
@@ -106,6 +126,16 @@
             border-bottom-left-radius: 0px;
             border-bottom-right-radius: 0px;
         }
+        .tabsLayoutB {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 40px;
+            background-color: #333;
+            border-bottom: 2px solid #aaa;
+            box-shadow: 0px 4px 30px black;
+        }
         .tabButton {
             margin-top: 8px;
             margin-left: 8px;
@@ -113,12 +143,12 @@
         .paletteButton {
             display: block;            
             flex-shrink: 0;
-            height: 50px;
-            width: 50px;
-            box-shadow: 0px 0px 5px #fff5;
+            height: var(--paletteSize);
+            width: var(--paletteSize);
+            /*box-shadow: 0px 0px 5px #fff5;*/
             transition: all 0.1s ease;
         }
-        #tilesContainer, #spritesContainer {
+        .tilesContainer, .spritesContainer {
             display: flex;
             align-items: center;
             overflow-x: auto;
@@ -130,11 +160,39 @@
             scrollbar-width: none;
             -ms-overflow-style: none;  
         }
+        .tilesContainerLayoutB {
+            position: fixed;
+            display: flex;
+            flex-wrap: wrap;
+            left: 10px;
+            top: 160px;
+            width: 250px;
+            height: 250px;
+            background-color: #111;
+            border: 2px solid #aaa;
+            border-radius: var(--br);
+            corner-shape: squircle;
+            box-shadow: 0px 4px 30px black;
+        }
+        .spritesContainerLayoutB {
+            position: fixed;
+            display: flex;
+            flex-wrap: wrap;
+            left: 10px;
+            top: 420px;
+            width: 250px;
+            height: 250px;
+            background-color: #111;
+            border: 2px solid #aaa;
+            border-radius: var(--br);
+            corner-shape: squircle;
+            box-shadow: 0px 4px 30px black;
+        }
         #tilesContainer::-webkit-scrollbar, 
         #spritesContainer::-webkit-scrollbar {
             display: none;
         }
-        #jsonContainer {
+        .optionsContainer {
             position: absolute;
             left: 30vw;
             top: 10vh;
@@ -184,8 +242,8 @@
     <canvas hidden id="tilesetCanvas" width=256 height=256></canvas>
     <canvas hidden id="attemptCanvas" width=119 height=8></canvas>
     <canvas id="simulatorCanvas" width=256 height=240 style="visibility: hidden"></canvas>
-    <div id="menu">
-        <div id="tabs">
+    <div id="menu" class="menuLayoutA">
+        <div id="tabs" class="tabsLayoutA">
             <button id="tilesButton" class="tabButton" style="background-color: #444">Tiles</button>
             <button id="spritesButton" class="tabButton">Sprites</button>
             <button id="settingsButton" class="tabButton">Settings</button>
@@ -208,8 +266,8 @@
             <button style="opacity: 0">e</button>
             <button id="simulatorButton">Simulator [BETA]</button>
         </div>
-        <div id="tilesContainer"></div>
-        <div id="spritesContainer" style="display: none"></div>
+        <div id="tilesContainer" class="tilesContainer"></div>
+        <div id="spritesContainer" class="spritesContainer" style="display: none"></div>
         <div id="settingsContainer" style="display: none">
             <div class="menuGroup">
                 <p class="menuGroupItem" id="widthText">Width: 128</p>
@@ -218,33 +276,31 @@
                 <input class="menuGroupItem" id="heightInput" type="range" value=32 min=16 max=57>
             </div>
             <div class="menuGroup">
-                <button id="saveButton">Save TMX</button>
-                <p style="margin: 5px"></p>
+                <button id="saveButton" style="width: 80px">Save TMX</button>
                 <button id="loadButton">Load TMX</button>
-                <p style="margin: 5px"></p>
                 <button id="clearButton">Clear</button>
             </div>
             <div class="menuGroup">
                 <button id="editJsonButton">Level Options</button>
-                <p style="margin: 5px"></p>
                 <button id="audioUploadButton">Upload Audio</button>
-            </div>
-            <div class="menuGroup">
-                <button id="splashEnable">Splash Screen On</button>
-                <button id="autosaveEnable">Autosave On</button>
-                <p style="margin: 5px"></p>
-                <button id="gridlineEnable">Gridlines On</button>
-                <button id="attemptEnable">Attempt Counter On</button>
-                <p style="margin: 5px"></p>
-                <button id="colorPreviewEnable">Color Preview On</button>
-                <button id="previewEnable">Sprite Preview Off</button>
+                <button id="editorOptionsButton">Editor Options</button>
             </div>
         </div>
     </div>
-    <div id="jsonContainer" style="visibility: hidden">
-        <h1 style="text-align: center">
-            Level Options
-        </h1>
+    <div class="optionsContainer" id="editorOptionsContainer" style="visibility: hidden; width:300px;height:300px; left: calc((100vw - 300px)/2); top: calc((100vh - 300px)/3)">
+        <h1 style="text-align: center">Editor Options</h1>
+        <table style="margin-left: auto; margin-right: auto"><tr><td>
+            Splash Screen: <input type="checkbox" id="splashEnable"><br>
+            Autosave: <input type="checkbox" id="autosaveEnable"><br>
+            Gridlines: <input type="checkbox" id="gridlineEnable"><br>
+            Attempt Counter: <input type="checkbox" id="attemptEnable"><br>
+            Color Preview: <input type="checkbox" id="colorPreviewEnable"><br>
+            Sprite Preview: <input type="checkbox" id="previewEnable"><br>
+            <button id="layoutChange">Switch Layout [BETA]</button>
+        </td></tr></table>
+    </div>
+    <div class="optionsContainer" id="jsonContainer" style="visibility: hidden">
+        <h1 style="text-align: center">Level Options</h1>
         <table style="margin-left: auto; margin-right: auto"><tr><td>
             Blocks: <select id="blockSet">
                 <option value="A" selected>A</option>
@@ -339,6 +395,8 @@
         parallaxCtx.willReadFrequently = groundCtx.willReadFrequently = tilesetCtx.willReadFrequently = 
         attemptCtx.willReadFrequently = true;
 
+        const menu = document.getElementById('menu');
+        const tabs = document.getElementById('tabs');
         const tilesButton = document.getElementById('tilesButton');
         const spritesButton = document.getElementById('spritesButton');
         const settingsButton = document.getElementById('settingsButton');
@@ -387,10 +445,13 @@
         const gridlineEnable = document.getElementById('gridlineEnable');
         const attemptEnable = document.getElementById('attemptEnable');
         const audioUploadButton = document.getElementById('audioUploadButton');
+        const layoutChangeButton = document.getElementById('layoutChange');
         const jsonContainer = document.getElementById('jsonContainer');
         const jsonOutput = document.getElementById('jsonOutput');
         const jsonLoad = document.getElementById('jsonLoad');
         const colorSelector = document.getElementById('colorSelector');
+        const editorOptionsButton = document.getElementById('editorOptionsButton');
+        const editorOptionsContainer = document.getElementById('editorOptionsContainer');
 
         const assets = ['parallax.bmp','ground.bmp','attempt.png','icon/cube.png','startpos.png'];
         const [parallaxImg,groundImg,attemptImg,playerImg,startPosImg] = assets.map(i => Object.assign(new Image(), {src: i}));
@@ -410,7 +471,7 @@
         });
         let mouseState = 0; // 0=none, 1=left, 2=right
 
-        let prefs = [1,1,1,1,1]; //splash screen, autosave, color preview, gridlines, attempt
+        let prefs = [1,1,1,1,1,0,0]; //splash screen, autosave, color preview, gridlines, attempt, spritePreview, layout
         let openTab = 0;
         let tool = 0; // pen, line, rect, fill
         let settingsOpen = false;
@@ -556,12 +617,14 @@
         spritesButton.addEventListener('click', ()=>{tabButton(1)});
         settingsButton.addEventListener('click', ()=>{tabButton(2)});
         function tabButton(i) {
-            if (i<2) {openTab = i; jsonContainer.style.visibility = 'hidden'};
+            if (i<2) {openTab = i; jsonContainer.style.visibility = editorOptionsContainer.style.visibility = 'hidden'};
             const tabButtons = [tilesButton,spritesButton,settingsButton];
             const containers = [tilesContainer,spritesContainer,settingsContainer];
             for (let i=0; i<3; i++) {
                 tabButtons[i].style.backgroundColor = '#222';
-                containers[i].style.display = 'none';
+                if (!prefs[6]) {
+                    containers[i].style.display = 'none';
+                }
             }
             tabButtons[i].style.backgroundColor = '#444';
             containers[i].style.display = 'flex';
@@ -646,7 +709,7 @@
                 result = Math.floor(y/4)*16+x;
             };
             if (selectingColor==1) {bgColor = result+128; updateJson(5,result)}
-            if (selectingColor==2) {groundColor = result+192; updateJson(6,result)}
+            if (selectingColor==2) {groundColor = result+128; updateJson(6,result)}
             selectingColor = 0;
         })
         jsonLoad.addEventListener('click', ()=>{
@@ -693,36 +756,34 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             }
             fileHandle = undefined;
         });
-        splashEnable.textContent = `Splash Screen ${(prefs[0]==1)?'On':'Off'}`;
+        editorOptionsButton.addEventListener('click', ()=>{
+            editorOptionsContainer.style.visibility = (editorOptionsContainer.style.visibility=='hidden')?'visible':'hidden';
+        })
+        splashEnable.checked = prefs[0];
         splashEnable.addEventListener('click', ()=>{
-            prefs[0] = 1-prefs[0];
+            prefs[0] = splashEnable.checked;
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
-            splashEnable.textContent = `Splash Screen ${(prefs[0]==1)?'On':'Off'}`;
         });
         if (!prefs[0]) document.getElementById('splash').remove();
-        autosaveEnable.textContent = `Autosave ${(prefs[1]==1)?'On':'Off'}`;
+        autosaveEnable.checked = prefs[1];
         autosaveEnable.addEventListener('click', ()=>{
-            prefs[1] = 1-prefs[1];
+            prefs[1] = autosaveEnable.checked;
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
-            autosaveEnable.textContent = `Autosave ${(prefs[1]==1)?'On':'Off'}`;
         });
-        colorPreviewEnable.textContent = `Color Preview ${(prefs[2]==1)?'On':'Off'}`;
+        colorPreviewEnable.checked = prefs[2];
         colorPreviewEnable.addEventListener('click', ()=>{
-            prefs[2] = 1-prefs[2];
+            prefs[2] = colorPreviewEnable.checked;
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
-            colorPreviewEnable.textContent = `Color Preview ${(prefs[2]==1)?'On':'Off'}`;
         });
-        gridlineEnable.textContent = `Gridlines ${(prefs[3]==1)?'On':'Off'}`;
+        gridlineEnable.checked = prefs[3];
         gridlineEnable.addEventListener('click', ()=>{
-            prefs[3] = 1-prefs[3];
+            prefs[3] = gridlineEnable.checked;
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
-            gridlineEnable.textContent = `Gridlines ${(prefs[3]==1)?'On':'Off'}`;
         })
-        attemptEnable.textContent = `Attempt Counter ${(prefs[4]==1)?'On':'Off'}`;
+        attemptEnable.checked = prefs[4];
         attemptEnable.addEventListener('click', ()=>{
-            prefs[4] = 1-prefs[4];
+            prefs[4] = attemptEnable.checked;
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
-            attemptEnable.textContent = `Attempt Counter ${(prefs[4]==1)?'On':'Off'}`;
         });
         audioUploadButton.addEventListener('click', ()=>{audioLoad.click();});
         audioLoad.addEventListener('change', (e)=>{
@@ -734,6 +795,28 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             }
             reader.readAsDataURL(data);
         });
+        if (prefs[6]==1) {prefs[6]=0; switchLayout()};
+        function switchLayout() {
+            if (prefs.length < 7) prefs = [...prefs, ...(new Array(7-prefs.length).fill(0))];
+            prefs[6] = 1-prefs[6];
+            menu.classList.toggle('menuLayoutA');
+            menu.classList.toggle('menuLayoutB');
+            tabs.classList.toggle('tabsLayoutA');
+            tabs.classList.toggle('tabsLayoutB');
+            tilesContainer.classList.toggle('tilesContainer');
+            tilesContainer.classList.toggle('tilesContainerLayoutB');
+            spritesContainer.classList.toggle('spritesContainer');
+            spritesContainer.classList.toggle('spritesContainerLayoutB');
+            document.querySelector(':root').style.setProperty('--paletteSize',`${prefs[6]==1?15.625:50}px`);
+            localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
+            if (prefs[6]) {
+                tilesContainer.style.display = 'flex';
+                spritesContainer.style.display = 'flex';
+                settingsContainer.style.display = 'flex';
+            };
+            selectTile(selectedTile);
+        }
+        layoutChangeButton.addEventListener('click', ()=>{switchLayout()})
 
 //CANVAS/DOCUMENT LISTENERS
         canvas.addEventListener('wheel', (e)=>{
@@ -842,6 +925,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             e.preventDefault();
             let droppedFile = e.dataTransfer.files[0];
             if (droppedFile.name.endsWith('.tmx')) load(droppedFile);
+            draw();
         });
 //MAIN
         updateJson(0,options[0]);
@@ -853,7 +937,9 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
 //FUNCTIONS
         async function simulator() {
             function die() {
-                xPos = yPos = yVel = scrollX = scrollY = gamemode = 0;
+                xPos = startPos[0]*16;
+                yPos = startPos[1]*16;
+                yVel = scrollX = scrollY = gamemode = 0;
                 gravity = 1;
                 document.getElementById('audioPlayer').currentTime = 0;
                 document.getElementById('audioPlayer').play();
@@ -862,9 +948,9 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
                 setColor();
                 simulatorCtx.fillStyle = 'black';
                 simulatorCtx.fillRect(0,0,256,240);
-                for (let x = -mod(Math.floor(scrollX/4),144); x <= 256; x+=144) {
+                for (let x = -mod(Math.floor(scrollX/3),144); x <= 256; x+=144) {
                     for (let y = -mod(-Math.floor(scrollY),72); y <= 240; y+= 72) {
-                        simulatorCtx.drawImage(parallaxCanvas, x, y, 144, 72);
+                        simulatorCtx.drawImage(parallaxCanvas, x, y-24, 144, 72);
                     }
                 }
                 for (let x = -scrollX; x<=256; x+=64) {
@@ -973,6 +1059,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             document.getElementById('audioPlayer').currentTime = 0;
             document.getElementById('audioPlayer').play();
             setColor(true);
+            jump = false;
             while (simulatorOpen) {
                 if (debt < 1000/60) drawSim();
                 xPos+=speed;
@@ -998,7 +1085,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
                     yVel = 0;
                     yPos = Math.round(yPos/16)*16-yOffset*gravity;
                     if (jump) {
-                        if (gamemode==0) {yVel = 4.7}
+                        if (gamemode==0) {yVel = 4.9}
                         if (gamemode==2) {gravity = -gravity; yVel = -0.35}
                     };
                 }
@@ -1041,7 +1128,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
                     } else {land()}
                 }
 
-                if (falling && !(gamemode==1) && !(gamemode==3)) {yVel -= .37};
+                if (falling && !(gamemode==1) && !(gamemode==3)) {yVel -= .4};
                 if (falling && gamemode==3) {yVel -= .3}
                 if (gamemode==1) {
                     if (jump) {yVel += .2} else if (falling) {yVel -= .2};
@@ -1185,6 +1272,8 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             if ((mouseState==1) && (tool>0)&&(tool<4)) {
                 drawShape(true)
             };
+            ctx.fillStyle = '#FFF';
+            ctx.fillText(`${dispToGrid(mousepos[0],0)[0]},${dispToGrid(0,mousepos[1])[1]}`,10,15);
         };
 
         function drawShape(preview=false) { // The line drawing algorithm is AI assisted
@@ -1401,9 +1490,9 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             const tile = document.getElementById(`T${x}`);
             const sprite = document.getElementById(`S${y}`);
             prevTile.style.boxShadow = prevSprite.style.boxShadow = '';
-            prevTile.style.width = prevTile.style.height = prevSprite.style.width = prevSprite.style.height = '50px';
+            prevTile.style.width = prevTile.style.height = prevSprite.style.width = prevSprite.style.height = `${prefs[6]?15.625:50}px`;
             tile.style.boxShadow = sprite.style.boxShadow = '0px 0px 12px #2ef';
-            tile.style.width = tile.style.height = sprite.style.width = sprite.style.height = '60px';
+            tile.style.width = tile.style.height = sprite.style.width = sprite.style.height = `${prefs[6]?15.625:60}px`;
         };
 
         function placeBlock(pos=false,tile=selectedTile[openTab]) {
