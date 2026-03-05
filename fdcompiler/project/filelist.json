@@ -1,0 +1,110 @@
+[
+  {
+    "type": "dir",
+    "path": "project/.github"
+  },
+  {
+    "type": "file",
+    "path": "project/1build.bat"
+  },
+  {
+    "type": "file",
+    "path": "project/2export levels and build.bat"
+  },
+  {
+    "type": "file",
+    "path": "project/3export music - levels - build rom.bat"
+  },
+  {
+    "type": "file",
+    "path": "project/4DELETE and reexport levels and build.bat"
+  },
+  {
+    "type": "file",
+    "path": "project/5build main only.bat"
+  },
+  {
+    "type": "dir",
+    "path": "project/BUILD"
+  },
+  {
+    "type": "file",
+    "path": "project/build.bat"
+  },
+  {
+    "type": "file",
+    "path": "project/BUILD_FLAGS.h"
+  },
+  {
+    "type": "file",
+    "path": "project/clean.bat"
+  },
+  {
+    "type": "file",
+    "path": "project/compile_everything.sh"
+  },
+  {
+    "type": "dir",
+    "path": "project/CONFIG"
+  },
+  {
+    "type": "dir",
+    "path": "project/EDITOR"
+  },
+  {
+    "type": "file",
+    "path": "project/export levels and build.bat"
+  },
+  {
+    "type": "dir",
+    "path": "project/fan icon collection"
+  },
+  {
+    "type": "dir",
+    "path": "project/ficus CHR layout testing"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS"
+  },
+  {
+    "type": "dir",
+    "path": "project/LEVELS"
+  },
+  {
+    "type": "dir",
+    "path": "project/LIB"
+  },
+  {
+    "type": "file",
+    "path": "project/makefile"
+  },
+  {
+    "type": "dir",
+    "path": "project/menus"
+  },
+  {
+    "type": "dir",
+    "path": "project/METATILES"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC"
+  },
+  {
+    "type": "dir",
+    "path": "project/NSF"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE"
+  },
+  {
+    "type": "dir",
+    "path": "project/TMP"
+  },
+  {
+    "type": "dir",
+    "path": "project/UTILS"
+  }
+]

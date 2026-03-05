@@ -1,0 +1,42 @@
+[
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblank.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblank2.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblankcloud.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblankcloud2.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblankextra.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblankextra2.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblankfingerdash.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankblankfingerdash2.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankmain.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Sprites/bankportals.chr"
+  }
+]

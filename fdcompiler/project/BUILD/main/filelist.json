@@ -1,0 +1,14 @@
+[
+  {
+    "type": "file",
+    "path": "project/BUILD/main/crt0.lst"
+  },
+  {
+    "type": "file",
+    "path": "project/BUILD/main/famidash.dbg"
+  },
+  {
+    "type": "file",
+    "path": "project/BUILD/main/famidash.lst"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/bankfootball.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/bankgamemodesA.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/bankgamemodesAretro.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/bankgamemodesB.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/bankgamemodesBretro.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/banktriangle.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Gamemode/so_retro_v2.chr"
+  }
+]

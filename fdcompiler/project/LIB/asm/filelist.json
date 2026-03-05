@@ -1,0 +1,46 @@
+[
+  {
+    "type": "file",
+    "path": "project/LIB/asm/crt0.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/famistudio_ca65.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/get_tv_system.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/longbranch.mac"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/lz.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/mapper.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/nesdash.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/nesdoug.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/neslib.s"
+  },
+  {
+    "type": "dir",
+    "path": "project/LIB/asm/NoteTables"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/zeropage.inc"
+  }
+]

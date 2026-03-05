@@ -1,0 +1,18 @@
+[
+  {
+    "type": "file",
+    "path": "project/LIB/asm/NoteTables/famistudio_note_table_lsb.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/NoteTables/famistudio_note_table_msb.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/NoteTables/famistudio_note_table_pal_lsb.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/asm/NoteTables/famistudio_note_table_pal_msb.bin"
+  }
+]

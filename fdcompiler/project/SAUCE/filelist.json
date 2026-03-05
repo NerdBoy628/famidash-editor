@@ -1,0 +1,46 @@
+[
+  {
+    "type": "file",
+    "path": "project/SAUCE/core.h"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/defines"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/famidash.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/famidash.h"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/functions"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/gamemodes"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/gamestates"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/include.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/include_menus.h"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/menustates"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/mouse.h"
+  }
+]

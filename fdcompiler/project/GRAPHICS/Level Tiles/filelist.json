@@ -1,0 +1,42 @@
+[
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/BlocksA.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/BlocksB.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/BlocksC.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/BlocksD.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/SawbladesA.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/SawbladesNone.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/slopesA.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/SpikesA.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/SpikesB.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/Level Tiles/SpikesC.chr"
+  }
+]

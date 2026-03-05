@@ -1,0 +1,18 @@
+[
+  {
+    "type": "file",
+    "path": "project/NSF/crt0.s"
+  },
+  {
+    "type": "file",
+    "path": "project/NSF/metadata.s"
+  },
+  {
+    "type": "file",
+    "path": "project/NSF/metadata_macro.inc"
+  },
+  {
+    "type": "file",
+    "path": "project/NSF/nsfmapper.s"
+  }
+]

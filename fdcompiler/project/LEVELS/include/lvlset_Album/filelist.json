@@ -1,0 +1,46 @@
+[
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/all_level_data.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/all_level_table.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/all_sprite_data.s"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/const_levellist.h"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/grounddata.h"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/groundlist.h"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/levellist.h"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/level_data_cache.json"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/level_defines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/menutext.h"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_Album/objdefines.h"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/album_titlescreen.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/bgmtest.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/bgmtest_album.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/bgmtest_huge.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/common_xcd_bank_03.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/credits.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/customize.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/funsettings.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/gameover.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/instructions.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/levelselection.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/playmain.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/progressbar.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/progressbar_pt2.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/refreshmenu.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/refreshmenuHUGE.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/settings.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/menustates/titlescreen.c"
+  }
+]

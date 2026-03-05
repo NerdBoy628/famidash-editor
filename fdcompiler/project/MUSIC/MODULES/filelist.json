@@ -1,0 +1,26 @@
+[
+  {
+    "type": "file",
+    "path": "project/MUSIC/MODULES/music.asm"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/MODULES/music.dnm"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/MODULES/music_master.dnm"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/MODULES/music_master.fms"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/MODULES/sfx.dnm"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/MODULES/the album.fms"
+  }
+]

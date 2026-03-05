@@ -1,0 +1,298 @@
+[
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/musicDefines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/musicPlayRoutines.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_0.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_1.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_10.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_11.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_12.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_13.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_14.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_15.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_16.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_17.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_18.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_19.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_2.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_20.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_21.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_22.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_23.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_24.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_25.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_26.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_27.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_28.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_29.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_3.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_30.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_31.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_32.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_33.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_34.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_35.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_36.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_37.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_38.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_39.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_4.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_40.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_41.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_42.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_43.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_44.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_45.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_46.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_47.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_48.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_49.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_5.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_50.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_6.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_7.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_8.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_9.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank0.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank1.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank10.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank11.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank2.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank3.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank4.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank5.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank6.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank7.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank8.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_bank9.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_data_header.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_songlist.inc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/music_soundTestTables.h"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/nsf_metadata.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/pcm_metadata.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/sfx.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/sfxDefines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/sfx_sfxlist.inc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE/sfx_soundTestTables.h"
+  }
+]

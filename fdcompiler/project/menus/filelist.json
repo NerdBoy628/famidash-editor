@@ -1,0 +1,134 @@
+[
+  {
+    "type": "file",
+    "path": "project/menus/B-Credits.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/B-credits2.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/B-Main.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/B-playmain.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/C-Main.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/C-playmain.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/Credits.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/credits2.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/credits3.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/Customize.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/D-Main.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/D-playmain.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/DialogBox.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/FunSettings.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/gameover.nss"
+  },
+  {
+    "type": "dir",
+    "path": "project/menus/h"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/IMPLEMENT MENUS INSTRUCTIONS.txt"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/instructions.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/levelcomplete.chr.bmp"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/LevelComplete.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/Main.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/MainUnlocked.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/menus.chr.bmp"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/Pause.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/PracticeComplete.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/Select.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/Settings.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/SoundTest.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/VS-LevelComplete.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/VS-Main.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/VS-Select.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/VS-Settings.nss"
+  },
+  {
+    "type": "file",
+    "path": "project/menus/WorldMeltdown-Main.nss"
+  }
+]

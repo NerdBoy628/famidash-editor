@@ -1,0 +1,30 @@
+[
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/lvlset_Album_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/lvlset_A_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/lvlset_B_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/lvlset_C_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/lvlset_D_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/lvlset_HUGE_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/metadata/METADATA_TEMPLATE_A.json5"
+  }
+]

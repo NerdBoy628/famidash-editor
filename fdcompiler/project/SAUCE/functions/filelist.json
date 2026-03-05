@@ -1,0 +1,38 @@
+[
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/collision.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/draw_sprites.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/fade_timer.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/level_loading.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/practice_state.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/reset_level.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/scroll.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/sprite_loading.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/functions/x_movement.h"
+  }
+]

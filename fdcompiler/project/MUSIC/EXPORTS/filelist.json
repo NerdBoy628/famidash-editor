@@ -1,0 +1,34 @@
+[
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/challenge.txt"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/death moon.txt"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC/EXPORTS/lvlset_A"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC/EXPORTS/lvlset_Album"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC/EXPORTS/lvlset_B"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC/EXPORTS/lvlset_C"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC/EXPORTS/lvlset_D"
+  },
+  {
+    "type": "dir",
+    "path": "project/MUSIC/EXPORTS/lvlset_HUGE"
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "type": "dir",
+    "path": "project/SAUCE/defines/album_nametable"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/defines/charmap"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/customize_buttons.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/dialogbox.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/difficulty.h"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/defines/nametable"
+  },
+  {
+    "type": "dir",
+    "path": "project/SAUCE/defines/palette"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/physics_defines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/physics_table_defines.cmp.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/physics_table_defines.txt"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/space_defines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/sprites.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/titlescreen_buttons.c"
+  }
+]

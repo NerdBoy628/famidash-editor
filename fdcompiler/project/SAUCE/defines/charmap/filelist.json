@@ -1,0 +1,38 @@
+[
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/bgm_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/bg_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/color1_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/dialogbox_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/endlevel_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/luckydraw_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/mainmenu_charmap.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/mainmenu_customize.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/charmap/no_remap_charmap.h"
+  }
+]

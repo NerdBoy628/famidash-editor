@@ -1,0 +1,10 @@
+[
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/palette/palettes_PRG.c"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/defines/palette/palettes_XCD02.c"
+  }
+]

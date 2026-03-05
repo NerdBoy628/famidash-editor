@@ -1,0 +1,38 @@
+[
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Gamemode"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Icons"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Idk"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Level Sprites"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Level Tiles"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Menus"
+  },
+  {
+    "type": "dir",
+    "path": "project/GRAPHICS/Old"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/parallax.chr"
+  },
+  {
+    "type": "file",
+    "path": "project/GRAPHICS/sprites.png"
+  }
+]

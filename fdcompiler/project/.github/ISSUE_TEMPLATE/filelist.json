@@ -1,0 +1,10 @@
+[
+  {
+    "type": "file",
+    "path": "project/.github/ISSUE_TEMPLATE/bug-report.md"
+  },
+  {
+    "type": "file",
+    "path": "project/.github/ISSUE_TEMPLATE/feature-request.md"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "type": "file",
+    "path": "project/UTILS/cmpdbgfiles.py"
+  },
+  {
+    "type": "file",
+    "path": "project/UTILS/compileVarTables.py"
+  },
+  {
+    "type": "file",
+    "path": "project/UTILS/defines_to_asm.py"
+  },
+  {
+    "type": "file",
+    "path": "project/UTILS/desync_finder.lua"
+  },
+  {
+    "type": "file",
+    "path": "project/UTILS/sprite hitbox lua.lua"
+  }
+]

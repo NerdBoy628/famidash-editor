@@ -1,0 +1,22 @@
+[
+  {
+    "type": "file",
+    "path": "project/TMP/main/BUILD_FLAGS.s"
+  },
+  {
+    "type": "file",
+    "path": "project/TMP/main/crt0.o"
+  },
+  {
+    "type": "file",
+    "path": "project/TMP/main/famidash.o"
+  },
+  {
+    "type": "file",
+    "path": "project/TMP/main/famidash.pp.c"
+  },
+  {
+    "type": "file",
+    "path": "project/TMP/main/famidash.s"
+  }
+]

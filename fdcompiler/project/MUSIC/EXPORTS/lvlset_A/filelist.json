@@ -1,0 +1,114 @@
+[
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/musicDefines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/musicPlayRoutines.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_0.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_1.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_10.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_11.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_12.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_13.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_2.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_3.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_4.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_5.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_6.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_7.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_8.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_9.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_bank0.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_bank1.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_bank2.dmc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_data_header.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_songlist.inc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/music_soundTestTables.h"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/nsf_metadata.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/pcm_metadata.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/sfx.s"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/sfxDefines.h"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/sfx_sfxlist.inc"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/EXPORTS/lvlset_A/sfx_soundTestTables.h"
+  }
+]

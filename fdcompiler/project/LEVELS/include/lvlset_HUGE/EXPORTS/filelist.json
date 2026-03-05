@@ -1,0 +1,706 @@
+[
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/acropolis.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/aftercatabath.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/aftercatabath.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/aftercatabath.lz.2.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/aftercatabath.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/aftermath.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/ajollyretrochristmas.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/ajollyretrochristmas.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/ajollyretrochristmas.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/aprettyeasylevel.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/astronomicalexpedition.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/astronomicalexpedition.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/astronomicalexpedition.lz.2.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/astronomicalexpedition.lz.3.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/astronomicalexpedition.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/azuronxolax.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/backontrack.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/baseafterbase.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/bestautomaticlvl.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/blastprocessing.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/bloodbath.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/bloodbathbutno.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/cantletgo.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/cataclysm.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/clubstep.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/clutterfunk.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/clutterfunk2.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/cryogenic.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/cryogenic.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/cryogenic.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/cycles.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/danceofviolins.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/darkparadise.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dash.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dash.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dash.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/deadlocked.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/deadlyclubstep.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/deathmoon.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/deathmoon.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/deathmoon.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/decode.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/demoncryogenic.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/demoncryogenic.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/demoncryogenic.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/demonpark.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dorabaebasic10.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dorabaebasic4.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dorabaebasic6.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dreamer.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/dryout.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/eighto.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/electrodynamix.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/electromanadventures.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/element111rg.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/endorphinrush.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/eon.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/eon.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/eon.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/everyend.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/everyend.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/everyend.lz.2.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/everyend.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/everymadness.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/extraordinaryexcitement.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/extraordinaryexcitement.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/extraordinaryexcitement.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/factorytime.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/fairydust.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/fingerdash.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/fireaura.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/firetemple.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/fofii_fofii_fofii.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/foresttemple.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/funnygameholiday.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/futurefunkfix.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/futurefunkfix.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/futurefunkfix.lz.2.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/futurefunkfix.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/gameover.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/generationretro.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/geometricaldominator.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/goldenhaze.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/greif.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/groundtospace.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/hell.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/hexagonforce.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/hexagonforce.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/hexagonforce.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/hi.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/highlife.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/highlife.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/highlife.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/icdx.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/infinitecircles.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/invisiblelight.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/jawbreaker.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/jumper.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/kappaclysm.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/kratos.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/leveleasy.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/lookatthislevel.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/lostinthewoods.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/luckydraw.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/madness.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/moonlight.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/motion.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/motion.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/motion.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/nightmare.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/ninecircles.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/ninox.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/nullscapes.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/oceane.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/pgclubstep.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/polargeist.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/powertrip.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/problematic.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/pyrophoric.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/rainbowdust.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/rainbowtylenol.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/rainbowtylenol.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/rainbowtylenol.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/rainingtacos.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/respite.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/retray.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/revolution.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/scarletsurge.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/selectpaymenttype.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/shardscapes.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/silentcircles.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/silentclubstep.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/skeletalshenanigans.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/skeletalshenanigans.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/skeletalshenanigans.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/slaughterhouse.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/sonar.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/sonicblaster.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/sonicwave.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/sonicwave.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/sonicwave.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/speedracer.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/stalemate.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/stereomadness.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/styx.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/subtleoddities.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/subtleoddities.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/subtleoddities.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/subzero.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/sunshine.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/supercycles.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thechallenge.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thelightningroad.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/theoryofeverything.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thermodynamix.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thesewers.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thesteamworks.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thesteamworks.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thesteamworks.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/thetower.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/timemachine.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/tinytunes.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/toe2.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/toeiiv2.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/trolledfix.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/trythisgd.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/trythisgd.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/trythisgd.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/ultiatedestruction.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/wcropolix.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/windylandscape.lz.0.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/windylandscape.lz.1.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/windylandscape.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/xmaschallenge.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/xstep.lz.bin"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/include/lvlset_HUGE/EXPORTS/xx.lz.bin"
+  }
+]

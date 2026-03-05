@@ -1,0 +1,14 @@
+[
+  {
+    "type": "dir",
+    "path": "project/LIB/asm"
+  },
+  {
+    "type": "dir",
+    "path": "project/LIB/headers"
+  },
+  {
+    "type": "file",
+    "path": "project/LIB/nes.lib"
+  }
+]

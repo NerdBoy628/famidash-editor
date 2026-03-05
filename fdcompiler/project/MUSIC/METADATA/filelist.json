@@ -1,0 +1,26 @@
+[
+  {
+    "type": "file",
+    "path": "project/MUSIC/METADATA/lvlset_Album_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/METADATA/lvlset_A_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/METADATA/lvlset_B_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/METADATA/lvlset_C_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/METADATA/lvlset_D_metadata.json5"
+  },
+  {
+    "type": "file",
+    "path": "project/MUSIC/METADATA/lvlset_HUGE_metadata.json5"
+  }
+]

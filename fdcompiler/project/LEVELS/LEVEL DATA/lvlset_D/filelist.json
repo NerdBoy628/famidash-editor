@@ -1,0 +1,102 @@
+[
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/acropolis.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/aftercatabath.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/azuronxolax.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/demoncryogenic.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/demonpark.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/element111rg.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/element111rg_with_secret_way.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/foresttemple.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/gameover.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/goldenhaze.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/icdx.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/jawbreaker.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/kratos.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/nullscapes.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/respite.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/shardscapes.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/silentcircles.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/silentclubstep.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/slaughterhouse.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/speedracer.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/styx.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/template.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/toeiiv2.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/wcropolix.tmx"
+  },
+  {
+    "type": "file",
+    "path": "project/LEVELS/LEVEL DATA/lvlset_D/windylandscape.tmx"
+  }
+]

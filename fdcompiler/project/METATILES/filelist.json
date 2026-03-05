@@ -1,0 +1,18 @@
+[
+  {
+    "type": "file",
+    "path": "project/METATILES/metatiles.h"
+  },
+  {
+    "type": "file",
+    "path": "project/METATILES/metatiles.inc"
+  },
+  {
+    "type": "file",
+    "path": "project/METATILES/metatiles.s"
+  },
+  {
+    "type": "file",
+    "path": "project/METATILES/metatiles_macro.inc"
+  }
+]

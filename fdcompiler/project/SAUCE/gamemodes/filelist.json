@@ -1,0 +1,26 @@
+[
+  {
+    "type": "file",
+    "path": "project/SAUCE/gamemodes/gamemode_ball.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/gamemodes/gamemode_cube.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/gamemodes/gamemode_ship.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/gamemodes/gamemode_spider.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/gamemodes/gamemode_ufo.h"
+  },
+  {
+    "type": "file",
+    "path": "project/SAUCE/gamemodes/gamemode_wave.h"
+  }
+]

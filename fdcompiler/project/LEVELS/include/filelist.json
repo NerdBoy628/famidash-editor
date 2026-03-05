@@ -1,0 +1,26 @@
+[
+  {
+    "type": "dir",
+    "path": "project/LEVELS/include/lvlset_A"
+  },
+  {
+    "type": "dir",
+    "path": "project/LEVELS/include/lvlset_Album"
+  },
+  {
+    "type": "dir",
+    "path": "project/LEVELS/include/lvlset_B"
+  },
+  {
+    "type": "dir",
+    "path": "project/LEVELS/include/lvlset_C"
+  },
+  {
+    "type": "dir",
+    "path": "project/LEVELS/include/lvlset_D"
+  },
+  {
+    "type": "dir",
+    "path": "project/LEVELS/include/lvlset_HUGE"
+  }
+]
