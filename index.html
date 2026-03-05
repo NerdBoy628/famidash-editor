@@ -658,7 +658,7 @@
             simulatorCanvas.style.visibility = simulatorOpen?'visible':'hidden';
             if (simulatorOpen) simulator();
         })
-        compilerButton.addEventListener('click', ()=>{window.open('/fdcompiler')})
+        compilerButton.addEventListener('click', ()=>{window.open('fdcompiler')})
         widthInput.value = gridSize[0];
         heightInput.value = gridSize[1];
         camera.y = window.innerHeight-gridSize[1]*cellSize*camera.z-250;
