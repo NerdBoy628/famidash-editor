@@ -1,9 +1,5 @@
 [
   {
-    "type": "dir",
-    "path": "project/.github"
-  },
-  {
     "type": "file",
     "path": "project/1build.bat"
   },
