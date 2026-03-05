@@ -51,8 +51,4 @@
     "type": "dir",
     "path": "project/LEVELS/metadata"
   },
-  {
-    "type": "dir",
-    "path": "project/LEVELS/__pycache__"
-  }
 ]
