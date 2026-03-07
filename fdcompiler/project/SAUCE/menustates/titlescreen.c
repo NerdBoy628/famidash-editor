@@ -695,7 +695,7 @@ void state_menu() {
 
 			if (!tmp7) crossPRGBankJump8(playPCM, 1);
 			else crossPRGBankJump8(playPCM, 0);
-			
+			normalorcommlevels = 0;
 			gameState = STATE_LEVELSELECT;
 
 			if (normalorcommlevels) level = LEVEL_COUNT;

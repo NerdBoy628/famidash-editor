@@ -1,39 +1,11 @@
 [
   {
-    "type": "file",
-    "path": "project/1build.bat"
-  },
-  {
-    "type": "file",
-    "path": "project/2export levels and build.bat"
-  },
-  {
-    "type": "file",
-    "path": "project/3export music - levels - build rom.bat"
-  },
-  {
-    "type": "file",
-    "path": "project/4DELETE and reexport levels and build.bat"
-  },
-  {
-    "type": "file",
-    "path": "project/5build main only.bat"
-  },
-  {
     "type": "dir",
     "path": "project/BUILD"
   },
   {
     "type": "file",
-    "path": "project/build.bat"
-  },
-  {
-    "type": "file",
     "path": "project/BUILD_FLAGS.h"
-  },
-  {
-    "type": "file",
-    "path": "project/clean.bat"
   },
   {
     "type": "file",
@@ -42,14 +14,6 @@
   {
     "type": "dir",
     "path": "project/CONFIG"
-  },
-  {
-    "type": "dir",
-    "path": "project/EDITOR"
-  },
-  {
-    "type": "file",
-    "path": "project/export levels and build.bat"
   },
   {
     "type": "dir",

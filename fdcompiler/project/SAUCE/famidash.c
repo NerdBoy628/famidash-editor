@@ -60,7 +60,7 @@ void main(){
 
 	// assigning value at startup as opposed to compile time
 	// is needed for cc65 to export the label for mesen
-	gameState = STATE_MENU;
+	gameState = STATE_SAVEVALIDATE;
 	nmi_fs_updates_on();
 
 	menuMusicCurrentlyPlaying = 0;

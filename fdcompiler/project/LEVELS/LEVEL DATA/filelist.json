@@ -2,21 +2,5 @@
   {
     "type": "dir",
     "path": "project/LEVELS/LEVEL DATA/lvlset_A"
-  },
-  {
-    "type": "dir",
-    "path": "project/LEVELS/LEVEL DATA/lvlset_B"
-  },
-  {
-    "type": "dir",
-    "path": "project/LEVELS/LEVEL DATA/lvlset_C"
-  },
-  {
-    "type": "dir",
-    "path": "project/LEVELS/LEVEL DATA/lvlset_D"
-  },
-  {
-    "type": "dir",
-    "path": "project/LEVELS/LEVEL DATA/lvlset_HUGE"
   }
 ]

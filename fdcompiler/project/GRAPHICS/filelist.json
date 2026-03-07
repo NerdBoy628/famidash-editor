@@ -30,9 +30,5 @@
   {
     "type": "file",
     "path": "project/GRAPHICS/parallax.chr"
-  },
-  {
-    "type": "file",
-    "path": "project/GRAPHICS/sprites.png"
   }
 ]

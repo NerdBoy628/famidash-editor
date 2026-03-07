@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # MODIFIED FOR WEB COMPILER
 
-import pathlib, re, sys
+import pathlib, re, os
 
 # basic splitter into control and comment blocks
 basicSplit = re.compile(r'^(?P<padding>[\t ]*)(?:(?P<ctrl>#.*?)|(?P<noCtrl>))[\t ]*(?:\/\/(?P<comment>.*))?$', re.MULTILINE)

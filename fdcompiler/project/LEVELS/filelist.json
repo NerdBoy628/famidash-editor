@@ -5,18 +5,6 @@
   },
   {
     "type": "file",
-    "path": "project/LEVELS/ADDING A NEW LEVEL.txt"
-  },
-  {
-    "type": "dir",
-    "path": "project/LEVELS/BIG backup"
-  },
-  {
-    "type": "file",
-    "path": "project/LEVELS/EXPORT LEVELS INSTRUCTIONS.txt"
-  },
-  {
-    "type": "file",
     "path": "project/LEVELS/export_levels.bat"
   },
   {

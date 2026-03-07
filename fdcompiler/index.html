@@ -159,10 +159,11 @@
         const gameCanvas = document.getElementById('gameCanvas');
         const a = document.getElementById('downloader');
 
-        function logLine(s = '') { log.textContent += s + '\n'; compileButton.textContent = s}
+        function logLine(s = '') { log.textContent += s + '\n'; compileButton.textContent = s; console.log(s)}
 
         let cc65Module = null;
-        let ca65Module = null;
+        let ca65Module1 = null;
+        let ca65Module2 = null; // for whatever reason i have to make two ca65's or the second command doesnt work
         let ld65Module = null;
         let pyodide;
         let pyodidePromise = loadPyodide();
@@ -181,14 +182,19 @@
 
         // Initialize the modularized toolchains (noInitialRun prevents them auto-running main)
         async function initToolchains() {
-            if (cc65Module && ca65Module && ld65Module) return;
+            if (cc65Module && ca65Module1 && ca65Module2 && ld65Module) return;
             try {
                 cc65Module = await CC65({
                     noInitialRun: true,
                     //print: t => logLine('CC65: ' + t),
                     //printErr: t => logLine('CC65: ' + t)
                 });
-                ca65Module = await CA65({
+                ca65Module1 = await CA65({
+                    noInitialRun: true,
+                    //print: t => logLine('CA65: ' + t),
+                    //printErr: t => logLine('CA65: ' + t)
+                });
+                ca65Module2 = await CA65({
                     noInitialRun: true,
                     //print: t => logLine('CA65: ' + t),
                     //printErr: t => logLine('CA65: ' + t)
@@ -203,7 +209,7 @@
                 throw err;
             }
 
-            if (!cc65Module.FS || !ca65Module.FS || !ld65Module.FS) {
+            if (!cc65Module.FS || !ca65Module1.FS || !ca65Module2.FS || !ld65Module.FS) {
                 throw new Error('One of the modules does not expose FS()');
             }
         }
@@ -265,7 +271,7 @@
                     let stat;
                     try { stat = fromModule.FS.stat(fullPath); } catch (e) { continue; }
                     if (fromModule.FS.isDir(stat.mode)) {
-                        try { toModule.FS.mkdir(fullPath); } catch (e) {}
+                        try { toModule.FS.mkdirTree(fullPath); } catch (e) {}
                         copyDir(fullPath);
                     } else {
                         const data = fromModule.FS.readFile(fullPath);
@@ -311,7 +317,9 @@
 
             await mirrorFS(pyodide, cc65Module);
 
-            cc65Module.callMain([ //C -> .s
+            try { cc65Module.FS.mkdirTree('/project/TMP/main'); } catch (e) {};
+            
+            cc65Module.callMain([
                 '-Osir',
                 '-g',
                 '--eagerly-inline-funcs',
@@ -323,16 +331,24 @@
                 '-o', '/project/TMP/main/famidash.s'
             ]);
 
-            await mirrorFS(cc65Module, ca65Module);
+            await mirrorFS(cc65Module, ca65Module1);
 
             // --- CA65: assemble crt0 + main ---
-            try { ca65Module.FS.mkdirTree('/project/TMP/main'); } catch (e) {}
 
             // set working directory so relative includes are resolved from /project
-            try { ca65Module.FS.chdir('/project'); } catch (e) {/* ignore if it fails */}
+            try { ca65Module1.FS.chdir('/project'); } catch (e) {/* ignore if it fails */}
 
             // Assemble the main .s; also include binary include dirs in case it references assets
-            ca65Module.callMain([
+            ca65Module1.callMain([
+                '--cpu', '6502X',
+                '-g',
+                '-I', '/project/LIB/asm',
+                '--bin-include-dir', '/project/LIB/asm',
+                '/project/TMP/main/famidash.s',
+                '-o', '/project/TMP/main/famidash.o'
+            ]);
+            await mirrorFS(ca65Module1, ca65Module2);
+            ca65Module2.callMain([
                 '--cpu', '6502X',
                 '-g',
                 '-I', '/project',
@@ -346,16 +362,8 @@
                 '/project/LIB/asm/crt0.s',
                 '-o', '/project/TMP/main/crt0.o'
             ]);
-            ca65Module.callMain([
-                '--cpu', '6502X',
-                '-g',
-                '-I', '/project/LIB/asm',
-                '--bin-include-dir', '/project/LIB/asm',
-                '/project/TMP/main/famidash.s',
-                '-o', '/project/TMP/main/famidash.o'
-            ]);
 
-            await mirrorFS(ca65Module, ld65Module);
+            await mirrorFS(ca65Module2, ld65Module);
 
             try { ld65Module.FS.mkdirTree('/project/BUILD/main'); } catch (e) {}
 
