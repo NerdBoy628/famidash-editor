@@ -149,6 +149,7 @@
     <script src="ld65.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
     <script src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         const log = document.getElementById('log');
         const compileButton = document.getElementById('compileButton');
@@ -218,43 +219,27 @@
         async function loadProjectInto(module) {
             if (!module || !module.FS) throw new Error('Module or module.FS is missing');
 
-            // Encode each URL path segment safely (handles spaces and special chars)
-            function encodePath(p) {
-                return p.split('/').map(encodeURIComponent).join('/');
-            }
-
-            async function loadDir(path) {
-                const listUrl = encodePath(path + '/filelist.json');
-                const r = await fetch(listUrl, {cache: 'no-store'});
-                if (!r.ok) throw new Error('Failed to fetch ' + listUrl + ' : ' + r.status);
-
-                const files = await r.json();
-                
-                for (const file of files) {
-                    const encodedFetchPath = encodePath(file.path);
-                    const fsPath = '/' + file.path;   // Ensure absolute path in WASM FS
-
-                    if (file.type === 'dir') {
-                        try { module.FS.mkdirTree(fsPath); } catch (e) {}
-                        await loadDir(file.path);
-                    }
-                    else if (file.type === 'file') {
-                        const dataResp = await fetch(encodedFetchPath, {cache: 'no-store'});
-                        if (!dataResp.ok) {
-                            throw new Error('Failed to fetch ' + encodedFetchPath + ' : ' + dataResp.status);
-                            continue;
-                        }
-
-                        const ab = await dataResp.arrayBuffer();
-
-                        const dir = fsPath.substring(0, fsPath.lastIndexOf('/'));
+            const response = await fetch('project.zip', { cache: 'no-store' });
+            if (!response.ok) throw new Error('Failed to fetch project.zip: ' + response.status);
+            
+            const zipData = await response.arrayBuffer();
+            const zip = await JSZip.loadAsync(zipData);
+            const fileKeys = Object.keys(zip.files);
+            
+            for (const filename of fileKeys) {
+                const file = zip.files[filename];
+                const fsPath = '/project/' + filename;
+                if (file.dir) {
+                    try { module.FS.mkdirTree(fsPath); } catch (e) {}
+                } else {
+                    const content = await file.async('uint8array');
+                    const dir = fsPath.substring(0, fsPath.lastIndexOf('/'));
+                    if (dir) {
                         try { module.FS.mkdirTree(dir); } catch (e) {}
-
-                        module.FS.writeFile(fsPath, new Uint8Array(ab));
                     }
+                    module.FS.writeFile(fsPath, content);
                 }
             }
-            await loadDir('project');
         }
 
         // Copy subtree from one module.FS to another
