@@ -68,7 +68,7 @@
             margin-top: -50px;
             transform: translate(0px,43px);
             resize: none;
-            tab-size: 2;
+            tab-size: 4;
             font-size: 8px;
         }
         canvas {
@@ -160,17 +160,23 @@
         const gameCanvas = document.getElementById('gameCanvas');
         const a = document.getElementById('downloader');
 
-        function logLine(s = '') { log.textContent += s + '\n'; compileButton.textContent = s; console.log(s)}
+        function logLine(s = '') { log.textContent += s + '\n'; compileButton.textContent = s; console.log(s)};
+        function setProgress(x) {
+            fileLoadProgress = x;
+            compileButton.style.backgroundImage = `linear-gradient(to right, #59e ${fileLoadProgress*100}%, #444 ${fileLoadProgress*100 + 10}%)`;
+        };
 
         let cc65Module = null;
         let ca65Module1 = null;
         let ca65Module2 = null; // for whatever reason i have to make two ca65's or the second command doesnt work
         let ld65Module = null;
         let pyodide;
+        let toolchainPromise = initToolchains();
         let pyodidePromise = loadPyodide();
 
         let tmx = null;
         let metadata = null;
+        let fileLoadProgress = 0;
 
         tmxUpload.addEventListener('change', (e)=>{
             tmx = e.target.files[0];
@@ -181,7 +187,8 @@
             songSelect.innerHTML += `<option>${song}</option>`
         }
 
-        // Initialize the modularized toolchains (noInitialRun prevents them auto-running main)
+        if (localStorage.getItem('fdcompiler_metadata')) metadataUpload.value = localStorage.getItem('fdcompiler_metadata');
+
         async function initToolchains() {
             if (cc65Module && ca65Module1 && ca65Module2 && ld65Module) return;
             try {
@@ -192,18 +199,12 @@
                 });
                 ca65Module1 = await CA65({
                     noInitialRun: true,
-                    //print: t => logLine('CA65: ' + t),
-                    //printErr: t => logLine('CA65: ' + t)
                 });
                 ca65Module2 = await CA65({
                     noInitialRun: true,
-                    //print: t => logLine('CA65: ' + t),
-                    //printErr: t => logLine('CA65: ' + t)
                 });
                 ld65Module = await LD65({
                     noInitialRun: true,
-                    //print: t => logLine('LD65: ' + t),
-                    //printErr: t => logLine('LD65: ' + t)
                 });
             } catch (err) {
                 logLine('Failed to instantiate one or more tool modules: ' + err);
@@ -215,7 +216,6 @@
             }
         }
 
-        // Load the project into a module's FS using project/filelist.json
         async function loadProjectInto(module) {
             if (!module || !module.FS) throw new Error('Module or module.FS is missing');
 
@@ -225,6 +225,7 @@
             const zipData = await response.arrayBuffer();
             const zip = await JSZip.loadAsync(zipData);
             const fileKeys = Object.keys(zip.files);
+            let idx = 0;
             
             for (const filename of fileKeys) {
                 const file = zip.files[filename];
@@ -239,10 +240,12 @@
                     }
                     module.FS.writeFile(fsPath, content);
                 }
+                idx++;
+                setProgress(idx / fileKeys.length);
             }
+            compileButton.style.backgroundImage = '';
         }
 
-        // Copy subtree from one module.FS to another
         function mirrorFS(fromModule, toModule, root = '/project') {
             if (!fromModule || !fromModule.FS) throw new Error('mirrorFS: fromModule.FS missing');
             if (!toModule || !toModule.FS) throw new Error('mirrorFS: toModule.FS missing');
@@ -271,27 +274,35 @@
         }
 
         async function export_levels() {
+            setProgress(0);
             await pyodide.loadPackage('micropip');
-            const micropip = await pyodide.pyimport('micropip')
+            setProgress(1/16);
+            const micropip = await pyodide.pyimport('micropip');
+            setProgress(2/16);
             await micropip.install('binpacking');
+            setProgress(3/16);
             await micropip.install('json5');
+            setProgress(1/4);
             let reader = new FileReader();
             reader.onload = function(e) {pyodide.FS.writeFile('/project/LEVELS/LEVEL DATA/lvlset_A/stereomadness.tmx',e.target.result)};
             await reader.readAsText(tmx);
             metadata = metadataUpload.value;
+            localStorage.setItem('fdcompiler_metadata', metadataUpload.value);
             let fullMetadata = await (await fetch('project/LEVELS/metadata/METADATA_TEMPLATE_A.json5', {cache: 'no-store'})).text();
             fullMetadata = fullMetadata.replace('--COMPILERPLACEHOLDER--',
                 `${metadata.split('level:')[0]}level: "stereomadness",${metadata.split('level')[1].split(',').slice(1).join(',')
                 .split('songID:')[0]}songID: "song_${songSelect.value}",${metadata.split('songID')[1].split(',').slice(1).join(',')}`
             );
             pyodide.FS.writeFile('/project/LEVELS/metadata/lvlset_A_metadata.json5',fullMetadata);
+            setProgress(2/4);
             await pyodide.runPython(await (await fetch('project/LEVELS/export_wrapper_js.py', {cache: 'no-store'})).text());
+            setProgress(3/4);
             await pyodide.runPython(await (await fetch('project/UTILS/defines_to_asm.py', {cache: 'no-store'})).text());
+            setProgress(4/4);
         }
 
         async function buildMain() {
             logLine('Loading files...');
-            let toolchainPromise = initToolchains();
             pyodide = await pyodidePromise;
             await loadProjectInto(pyodide);
             logLine('Exporting levels...');
@@ -318,12 +329,9 @@
 
             await mirrorFS(cc65Module, ca65Module1);
 
-            // --- CA65: assemble crt0 + main ---
-
             // set working directory so relative includes are resolved from /project
-            try { ca65Module1.FS.chdir('/project'); } catch (e) {/* ignore if it fails */}
+            try { ca65Module1.FS.chdir('/project'); } catch (e) {}
 
-            // Assemble the main .s; also include binary include dirs in case it references assets
             ca65Module1.callMain([
                 '--cpu', '6502X',
                 '-g',
@@ -372,6 +380,7 @@
             a.download = 'famidash.nes';
 
             logLine('Done!');
+            compileButton.style.backgroundImage = '';
             compileButton.textContent = 'Download';
 
             const ctx = gameCanvas.getContext('2d');
@@ -397,7 +406,7 @@
                 scriptProcessor.connect(audioCtx.destination);
             }
 
-            const keys = (player, key, type) => {
+            const keys = (player, key, type, e=undefined) => {
                 const map = {
                     38: jsnes.Controller.BUTTON_UP,
                     40: jsnes.Controller.BUTTON_DOWN,
@@ -409,6 +418,7 @@
                     16: jsnes.Controller.BUTTON_SELECT  // Shift
                 };
                 if (map[key] !== undefined) {
+                    if (e) e.preventDefault();
                     type === 'down' ? nes.buttonDown(player, map[key]) : nes.buttonUp(player, map[key]);
                 }
             };
@@ -426,7 +436,7 @@
                 }
             });
 
-            document.addEventListener('keydown', (e) => {e.preventDefault(); keys(1, e.keyCode, 'down')});
+            document.addEventListener('keydown', (e) => {keys(1, e.keyCode, 'down', e)});
             document.addEventListener('keyup', (e) => {keys(1, e.keyCode, 'up')});
 
             if (!audioCtx) initAudio();
@@ -449,9 +459,7 @@
             if (compileButton.textContent == 'Download') {
                 a.click();
             } else {
-                //log.style.display = 'inline-block';
                 compileButton.disabled = true;
-                //compileButton.style.display = 'none';
                 try {
                     await buildMain();
                 } catch (err) {

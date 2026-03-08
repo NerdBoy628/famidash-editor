@@ -1,7 +1,54 @@
 {
 	official_levels:  [
 		{
-			--COMPILERPLACEHOLDER--	
+			level: "stereomadness",
+			upperText: "STEREO ",
+			lowerText: "MADNESS",
+			decoType: "DECO1",
+			spikeSet: "A",
+			blockSet: "A",
+			sawSet: "A",
+			difficulty: "EASY",
+			stars: 1,
+			songID: "song_stereo_madness",
+			startingGameMode: 0,
+			startingSpeed: 0,
+			startingBackgroundColor: 0x12,
+			startingGroundColor: 0x02,
+			//spawnYPositionHi: 0x30,		;default #$B000
+			//spawnYPositionLow: 0x00,
+			//scrollYPositionHi: 0x02,		;default $02EF, less to go up
+			//scrollYPositionLow: 0x30,
+			maxFallSpeed: 0x07,
+			objectOffsets: [
+				{
+					coordinates: [
+						[128, 25], [132, 24], [136, 23], [140, 22],
+						[144, 21], [218, 25], [222, 24], [226, 23],
+						[230, 22], [234, 21], [646, 26], [650, 25],
+						[654, 24], [658, 23],	//deco
+						[418, 21],				//cube portal
+						[764, 21],				//ship portal
+					],
+					offsetY: -8
+				},
+				{
+					coordinates: [
+						[527, 25], [530, 25], [535, 25], [538, 25],
+						[539, 24], [542, 24],
+					],
+					offsetY: -4
+				},
+				{
+					coordinates: [716, 25],
+					offsetX: +8
+				},
+				{
+					coordinates: [449, 23],
+					offsetY: +8,
+					offsetX: +8
+				},
+			]
 		},
 		{
 			level: "backontrack",
