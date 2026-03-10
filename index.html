@@ -278,6 +278,16 @@
                 <input class="menuGroupItem" id="heightInput" type="range" value=32 min=16 max=57>
             </div>
             <div class="menuGroup">
+                <p class="menuGroupItem">Offset Map</p>
+                <table><tr><th></th>
+                <th><button onclick="shiftGrid(0,-1)">↑</button></th>
+                <th></th></tr><tr>
+                <th><button onclick="shiftGrid(-1,0)">←</button></th>
+                <th><button onclick="shiftGrid(0,1)">↓</button></th>
+                <th><button onclick="shiftGrid(1,0)">→</button></th>
+                </tr></table>
+            </div>
+            <div class="menuGroup">
                 <button id="saveButton" style="width: 80px">Save TMX</button>
                 <button id="loadButton">Load TMX</button>
                 <button id="clearButton">Clear</button>
@@ -729,9 +739,10 @@
             navigator.clipboard.readText().then((pastedText)=>{
                 try {
                     let input = pastedText;
-                    input = pastedText.replaceAll('{').replaceAll('}').replaceAll('\n','')
-                    .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split(',');
-                    for (let i = 0; i < input.length; i++) {input[i] = input[i].split(': ')};
+                    let objectOffsets = input.split('objectOffsets: ')[1];
+                    input = pastedText.replaceAll('{','').replaceAll('}','').replaceAll('\n','')
+                    .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split('objectOffsets')[0].split(',');
+                    for (let i = 0; i < input.length; i++) {input[i] = input[i].split('/')[0].split(': ')};
                     input = Object.fromEntries(input);
                     if (input.blockSet) options[0] = input.blockSet;
                     if (input.spikeSet) options[1] = input.spikeSet;
@@ -747,6 +758,31 @@ options[4] = false; if (input.forcePlatformer) options[4] = input.forcePlatforme
                     if (input.difficulty) options[11] = input.difficulty;
 options[12] = '';   if (input.upperText) options[12] = input.upperText;
 options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
+                    objectOffsets = objectOffsets.replaceAll('},','').replaceAll('}','').replaceAll('\n','').replaceAll('\t','').replaceAll(' ','')
+                    .replace('[','').split('{').map((offset)=>{
+                        if (offset) {
+                            offset = offset.split(/[\[\]]/);
+                            offset[1] = offset[1].split(',').map((x)=>parseInt(x));
+                            offset[2] = offset[2].split(',');
+                            offset[2].pop();
+                            offset[2].shift();
+                            offset[2] = offset[2].map((x)=>x.split(':'));
+                            offset.shift();
+                        }
+                        return offset;
+                    });
+                    objectOffsets.shift();
+                    options[14] = [];
+                    for (let offset of objectOffsets) {
+                        if (offset) {
+                            let amount = [0,0];
+                            for (let x of offset[1]) {
+                                if (x[0]=='offsetX') amount[0] = parseInt(x[1]);
+                                if (x[0]=='offsetY') amount[1] = parseInt(x[1]);
+                            }
+                            options[14].push([JSON.stringify(offset[0]),amount]);
+                        }
+                    }
                     updateJson(0,options[0]);
                 } catch (e) {
                     alert(`JSON load failed! Make sure the clipboard contains valid data.\n${e}`);
@@ -1202,7 +1238,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             if (simulatorOpen) return;
             if (!prefs[2]) {bgColor = 146; groundColor = 130; objColor = 176};
             setColor();
-            if (camera.x*cellSize*camera.z>=0) {bgColor = options[5]+128; groundColor = options[6]+128};
+            if (camera.x*cellSize*camera.z>=0) {bgColor = options[5]+128; groundColor = options[6]+128; objColor = 176};
             widthText.textContent = `Width: ${widthInput.value}`;
             heightText.textContent = `Height: ${heightInput.value}`;
             ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -1577,6 +1613,32 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
                 if (x < 0 || y < 0 || x >= gridSize[0] || y >= gridSize[1]) return;
                 (openTab?spriteGrid:tileGrid)[y][x] = tile;
             }
+        };
+
+        function shiftGrid(x,y) {
+            if (x > 0) {
+                for (let row of tileGrid) { row.unshift(0); row.pop() }
+                for (let row of spriteGrid) { row.unshift(-1); row.pop() }
+            } else if (x < 0) {
+                for (let row of tileGrid) { row.push(0); row.shift() }
+                for (let row of spriteGrid) { row.push(-1); row.shift() }
+            }
+            if (y > 0) {
+                tileGrid.unshift(new Array(gridSize[0]).fill(0));
+                tileGrid.pop();
+                spriteGrid.unshift(new Array(gridSize[0]).fill(-1));
+                spriteGrid.pop();
+            } else if (y < 0) {
+                tileGrid.push(new Array(gridSize[0]).fill(0));
+                tileGrid.shift();
+                spriteGrid.push(new Array(gridSize[0]).fill(-1));
+                spriteGrid.shift();
+            }
+            for (offset of options[14]) {
+                offset[0] = JSON.stringify(JSON.parse(offset[0]).map((pos,idx)=>pos+[x,y][idx]));
+            }
+            draw();
+            saveHistory();
         };
 
         function saveHistory() {

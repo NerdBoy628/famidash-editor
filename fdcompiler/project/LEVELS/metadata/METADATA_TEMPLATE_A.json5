@@ -5,17 +5,6 @@
 	community_levels: [
 	],
 	globalObjectOffsets: [
-		/*	Format:
-		{
-			objectID: int or array,
-			--
-			offset: [x_offset, y_offset] (in px)
-			OR
-			offset{X, Y}: offset (in px)
-
-			override: true if you want this setting to override the previous one for this tile
-		}
-		*/
 		{
 			objectID: 0x3E, /* Right medium post */
 			offsetX: -8
