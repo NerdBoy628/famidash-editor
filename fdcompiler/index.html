@@ -177,6 +177,8 @@
         let tmx = null;
         let metadata = null;
         let fileLoadProgress = 0;
+        let emulationSpeed = 1;
+        let frameskip = false;
 
         tmxUpload.addEventListener('change', (e)=>{
             tmx = e.target.files[0];
@@ -420,7 +422,9 @@
                 if (map[key] !== undefined) {
                     if (e) e.preventDefault();
                     type === 'down' ? nes.buttonDown(player, map[key]) : nes.buttonUp(player, map[key]);
-                }
+                };
+                if (e.key == '.') {if (type == 'down') {emulationSpeed = 2} else {emulationSpeed = 1}};
+                if (e.key == ',') {if (type == 'down') {emulationSpeed = .5} else {emulationSpeed = 1}};
             };
 
             const nes = new jsnes.NES({
@@ -437,7 +441,7 @@
             });
 
             document.addEventListener('keydown', (e) => {keys(1, e.keyCode, 'down', e)});
-            document.addEventListener('keyup', (e) => {keys(1, e.keyCode, 'up')});
+            document.addEventListener('keyup', (e) => {keys(1, e.keyCode, 'up', e)});
 
             if (!audioCtx) initAudio();
             audioCtx.resume();
@@ -445,7 +449,15 @@
             nes.loadROM(rom);
 
             const run = () => {
-                nes.frame();
+                if (emulationSpeed == 2) {
+                    nes.frame();
+                    nes.frame();
+                } else {
+                    frameskip = !frameskip;
+                    if (frameskip || emulationSpeed == 1) {
+                        nes.frame();
+                    }
+                }
                 requestAnimationFrame(run);
             };
             gameCanvas.hidden = false;

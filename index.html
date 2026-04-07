@@ -703,6 +703,7 @@
             tileGrid = newTileGrid;
             spriteGrid = newSpriteGrid;
             draw();
+            updateJson();
         });
         editJsonButton.addEventListener('click', (e)=>{
             jsonContainer.style.visibility = (jsonContainer.style.visibility=='hidden')?'visible':'hidden';
@@ -1382,7 +1383,6 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
         function drawShape(preview=false) { // The line drawing algorithm is AI assisted
             function place(x,y) {
                 if (preview) {
-                    widthText.textContent = `${x},${y}`
                     ctx.drawImage(
                         openTab?spriteImg:tileImg,
                         16*(selectedTile[openTab]%16), 
@@ -1646,7 +1646,7 @@ options[13] = '';   if (input.lowerText) options[13] = input.lowerText;
             history.push(structuredClone([tileGrid,spriteGrid,gridSize,options]));
             historyIndex++;
             localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
-            if (fileHandle) {
+            if (fileHandle && window.showSaveFilePicker) {
                 clearTimeout(autosaveTimeout);
                 autosaveTimeout = setTimeout(()=>{save()},1000);
             }
@@ -1688,20 +1688,32 @@ ${spriteData.slice(1,-1)}
 </data>
  </layer>
 </map>`;
-            if (!fileHandle) {
-                fileHandle = await window.showSaveFilePicker({
-                    suggestedName: "level.tmx",
-                    types: [
-                    {
-                        description: "TMX File - Famidash Level Map",
-                        accept: { "text/xml": [".tmx"] }
-                    }
-                    ]
-                })
+            if (window.showSaveFilePicker) {
+                if (!fileHandle) {
+                    fileHandle = await window.showSaveFilePicker({
+                        suggestedName: "level.tmx",
+                        types: [
+                        {
+                            description: "TMX File - Famidash Level Map",
+                            accept: { "text/xml": [".tmx"] }
+                        }
+                        ]
+                    })
+                }
+                const writable = await fileHandle.createWritable();
+                await writable.write(output);
+                await writable.close();
+            } else {
+                const url = window.URL.createObjectURL(new Blob([output], { "text/xml": [".tmx"] }));
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'level.tmx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
             }
-            const writable = await fileHandle.createWritable();
-            await writable.write(output);
-            await writable.close();
         };
 
         function load(data) {

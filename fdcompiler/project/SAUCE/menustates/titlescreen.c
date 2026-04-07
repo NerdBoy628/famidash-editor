@@ -693,8 +693,6 @@ void state_menu() {
 			POKE(0x2005, 0x00);
 			mmc3_disable_irq();
 
-			if (!tmp7) crossPRGBankJump8(playPCM, 1);
-			else crossPRGBankJump8(playPCM, 0);
 			normalorcommlevels = 0;
 			gameState = STATE_LEVELSELECT;
 
