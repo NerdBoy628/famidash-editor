@@ -107,8 +107,7 @@
     <div class="main">
         <br><h1>Famidash Web Compiler</h1>
         <hr>
-        <p>Your level will replace Stereo Madness.<br>
-        The game is compiled locally.<br>
+        <p>The game is compiled locally.<br>
         The source code was updated on 2-21-2026.</p>
         <div id="collapse">
         <hr>
@@ -395,13 +394,11 @@
 
             function initAudio() {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
-                // ScriptProcessorNode handles the timing to prevent popping
                 scriptProcessor = audioCtx.createScriptProcessor(2048, 0, 2);
                 scriptProcessor.onaudioprocess = (e) => {
                     const left = e.outputBuffer.getChannelData(0);
                     const right = e.outputBuffer.getChannelData(1);
                     for (let i = 0; i < 2048; i++) {
-                        // Pull samples from our queue or play silence if empty
                         left[i] = right[i] = audioQueue.shift() || 0;
                     }
                 };
