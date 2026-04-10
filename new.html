@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
-    <meta charset="UTF-8"><title>Famidash Editor</title>
+    <meta charset="UTF-8"><title>Famidash Editor 2</title>
     <link rel="icon" type="image/png" href="icon/cube.png">
     <style>
         @font-face { font-family: 'Pusab'; src: url('pusab.otf') format('opentype') }
@@ -23,6 +23,7 @@
         }
         h1  { margin-bottom: 5px }
         h2 { font-size: 30px; margin-bottom: 5px }
+        canvas {image-rendering: pixelated; image-rendering: crisp-edges}
         #canvas {
             position: absolute;
             left: 0px;
@@ -34,7 +35,6 @@
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             -ms-interpolation-mode: nearest-neighbor;
-            pointer-events: none;
         }
         select {
             font-family: Pusab;
@@ -252,7 +252,7 @@
             border-right: 5px solid #0aa;
             border-bottom: 5px solid #0aa;
         }
-        .menuPopup {
+        #menuPopup {
             position: absolute;
             overflow: scroll;
             scrollbar-width: none;
@@ -319,31 +319,31 @@
         <!-- <button class="roundButton" style="right: 30px; top: 30px; width: 180px; height: 80px">idk</button>
         <button class="roundButton" style="right: 30px; top: 140px; width: 180px; height: 80px">idk</button> -->
     </div>
-    <div class="menuPopup" style="display: none">
+    <div id="menuPopup" style="display: none">
         <h1>Level Settings</h1>
         <table id="settingsTable"><tr><td>
             <h2>Speed</h2>
-            <img id="setSpeed5" src="sprites/109_0.png" style="height: 60px">
-            <img id="setSpeed1" src="sprites/20_0.png" style="height: 60px">
-            <img id="setSpeed0" src="sprites/21_0.png" style="height: 60px">
-            <img id="setSpeed2" src="sprites/22_0.png" style="height: 60px">
-            <img id="setSpeed3" src="sprites/32_0.png" style="height: 60px">
-            <img id="setSpeed4" src="sprites/33_0.png" style="height: 60px">
+            <img id="setSpeed5" src="sprites/109_0.png" style="height: 50px; opacity: .7">
+            <img id="setSpeed1" src="sprites/20_0.png" style="height: 50px; opacity: .7">
+            <img id="setSpeed0" src="sprites/21_0.png" style="height: 60px; opacity: 1">
+            <img id="setSpeed2" src="sprites/22_0.png" style="height: 50px; opacity: .7">
+            <img id="setSpeed3" src="sprites/32_0.png" style="height: 50px; opacity: .7">
+            <img id="setSpeed4" src="sprites/33_0.png" style="height: 50px; opacity: .7">
             <h2>Gamemode</h2>
             <img id="setGamemode0" src="icon/cube.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode1" src="icon/ship.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode2" src="icon/ball_0.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode3" src="icon/ufo.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode6" src="icon/wave.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode4" src="icon/robot.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode5" src="icon/spider.png" style="height: 40px; margin: 0px">
-            <img id="setGamemode7" src="icon/swing.png" style="height: 40px; margin: 0px">
+            <img id="setGamemode1" src="icon/ship.png" style="height: 30px; margin: 0px; opacity: .7">
+            <img id="setGamemode2" src="icon/ball_0.png" style="height: 30px; margin: 0px; opacity: .7">
+            <img id="setGamemode3" src="icon/ufo.png" style="height: 30px; margin: 0px; opacity: .7">
+            <img id="setGamemode6" src="icon/wave.png" style="height: 30px; margin: 0px; opacity: .7">
+            <img id="setGamemode4" src="icon/robot.png" style="height: 30px; margin: 0px; opacity: .7">
+            <img id="setGamemode5" src="icon/spider.png" style="height: 30px; margin: 0px; opacity: .7">
+            <img id="setGamemode7" src="icon/swing.png" style="height: 30px; margin: 0px; opacity: .7">
             <h2>Platformer Mode:</h2>
             <input id="setPlatformer" type="checkbox" style="width: 30px; height: 30px">
             <h2>Background Color:</h2>
-            <img id="setBg" src="colors.png" style="width: 280px; height: 70px; margin: 0px">
+            <canvas id="setBg" style="width: 280px; height: 70px; margin: 0px"></canvas>
             <h2>Ground Color:</h2>
-            <img id="setG" src="colors.png" style="width: 280px; height: 70px; margin: 0px">
+            <canvas id="setG" style="width: 280px; height: 70px; margin: 0px"></canvas>
         </td><td>
             <h2>Block Set:</h2>
             <button id="setBlockA" class="smallButton">A</button>
@@ -360,9 +360,9 @@
             <button id="setSpriteC" style="width: 160px" class="smallButton grayButton">ExtraSprites</button>
             <h2>Slopes:</h2>
             <input id="setSlopes" type="checkbox" style="width: 30px; height: 30px">
-            <h2>Max Fall Speed:</h2>
-            <button id="setMax6" class="smallButton grayButton">6</button>
+            <h2>Max Fall Speed:</h2> <!-- its sad that i have to reverse these -->
             <button id="setMax7" class="smallButton">7</button>
+            <button id="setMax6" class="smallButton grayButton">6</button>
             <br><br>
             <button id="closeSettings" class="smallButton" style="width: 100px; height: 50px; font-size: 30px;">OK</button>
         </td><td>
@@ -379,9 +379,9 @@
                 <option value="&#x44;&#x45;&#x4D;&#x4F;&#x4E;">&#x44;&#x65;&#x6D;&#x6F;&#x6E;</option>
             </select>
             <h2>Upper Text:</h2>
-            <input type="text" id="setUpperText" maxlength=15 style="font-family: Pusab; text-align: center; width: 160px;" value="LEVEL">
+            <input type="text" id="setUpperText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="LEVEL">
             <h2>Lower Text:</h2>
-            <input type="text" id="setLowerText" maxlength=15 style="font-family: Pusab; text-align: center; width: 160px;" value="NAME">
+            <input type="text" id="setLowerText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="NAME">
         </td></tr></table>
     </div>
     <script>
@@ -392,20 +392,28 @@
         function dispToGrid(x,y) {return [Math.floor((x-camera.x)/camera.z/cellSize),Math.floor((y-camera.y)/camera.z/cellSize)]};
 
         for (let el of [
-            'canvas', 'parallaxCanvas', 'groundCanvas', 'tilesetCanvas', 'attemptCanvas'
+            'canvas', 'parallaxCanvas', 'groundCanvas', 'tilesetCanvas', 'attemptCanvas', 'setBg', 'setG'
         ]) {window[el] = gid(el)};
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight*.7;
+        setBg.width = setG.width = 280;
+        setBg.height = setG.height = 70;
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
-        const parallaxCtx = gid('parallaxCanvas').getContext('2d');
-        const groundCtx = gid('groundCanvas').getContext('2d');
-        const tilesetCtx = gid('tilesetCanvas').getContext('2d');
-        const attemptCtx = gid('attemptCanvas').getContext('2d');
-        parallaxCtx.imageSmoothingEnabled = groundCtx.imageSmoothingEnabled =
-        tilesetCtx.imageSmoothingEnabled = attemptCtx.imageSmoothingEnabled = false;
-        const [parallaxImg,groundImg,attemptImg,playerImg,startPosImg] = ['parallax.bmp','ground.bmp','attempt.png','icon/cube.png','startpos.png'].map(i => Object.assign(new Image(), {src: i}));
-        let tileImg = new Image(); tileImg.src = `tilesets/BlocksaSpikesaSawsaSlopesa.png`;
+        const parallaxCtx = parallaxCanvas.getContext('2d');
+        const groundCtx = groundCanvas.getContext('2d');
+        const tilesetCtx = tilesetCanvas.getContext('2d');
+        const attemptCtx = attemptCanvas.getContext('2d');
+        const setBgCtx = setBg.getContext('2d');
+        const setGCtx = setG.getContext('2d');
+        for (let context of [parallaxCtx, groundCtx, tilesetCtx, attemptCtx, setBgCtx, setGCtx]) {
+            context.imageSmoothingEnabled = false;
+            context.willReadFrequently = true;
+        };
+        const [parallaxImg,noParallaxImg,groundImg,attemptImg,playerImg,startPosImg,colorsImg]
+            = ['parallax.bmp','noparallax.bmp','ground.bmp','attempt.png','icon/cube.png','startpos.png','colors.png']
+            .map(i => Object.assign(new Image(), {src: i}));
+        let tileImg = new Image(); tileImg.src = `tilesets/BlocksaSpikesaSawsaSlopesnone.png`;
         let spriteImg = new Image(); spriteImg.src = `sprites.png`;
 
         let openTab = 0;
@@ -434,7 +442,6 @@
             [], //sprite shifts
         ]
         let options = JSON.parse(JSON.stringify(optionsDefault));
-        // create 2D arrays with the grid size and fill them with empty cells
         let tileGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(0));
         let spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
         //if (localStorage.getItem('famidash_editor_version')!=3) {
@@ -561,12 +568,88 @@
             for (let i of tools) {gid(`${i}Tool`).classList.remove('cyanButton')};
             gid(`${tools[tool]}Tool`).classList.add('cyanButton');
         };
-        gid('settingsButton').addEventListener('click', ()=>{
-            gcl('menuPopup').style.display = 'block';
+        gid('settingsButton').addEventListener('click', ()=>{gid('menuPopup').style.display = 'block'});
+        gid('closeSettings').addEventListener('click', ()=>{gid('menuPopup').style.display = 'none'});
+        for (let i = 0; i < 6; i++) {
+            gid(`setSpeed${i}`).addEventListener('mousedown', (e)=>{
+                e.preventDefault();
+                gid(`setSpeed${options[8]}`).style.opacity = '.7';
+                gid(`setSpeed${options[8]}`).style.height = '50px';
+                options[8] = parseInt(e.srcElement.id[8]);
+                e.srcElement.style.opacity = '1';
+                e.srcElement.style.height = '60px';
+            });
+        };
+        for (let i = 0; i < 8; i++) {
+            gid(`setGamemode${i}`).addEventListener('mousedown', (e)=>{
+                e.preventDefault();
+                gid(`setGamemode${options[7]}`).style.opacity = '.7';
+                gid(`setGamemode${options[7]}`).style.height = '30px';
+                options[7] = parseInt(e.srcElement.id[11]);
+                e.srcElement.style.opacity = '1';
+                e.srcElement.style.height = '40px';
+            });
+        };
+        gid('setPlatformer').addEventListener('change', (e)=>{options[4] = e.srcElement.checked});
+        gid('setBg').addEventListener('mousedown', (e)=>{
+            if (e.offsetX==280 || e.offsetY==70) return;
+            if (Math.floor(e.offsetX/280*13)==0) {
+                result = [15,0,16,32][Math.floor(e.offsetY/70*4)];
+            } else {
+                result = Math.floor(e.offsetY/70*3)*16+Math.floor(e.offsetX/280*13);
+            };
+            options[5] = result; draw();
         });
-        gid('closeSettings').addEventListener('click', ()=>{
-            gcl('menuPopup').style.display = 'none';
-        })
+        gid('setG').addEventListener('mousedown', (e)=>{
+            if (e.offsetX==280 || e.offsetY==70) return;
+            if (Math.floor(e.offsetX/280*13)==0) {
+                result = [15,0,16,32][Math.floor(e.offsetY/70*4)];
+            } else {
+                result = Math.floor(e.offsetY/70*3)*16+Math.floor(e.offsetX/280*13);
+            };
+            options[6] = result; draw();
+        });
+        for (let i = 0; i < 4; i++) {
+            gid(`setBlock${'ABCD'[i]}`).addEventListener('mousedown', (e)=>{
+                gid(`setBlock${options[0]}`).classList.add('grayButton');
+                options[0] = e.srcElement.id[8];
+                e.srcElement.classList.remove('grayButton');
+                createTileButtons();
+            });
+        };
+        for (let i = 0; i < 3; i++) {
+            gid(`setSpike${'ABC'[i]}`).addEventListener('mousedown', (e)=>{
+                gid(`setSpike${options[1]}`).classList.add('grayButton');
+                options[1] = e.srcElement.id[8];
+                e.srcElement.classList.remove('grayButton');
+                createTileButtons();
+            });
+        };
+        for (let i = 0; i < 3; i++) {
+            gid(`setSprite${'ABC'[i]}`).addEventListener('mousedown', (e)=>{
+                const spriteSets = ['DECO1','DECOCLOUD','EXTRASPRITES1'];
+                gid(`setSprite${'ABC'[spriteSets.indexOf(options[3])]}`).classList.add('grayButton');
+                options[3] = spriteSets['ABC'.indexOf(e.srcElement.id[9])];
+                e.srcElement.classList.remove('grayButton');
+                createTileButtons();
+            });
+        };
+        gid('setSlopes').addEventListener('change', (e)=>{options[2] = e.srcElement.checked; createTileButtons();});
+        for (let i = 6; i <= 7; i++) {
+            gid(`setMax${i}`).addEventListener('mousedown', (e)=>{
+                e.preventDefault();
+                gid(`setMax${options[9]}`).classList.add('grayButton');
+                options[9] = parseInt(e.srcElement.id[6]);
+                e.srcElement.classList.remove('grayButton');
+            });
+        };
+        gid('setStars').addEventListener('input', (e)=>{
+            options[10] = e.srcElement.value;
+            gid('starsLabel').textContent = `Stars: ${e.srcElement.value}`;
+        });
+        gid('setDifficulty').addEventListener('change', (e)=>{options[11] = e.srcElement.value});
+        gid('setUpperText').addEventListener('input', (e)=>{options[12] = e.srcElement.value});
+        gid('setLowerText').addEventListener('input', (e)=>{options[13] = e.srcElement.value});
         window.addEventListener('resize', ()=>{
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight*.7;
@@ -595,6 +678,7 @@
         }, { passive: false });
         canvas.addEventListener('mousedown', (e)=>{
             e.preventDefault();
+            if (gid('menuPopup').style.display != 'none') return;
             [drag[0],drag[1]] = mousepos;
             if (e.button == 0) {
                 mouseState = 1;
@@ -678,7 +762,7 @@
         });
         
         window.addEventListener('load', () => {
-            createTileButtons(); draw();
+            createTileButtons(); draw(); saveHistory();
         });
 
         function createTileButtons() {
@@ -726,33 +810,38 @@
                 gcl('tabContainer').appendChild(newTab);
             }
             
-            addButtons([
-                32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,164,165,166,167,16, 126,136,137,2,6,1,5,
-                64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,
-                96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115, 140,141,247,248
-            ],0,32); // blocks
-            addButtons([3,25,21,55,199,200,22,201,202,56,57,58,60,61,62,63,84,85,86,87,88,89,90,91],1,25); // slabs
-            addButtons([17,26,27,28,18,29,30,31,244,245,246,249,250,251,193,194,195,196,240,241,242,243,24,23,94,95,92,93,130,131,59,12,13,133,134,135,138,139],2,17); // spikes
-            addButtons([125,127,4,8,9,10,11,116,117,118,119,120,121,122,123,124],3,125); // saws
-            addButtons([144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,215,216],4,144); // slopes
-            addButtons([0,7,19,20,14,15,132,197,198,203,204,205,206,207,208,209,210,52,53,54,232,233,234,142,235,236,237,238,239,128,129,212,213,214],5,197); // deco
-            addButtons([176,177,178,179,180,181,182,183,184,185,186,187,188,189,211,168,169,170,171,172,173,174,175,190,191,192,227,223,254,255],6,211); // miniblocks
-            addButtons([143,217,218,219,220,221,222,224,225,226,228,229,230,231,252,253],7,252); // customcollision
-            addButtons([
-                267,261,262,287,295,296,297,324,325,326,332,333,336,337,340,341,345,346,347,348,349,350,378,379,380,381,377,
-                266,268,269,270,293,294,338,339,342,343,357,509,510, 263,282,283,366,284,285,286
-            ],8,267); // orbs, etc
-            addButtons([
-                256,257,258,259,260,279,292,331,344,362,356,264,265,272,273,274,275,280,281,351,352,353,354,355,334,335,358,359,360,361,
-                276,277,278,288,289,365,290,291
-            ],9,256); // portals
-            addButtons([298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,329,330],10,299) // pulse
-            addButtons([399,384,400,416,385,386,387,388,389,390,391,392,393,394,395,396,401,402,403,404,405,406,407,408,409,410,411,412,417,418,419,420,421,422,423,424,425,426,427,428,415],11,399); // bg triggers
-            addButtons([447,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,431],12,447); // obj triggers
-            addButtons([463,448,464,480,449,450,451,452,453,454,455,456,457,458,459,460,465,466,467,468,469,470,471,472,473,474,475,476,481,482,483,484,485,486,487,488,489,490,491,492,430],13,463); // ground triggers
-            addButtons([271,367,383,398,414,477,478,479,493,494,495,496,497,498,499,500,501,502,503,504,505,506,507,508,327,328,368,369,370,371,372,373,374,375,376],14,271); // misc triggers
-            
-            //addButtons([320,321,322,323,363,364,382,397,413,429,461,462,511],21,511); // invalid
+            tileImg.onload = () => {
+                setColor(true);
+                gcl('tabContainer').replaceChildren();
+                document.querySelectorAll('.tileContainer').forEach(el => el.remove());
+                addButtons([
+                    32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,164,165,166,167,16, 126,136,137,2,6,1,5,
+                    64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,
+                    96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115, 140,141,247,248
+                ],0,32); // blocks
+                addButtons([3,25,21,55,199,200,22,201,202,56,57,58,60,61,62,63,84,85,86,87,88,89,90,91],1,25); // slabs
+                addButtons([17,26,27,28,18,29,30,31,244,245,246,249,250,251,193,194,195,196,240,241,242,243,24,23,94,95,92,93,130,131,59,12,13,133,134,135,138,139],2,17); // spikes
+                addButtons([125,127,4,8,9,10,11,116,117,118,119,120,121,122,123,124],3,125); // saws
+                if (options[2]) addButtons([144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,215,216],4,144); // slopes
+                addButtons([0,7,19,20,14,15,132,197,198,203,204,205,206,207,208,209,210,52,53,54,232,233,234,142,235,236,237,238,239,128,129,212,213,214],5,197); // deco
+                addButtons([176,177,178,179,180,181,182,183,184,185,186,187,188,189,211,168,169,170,171,172,173,174,175,190,191,192,227,223,254,255],6,211); // miniblocks
+                addButtons([143,217,218,219,220,221,222,224,225,226,228,229,230,231,252,253],7,252); // customcollision
+                addButtons([
+                    267,261,262,287,295,296,297,324,325,326,332,333,336,337,340,341,345,346,347,348,349,350,378,379,380,381,377,
+                    266,268,269,270,293,294,338,339,342,343,357,509,510, 263,282,283,366,284,285,286
+                ],8,267); // orbs, etc
+                addButtons([
+                    256,257,258,259,260,279,292,331,344,362,356,264,265,272,273,274,275,280,281,351,352,353,354,355,334,335,358,359,360,361,
+                    276,277,278,288,289,365,290,291
+                ],9,256); // portals
+                addButtons([298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,329,330],10,299) // pulse
+                addButtons([399,384,400,416,385,386,387,388,389,390,391,392,393,394,395,396,401,402,403,404,405,406,407,408,409,410,411,412,417,418,419,420,421,422,423,424,425,426,427,428,415],11,399); // bg triggers
+                addButtons([447,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,431],12,447); // obj triggers
+                addButtons([463,448,464,480,449,450,451,452,453,454,455,456,457,458,459,460,465,466,467,468,469,470,471,472,473,474,475,476,481,482,483,484,485,486,487,488,489,490,491,492,430],13,463); // ground triggers
+                addButtons([271,367,383,398,414,477,478,479,493,494,495,496,497,498,499,500,501,502,503,504,505,506,507,508,327,328,368,369,370,371,372,373,374,375,376],14,271); // misc triggers
+                //addButtons([320,321,322,323,363,364,382,397,413,429,461,462,511],15,511); // invalid
+            };
+            tileImg.src = `tilesets/Blocks${options[0].toLowerCase()}Spikes${options[1].toLowerCase()}SawsaSlopes${options[2]?'a':'none'}.png`;
         }
         function setTab(tab) {
             gid(`tab${openTab}`).classList.remove('selectedTab');
@@ -1062,8 +1151,7 @@
             groundCtx.clearRect(0,0,64,128);
             tilesetCtx.clearRect(0,0,256,256);
             attemptCtx.clearRect(0,0,119,8);
-            parallaxImg.src = `${options[2]?'no':''}parallax.bmp`;
-            parallaxCtx.drawImage(parallaxImg,0,0);
+            parallaxCtx.drawImage(options[2]?noParallaxImg:parallaxImg,0,0);
             groundCtx.drawImage(groundImg,0,0);
             tilesetCtx.drawImage(tileImg,0,0);
             attemptCtx.drawImage(attemptImg,0,0);
@@ -1106,6 +1194,39 @@
             imageData.data = applyMap(imageData.data);
             attemptCtx.putImageData(imageData, 0, 0);
             prevColors = [bgColor,groundColor,objColor];
+
+            setBgCtx.drawImage(colorsImg,0,0,280,70);
+            if (bgColor%16 == 0 || bgColor%16 == 15) {
+                [x,y] = [6,bgColor==143?12:Math.floor(bgColor/16-7)*17+12]
+            } else {
+                [x,y] = [bgColor%16*21.5+6,Math.floor(bgColor/16-8)*23+14]
+            };
+            setBgCtx.lineCap = "round"; 
+            for (style of [['white',3],['black',2]]) {
+                setBgCtx.strokeStyle = style[0];
+                setBgCtx.lineWidth = style[1];
+                setBgCtx.beginPath();
+                setBgCtx.moveTo(x,y);
+                setBgCtx.lineTo(x+5,y+5);
+                setBgCtx.lineTo(x+10,y-10);
+                setBgCtx.stroke();
+            };
+            setGCtx.drawImage(colorsImg,0,0,280,70);
+            if (groundColor%16 == 0 || groundColor%16 == 15) {
+                [x,y] = [6,groundColor==143?12:Math.floor(groundColor/16-7)*17+12]
+            } else {
+                [x,y] = [groundColor%16*21.5+6,Math.floor(groundColor/16-8)*23+14]
+            };
+            setGCtx.lineCap = "round"; 
+            for (style of [['white',3],['black',2]]) {
+                setGCtx.strokeStyle = style[0];
+                setGCtx.lineWidth = style[1];
+                setGCtx.beginPath();
+                setGCtx.moveTo(x,y);
+                setGCtx.lineTo(x+5,y+5);
+                setGCtx.lineTo(x+10,y-10);
+                setGCtx.stroke();
+            };
         };
 
         function saveHistory() {
