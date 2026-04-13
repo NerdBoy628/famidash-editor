@@ -278,6 +278,20 @@
             table-layout: fixed;
         }
         td { vertical-align: top; text-align: center }
+        #saveContainer {
+            transition: all 0.3s ease-in-out;
+            border-radius: 38px;
+            width: 65px;
+            height: 65px;
+            text-align: center;
+            overflow: hidden;
+        }
+        #saveContainer:hover {
+            border-radius: 10px;
+            width: 140px;
+            height: 80px;
+        }
+        #saveContainer:active {transform: scale(1)}
     </style>
 </head>
 <body>
@@ -289,8 +303,12 @@
     <button id="undo" class="roundButton" style="left: 30px; top: 30px">↩️</button>
     <button id="redo" class="roundButton" style="left: 150px; top: 30px">↪️</button>
     <button class="roundButton grayButton" style="left: 270px; top: 30px" id="btn-1">🗑</button>
+    <div id="saveContainer" class="roundButton" style="left: 30px; top: 150px">
+        <div id="saveIcon" style="position: absolute; left: 10px; top: 8px;">💾</div>
+        <button id="save" style="width: 120px; height: 30px; visibility: hidden;" class="smallButton grayButton">Save TMX</button>
+        <button id="load" style="width: 120px; height: 30px; visibility: hidden;" class="smallButton grayButton">Load TMX</button>
+    </div>
     <button id="settingsButton" class="roundButton" style="right: 30px; top: 30px">⚙️</button>
-    <!--<button class="roundButton" style="right: 30px; top: 160px">PEN</button>-->
     <div class="bottomContainer">
         <button id="buildButton" class="rectButton cyanButton" style="left: 30px; top: 30px; width: 180px; height: 80px">BUILD</button>
         <button id="toolsButton" class="rectButton" style="left: 30px; top: 140px; width: 180px; height: 80px">TOOLS</button>
@@ -322,14 +340,14 @@
     <div id="menuPopup" style="display: none">
         <h1>Level Settings</h1>
         <table id="settingsTable"><tr><td>
-            <h2>Speed</h2>
+            <h2>Speed:</h2>
             <img id="setSpeed5" src="sprites/109_0.png" style="height: 50px; opacity: .7">
             <img id="setSpeed1" src="sprites/20_0.png" style="height: 50px; opacity: .7">
             <img id="setSpeed0" src="sprites/21_0.png" style="height: 60px; opacity: 1">
             <img id="setSpeed2" src="sprites/22_0.png" style="height: 50px; opacity: .7">
             <img id="setSpeed3" src="sprites/32_0.png" style="height: 50px; opacity: .7">
             <img id="setSpeed4" src="sprites/33_0.png" style="height: 50px; opacity: .7">
-            <h2>Gamemode</h2>
+            <h2>Gamemode:</h2>
             <img id="setGamemode0" src="icon/cube.png" style="height: 40px; margin: 0px">
             <img id="setGamemode1" src="icon/ship.png" style="height: 30px; margin: 0px; opacity: .7">
             <img id="setGamemode2" src="icon/ball_0.png" style="height: 30px; margin: 0px; opacity: .7">
@@ -338,8 +356,8 @@
             <img id="setGamemode4" src="icon/robot.png" style="height: 30px; margin: 0px; opacity: .7">
             <img id="setGamemode5" src="icon/spider.png" style="height: 30px; margin: 0px; opacity: .7">
             <img id="setGamemode7" src="icon/swing.png" style="height: 30px; margin: 0px; opacity: .7">
-            <h2>Platformer Mode:</h2>
-            <input id="setPlatformer" type="checkbox" style="width: 30px; height: 30px">
+            <h2 style="display: flex; align-items: center; justify-content: center;">Platformer Mode:
+            <input id="setPlatformer" type="checkbox" style="width: 30px; height: 30px"></h2>
             <h2>Background Color:</h2>
             <canvas id="setBg" style="width: 280px; height: 70px; margin: 0px"></canvas>
             <h2>Ground Color:</h2>
@@ -358,8 +376,8 @@
             <button id="setSpriteA" style="width: 100px" class="smallButton">Default</button>
             <button id="setSpriteB" style="width: 90px" class="smallButton grayButton">Clouds</button>
             <button id="setSpriteC" style="width: 160px" class="smallButton grayButton">ExtraSprites</button>
-            <h2>Slopes:</h2>
-            <input id="setSlopes" type="checkbox" style="width: 30px; height: 30px">
+            <h2 style="display: flex; align-items: center; justify-content: center;">Slopes: 
+            <input id="setSlopes" type="checkbox" style="width: 30px; height: 30px"></h2>
             <h2>Max Fall Speed:</h2> <!-- its sad that i have to reverse these -->
             <button id="setMax7" class="smallButton">7</button>
             <button id="setMax6" class="smallButton grayButton">6</button>
@@ -382,8 +400,14 @@
             <input type="text" id="setUpperText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="LEVEL">
             <h2>Lower Text:</h2>
             <input type="text" id="setLowerText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="NAME">
+            <br><br>
+            <button id="saveMetadata" class="smallButton" style="width: 220px; height: 25px;">Copy to Clipboard</button><br>
+            <button id="loadMetadata" class="smallButton" style="width: 240px; height: 25px;">Load from Clipboard</button>
+            <br><br>
+            <!-- <button id="editorOptions" class="smallButton" style="width: 150px; height: 50px; font-size: 25px;">Editor Options</button> -->
         </td></tr></table>
     </div>
+    <input type="file" id="fileLoad" accept=".tmx,.xml" hidden>
     <script>
         function sleep(t) {return new Promise(resolve => setTimeout(resolve, t))};
         function gid(x) {return document.getElementById(x)};
@@ -544,6 +568,21 @@
         gid('btn-1').addEventListener('click', ()=>{selectTile(-1)});
         gid('undo').addEventListener('click', undo);
         gid('redo').addEventListener('click', redo);
+        gid('saveContainer').addEventListener('mouseenter', ()=>{
+            gid('saveIcon').style.visibility = 'hidden';
+            gid('save').style.visibility = 'visible';
+            gid('load').style.visibility = 'visible';
+            gid('copyMetadata').style.visibility = 'visible';
+        });
+        gid('saveContainer').addEventListener('mouseleave', ()=>{
+            gid('saveIcon').style.visibility = 'visible';
+            gid('save').style.visibility = 'hidden';
+            gid('load').style.visibility = 'hidden';
+            gid('copyMetadata').style.visibility = 'hidden';
+        });
+        gid('save').addEventListener('click', save);
+        gid('load').addEventListener('click', ()=>{gid('fileLoad').click()});
+        fileLoad.addEventListener('change', (e)=>{load(e.target.files[0])});
         gid('buildButton').addEventListener('click', ()=>{
             gid('buildContainer').style.display = 'block';
             gid('toolsContainer').style.display = 'none';
@@ -572,25 +611,15 @@
         gid('closeSettings').addEventListener('click', ()=>{gid('menuPopup').style.display = 'none'});
         for (let i = 0; i < 6; i++) {
             gid(`setSpeed${i}`).addEventListener('mousedown', (e)=>{
-                e.preventDefault();
-                gid(`setSpeed${options[8]}`).style.opacity = '.7';
-                gid(`setSpeed${options[8]}`).style.height = '50px';
-                options[8] = parseInt(e.srcElement.id[8]);
-                e.srcElement.style.opacity = '1';
-                e.srcElement.style.height = '60px';
+                e.preventDefault(); updateJson(8, parseInt(e.srcElement.id[8]));
             });
         };
         for (let i = 0; i < 8; i++) {
             gid(`setGamemode${i}`).addEventListener('mousedown', (e)=>{
-                e.preventDefault();
-                gid(`setGamemode${options[7]}`).style.opacity = '.7';
-                gid(`setGamemode${options[7]}`).style.height = '30px';
-                options[7] = parseInt(e.srcElement.id[11]);
-                e.srcElement.style.opacity = '1';
-                e.srcElement.style.height = '40px';
+                e.preventDefault(); updateJson(7, parseInt(e.srcElement.id[11]));
             });
         };
-        gid('setPlatformer').addEventListener('change', (e)=>{options[4] = e.srcElement.checked});
+        gid('setPlatformer').addEventListener('change', (e)=>{updateJson(4, e.srcElement.checked)});
         gid('setBg').addEventListener('mousedown', (e)=>{
             if (e.offsetX==280 || e.offsetY==70) return;
             if (Math.floor(e.offsetX/280*13)==0) {
@@ -610,46 +639,30 @@
             options[6] = result; draw();
         });
         for (let i = 0; i < 4; i++) {
-            gid(`setBlock${'ABCD'[i]}`).addEventListener('mousedown', (e)=>{
-                gid(`setBlock${options[0]}`).classList.add('grayButton');
-                options[0] = e.srcElement.id[8];
-                e.srcElement.classList.remove('grayButton');
-                createTileButtons();
-            });
+            gid(`setBlock${'ABCD'[i]}`).addEventListener('mousedown', (e)=>{updateJson(0, e.srcElement.id[8])});
         };
         for (let i = 0; i < 3; i++) {
-            gid(`setSpike${'ABC'[i]}`).addEventListener('mousedown', (e)=>{
-                gid(`setSpike${options[1]}`).classList.add('grayButton');
-                options[1] = e.srcElement.id[8];
-                e.srcElement.classList.remove('grayButton');
-                createTileButtons();
-            });
+            gid(`setSpike${'ABC'[i]}`).addEventListener('mousedown', (e)=>{updateJson(1, e.srcElement.id[8])});
         };
         for (let i = 0; i < 3; i++) {
             gid(`setSprite${'ABC'[i]}`).addEventListener('mousedown', (e)=>{
                 const spriteSets = ['DECO1','DECOCLOUD','EXTRASPRITES1'];
-                gid(`setSprite${'ABC'[spriteSets.indexOf(options[3])]}`).classList.add('grayButton');
-                options[3] = spriteSets['ABC'.indexOf(e.srcElement.id[9])];
-                e.srcElement.classList.remove('grayButton');
-                createTileButtons();
+                updateJson(3,spriteSets['ABC'.indexOf(e.srcElement.id[9])]);
             });
         };
-        gid('setSlopes').addEventListener('change', (e)=>{options[2] = e.srcElement.checked; createTileButtons();});
+        gid('setSlopes').addEventListener('change', (e)=>{updateJson(2, e.srcElement.checked)});
         for (let i = 6; i <= 7; i++) {
             gid(`setMax${i}`).addEventListener('mousedown', (e)=>{
                 e.preventDefault();
-                gid(`setMax${options[9]}`).classList.add('grayButton');
-                options[9] = parseInt(e.srcElement.id[6]);
-                e.srcElement.classList.remove('grayButton');
+                updateJson(9, parseInt(e.srcElement.id[6]));
             });
         };
-        gid('setStars').addEventListener('input', (e)=>{
-            options[10] = e.srcElement.value;
-            gid('starsLabel').textContent = `Stars: ${e.srcElement.value}`;
-        });
-        gid('setDifficulty').addEventListener('change', (e)=>{options[11] = e.srcElement.value});
-        gid('setUpperText').addEventListener('input', (e)=>{options[12] = e.srcElement.value});
-        gid('setLowerText').addEventListener('input', (e)=>{options[13] = e.srcElement.value});
+        gid('setStars').addEventListener('input', (e)=>{updateJson(10, parseInt(e.srcElement.value))});
+        gid('setDifficulty').addEventListener('change', (e)=>{updateJson(11, e.srcElement.value)});
+        gid('setUpperText').addEventListener('input', (e)=>{updateJson(12, e.srcElement.value)});
+        gid('setLowerText').addEventListener('input', (e)=>{updateJson(13, e.srcElement.value)});
+        gid('saveMetadata').addEventListener('click', saveMetadata);
+        gid('loadMetadata').addEventListener('click', loadMetadata);
         window.addEventListener('resize', ()=>{
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight*.7;
@@ -1256,6 +1269,209 @@
                 draw();
                 // localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             }
+        };
+
+        async function save() {
+            let tileData = '';
+            let spriteData = '';
+            for (let y = 0; y < gridSize[1]; y++) {
+                tileData = `${tileData}\n${tileGrid[y].map((x)=>x+1).join(',')},`;
+                spriteData = `${spriteData}\n${spriteGrid[y].map((x)=>(x==-1)?0:x+257).join(',')},`;
+            }
+            let output = `<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="${gridSize[0]}" height="${gridSize[1]}" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+ <editorsettings>
+  <chunksize width="16" height="27"/>
+  <export target="stereomadness.csv" format="csv"/>
+ </editorsettings>
+ <tileset firstgid="1" name="famidash" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+  <image source="../../../GRAPHICS/famidash.bmp" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="257" name="sprites" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+  <image source="../../../GRAPHICS/sprites.png" width="256" height="256"/>
+ </tileset>
+ <imagelayer id="3" name="Image Layer 1" parallaxx="0.9" parallaxy="0.9" repeatx="1" repeaty="1">
+  <image source="../../../GRAPHICS/Old/parallax Blue.bmp" width="192" height="72"/>
+ </imagelayer>
+ <imagelayer id="4" name="Image Layer 2" offsetx="0" offsety="${gridSize[1]*16}" repeatx="1">
+  <image source="../../../GRAPHICS/ground.bmp" width="80" height="32"/>
+ </imagelayer>
+ <layer id="1" width="${gridSize[0]}" height="${gridSize[1]}">
+  <data encoding="csv">
+${tileData.slice(1,-1)}
+</data>
+ </layer>
+ <layer id="2" name="SP" width="${gridSize[0]}" height="${gridSize[1]}">
+<data encoding="csv">
+${spriteData.slice(1,-1)}
+</data>
+ </layer>
+</map>`;
+            if (window.showSaveFilePicker) {
+                if (!fileHandle) {
+                    fileHandle = await window.showSaveFilePicker({
+                        suggestedName: "level.tmx",
+                        types: [
+                            {
+                                description: "TMX File - Famidash Level Map",
+                                accept: { "text/xml": [".tmx"] }
+                            }
+                        ]
+                    });
+                };
+                const writable = await fileHandle.createWritable();
+                await writable.write(output);
+                await writable.close();
+            } else {
+                const url = window.URL.createObjectURL(new Blob([output], { "text/xml": [".tmx"] }));
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'level.tmx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        };
+
+        function load(data) {
+            const reader = new FileReader();
+            reader.onload = (e)=>{
+                data = e.target.result;
+                gridSize = [data.split('width="')[1].split('"')[0], data.split('height="')[1].split('"')[0]];
+                let tileData = data.split('<data encoding="csv">\n')[1].split('\n</data>')[0].split('\n');
+                let spriteData = data.split('<data encoding="csv">\n')[2].split('\n</data>')[0].split('\n');
+                tileGrid = tileData.map((x)=>x.split(',').map((x)=>Math.max(x-1,0)).slice(0,gridSize[0]));
+                spriteGrid = spriteData.map((x)=>x.split(',').map((x)=>(x==0)?-1:x-257).slice(0,gridSize[0]));
+                saveHistory();
+            }
+            reader.readAsText(data);
+        };
+
+        function saveMetadata() {
+            let objectOffsets = '[\n';
+            for (let shift of options[14]) {
+                if (!(shift[1][0] == 0 && shift[1][1] == 0)) {
+                    objectOffsets += `\t\t{\n\t\t\tcoordinates: ${shift[0]},\n`;
+                    if (shift[1][0] != 0) objectOffsets += `\t\t\toffsetX: ${shift[1][0]},\n`;
+                    if (shift[1][1] != 0) objectOffsets += `\t\t\toffsetY: ${shift[1][1]},\n`;
+                    objectOffsets += '\t\t},\n';
+                };
+            }
+            objectOffsets += '\t]';
+            let output = `{
+	level: "${options[12].toLowerCase().replaceAll(' ','')}${options[13].toLowerCase().replaceAll(' ','')}",
+	upperText: "${options[12].toUpperCase()}",
+	lowerText: "${options[13].toUpperCase()}",
+	decoType: "${options[3]}",
+	spikeSet: "${options[1]}",
+	blockSet: "${options[0]}",
+	sawSet: "A",
+	difficulty: "${options[11]}",
+	stars: ${options[10]},
+	songID: "song_${(options[12]+' '+options[13]).toLowerCase().replace(/  +/g, ' ').trim().replaceAll(' ','_')}",
+	startingGameMode: ${options[7]},
+	startingSpeed: ${options[8]},
+	startingBackgroundColor: 0x${options[5].toString(16).padStart(2,'0')},
+	startingGroundColor: 0x${options[6].toString(16).padStart(2,'0')},
+	maxFallSpeed: 0x0${options[9]},
+	parallaxDisable: ${options[2]?'true':'false'},
+	forcePlatformer: ${options[4]},
+	objectOffsets: ${objectOffsets}
+}`;
+            navigator.clipboard.writeText(output);
+        }
+
+        async function loadMetadata() {
+            navigator.clipboard.readText().then((pastedText)=>{
+                try {
+                    let input = pastedText;
+                    let objectOffsets = input.split('objectOffsets: ')[1];
+                    input = pastedText.replaceAll('{','').replaceAll('}','').replaceAll('\n','')
+                    .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split('objectOffsets')[0].split(',');
+                    for (let i = 0; i < input.length; i++) {
+                        input[i] = input[i].split('/')[0].split(': ');
+                        input[i][0] = input[i][0].replaceAll(' ','')
+                    };
+                    input = Object.fromEntries(input);
+                    console.log(input)
+                    if (input.blockSet) updateJson(0, input.blockSet);
+                    console.log(options[0])
+                    if (input.spikeSet) updateJson(1, input.spikeSet);
+options[2] = false; if (input.parallaxDisable) updateJson(2, input.parallaxDisable=='true');
+                    if (input.decoType) updateJson(3, input.decoType);
+options[4] = false; if (input.forcePlatformer) updateJson(4, input.forcePlatformer=='true');
+                    if (input.startingBackgroundColor) updateJson(5, parseInt(input.startingBackgroundColor,16));
+                    if (input.startingGroundColor) updateJson(6, parseInt(input.startingGroundColor,16));
+                    if (input.startingGameMode) updateJson(7, parseInt(input.startingGameMode));
+                    if (input.startingSpeed) updateJson(8, parseInt(input.startingSpeed));
+                    if (input.maxFallSpeed) updateJson(9, parseInt(input.maxFallSpeed));
+                    if (input.stars) updateJson(10, parseInt(input.stars));
+                    if (input.difficulty) updateJson(11, input.difficulty);
+options[12] = '';   if (input.upperText) updateJson(12, input.upperText);
+options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
+                    objectOffsets = objectOffsets.replaceAll('},','').replaceAll('}','').replaceAll('\n','').replaceAll('\t','').replaceAll(' ','')
+                    .replace('[','').split('{').map((offset)=>{
+                        if (offset && offset!=']') {
+                            offset = offset.split(/[\[\]]/);
+                            offset[1] = offset[1].split(',').map((x)=>parseInt(x));
+                            offset[2] = offset[2].split(',');
+                            offset[2].pop();
+                            offset[2].shift();
+                            offset[2] = offset[2].map((x)=>x.split(':'));
+                            offset.shift();
+                        }
+                        return offset;
+                    });
+                    objectOffsets.shift();
+                    options[14] = [];
+                    for (let offset of objectOffsets) {
+                        if (offset) {
+                            let amount = [0,0];
+                            for (let x of offset[1]) {
+                                if (x[0]=='offsetX') amount[0] = parseInt(x[1]);
+                                if (x[0]=='offsetY') amount[1] = parseInt(x[1]);
+                            }
+                            options[14].push([JSON.stringify(offset[0]),amount]);
+                        }
+                    };
+                } catch (e) {
+                    alert(`JSON load failed! Make sure the clipboard contains valid data.\n${e}`);
+                    throw(e);
+                };
+                console.log(gid(`setBlock${options[0]}`));
+                gid(`setBlock${options[0]}`).dispatchEvent(new Event('mousedown')); createTileButtons();
+            });
+        };
+
+        function updateJson(item, value) {
+            const spriteSets = ['DECO1','DECOCLOUD','EXTRASPRITES1'];
+            gid(`setBlock${options[0]}`).classList.add('grayButton');
+            gid(`setSpike${options[1]}`).classList.add('grayButton');
+            gid(`setSprite${'ABC'[spriteSets.indexOf(options[3])]}`).classList.add('grayButton');
+            gid(`setGamemode${options[7]}`).style.opacity = '.7';
+            gid(`setGamemode${options[7]}`).style.height = '30px';
+            gid(`setSpeed${options[8]}`).style.opacity = '.7';
+            gid(`setSpeed${options[8]}`).style.height = '50px';
+            gid(`setMax${options[9]}`).classList.add('grayButton');
+            options[item] = value;
+            gid(`setBlock${options[0]}`).classList.remove('grayButton');
+            gid(`setSpike${options[1]}`).classList.remove('grayButton');
+            gid('setPlatformer').checked = options[2];
+            gid(`setSprite${'ABC'[spriteSets.indexOf(options[3])]}`).classList.remove('grayButton');
+            gid('setPlatformer').checked = options[4];
+            gid(`setGamemode${options[7]}`).style.opacity = '1';
+            gid(`setGamemode${options[7]}`).style.height = '40px';
+            gid(`setSpeed${options[8]}`).style.opacity = '1';
+            gid(`setSpeed${options[8]}`).style.height = '60px';
+            gid(`setMax${options[9]}`).classList.remove('grayButton');
+            gid('setStars').value = options[10];
+            gid('starsLabel').textContent = `Stars: ${options[10]}`;
+            gid('setDifficulty').value = options[11];
+            gid('setUpperText').value = options[12];
+            gid('setLowerText').value = options[13];
+            createTileButtons(); draw();
         };
 </script>
 </body></html>
