@@ -29,7 +29,7 @@
             text-align: center;
         }
         button {
-            display: block;
+            display: inline-block;
             margin: 0 auto;
             background-color: #444;
             color: #fff;
@@ -138,7 +138,10 @@
         </div>
         <h2>Step 3: Compile</h2>
         <canvas id="gameCanvas" width=256 height=240 hidden></canvas>
-        <button id="compileButton" disabled>Compile</button>
+        <br><div style="text-align: center">
+            <button id="compileButton" disabled>Compile</button>
+            <button id="downloadButton" style="display: none">Download</button>
+        </div>
         <pre id="log" hidden></pre>
         <a id="downloader" hidden></a>
     </div>
@@ -152,6 +155,7 @@
     <script>
         const log = document.getElementById('log');
         const compileButton = document.getElementById('compileButton');
+        const downloadButton = document.getElementById('downloadButton');
         const compileProgress = document.getElementById('compileProgress');
         const tmxUpload = document.getElementById('tmxUpload');
         const metadataUpload = document.getElementById('metadata');
@@ -172,23 +176,36 @@
         let pyodide;
         let toolchainPromise = initToolchains();
         let pyodidePromise = loadPyodide();
+        let projectZip = fetch('project.zip', { cache: 'no-store' });
 
         let tmx = null;
         let metadata = null;
         let fileLoadProgress = 0;
+        let firstRun = true;
+
+        let nes;
         let emulationSpeed = 1;
         let frameskip = false;
 
         tmxUpload.addEventListener('change', (e)=>{
             tmx = e.target.files[0];
             compileButton.disabled = false;
-        })
+        });
+
+        metadataUpload.addEventListener('change', (e)=>{
+            localStorage.setItem('fdcompiler_metadata', metadataUpload.value);
+        });
+
+        songSelect.addEventListener('change', (e)=>{
+            localStorage.setItem('fdcompiler_song', songSelect.value);
+        });
 
         for (let song of ['stereo_madness','back_on_track','polargeist','dry_out','base_after_base','cant_let_go','jumper','time_machine','cycles','xstep','clutterfunk','theory_of_everything','electroman_adventures','clubstep','electrodynamix','hexagon_force','blast_processing','toe_2','geometrical_dominator','deadlocked','fingerdash','dash','desert_city','the_challenge','practice','scheming_weasel','atthespeedoflight','atthespeedoflight2','extraordinary_excitement','retray','ground_to_space','haunted_woods','infernoplex','just_right','midnight','rainbow_tylenol','stalemate_greif_cut','menu_theme']) {
             songSelect.innerHTML += `<option>${song}</option>`
-        }
+        };
 
         if (localStorage.getItem('fdcompiler_metadata')) metadataUpload.value = localStorage.getItem('fdcompiler_metadata');
+        if (localStorage.getItem('fdcompiler_song')) songSelect.value = localStorage.getItem('fdcompiler_song');
 
         async function initToolchains() {
             if (cc65Module && ca65Module1 && ca65Module2 && ld65Module) return;
@@ -215,12 +232,12 @@
             if (!cc65Module.FS || !ca65Module1.FS || !ca65Module2.FS || !ld65Module.FS) {
                 throw new Error('One of the modules does not expose FS()');
             }
-        }
+        };
 
         async function loadProjectInto(module) {
             if (!module || !module.FS) throw new Error('Module or module.FS is missing');
 
-            const response = await fetch('project.zip', { cache: 'no-store' });
+            const response = await projectZip;
             if (!response.ok) throw new Error('Failed to fetch project.zip: ' + response.status);
             
             const zipData = await response.arrayBuffer();
@@ -245,7 +262,7 @@
                 setProgress(idx / fileKeys.length);
             }
             compileButton.style.backgroundImage = '';
-        }
+        };
 
         function mirrorFS(fromModule, toModule, root = '/project') {
             if (!fromModule || !fromModule.FS) throw new Error('mirrorFS: fromModule.FS missing');
@@ -272,7 +289,7 @@
             }
 
             copyDir(root);
-        }
+        };
 
         async function export_levels() {
             setProgress(0);
@@ -288,7 +305,6 @@
             reader.onload = function(e) {pyodide.FS.writeFile('/project/LEVELS/LEVEL DATA/lvlset_A/stereomadness.tmx',e.target.result)};
             await reader.readAsText(tmx);
             metadata = metadataUpload.value;
-            localStorage.setItem('fdcompiler_metadata', metadataUpload.value);
             let fullMetadata = await (await fetch('project/LEVELS/metadata/METADATA_TEMPLATE_A.json5', {cache: 'no-store'})).text();
             fullMetadata = fullMetadata.replace('--COMPILERPLACEHOLDER--',
                 `${metadata.split('level:')[0]}level: "stereomadness",${metadata.split('level')[1].split(',').slice(1).join(',')
@@ -300,12 +316,12 @@
             setProgress(3/4);
             await pyodide.runPython(await (await fetch('project/UTILS/defines_to_asm.py', {cache: 'no-store'})).text());
             setProgress(4/4);
-        }
+        };
 
         async function buildMain() {
             logLine('Loading files...');
             pyodide = await pyodidePromise;
-            await loadProjectInto(pyodide);
+            if (firstRun) await loadProjectInto(pyodide);
             logLine('Exporting levels...');
             await export_levels();
 
@@ -380,9 +396,9 @@
             a.href = url;
             a.download = 'famidash.nes';
 
-            logLine('Done!');
+            downloadButton.style.display = 'inline-block';
             compileButton.style.backgroundImage = '';
-            compileButton.textContent = 'Download';
+            compileButton.textContent = 'Restart';
 
             const ctx = gameCanvas.getContext('2d');
             const imageData = ctx.createImageData(256, 240);
@@ -424,18 +440,20 @@
                 if (e.key == ',') {if (type == 'down') {emulationSpeed = .5} else {emulationSpeed = 1}};
             };
 
-            const nes = new jsnes.NES({
-                onFrame: (buffer) => {
-                    for (let i = 0; i < 256 * 240; i++) {
-                        frameBuffer[i] = 0xFF000000 | buffer[i];
+            if (firstRun) {
+                nes = new jsnes.NES({
+                    onFrame: (buffer) => {
+                        for (let i = 0; i < 256 * 240; i++) {
+                            frameBuffer[i] = 0xFF000000 | buffer[i];
+                        }
+                        ctx.putImageData(imageData, 0, 0);
+                    },
+                    onAudioSample: (l, r) => {
+                        audioQueue.push((l + r) / 2);
+                        if (audioQueue.length > 8192) audioQueue.shift();
                     }
-                    ctx.putImageData(imageData, 0, 0);
-                },
-                onAudioSample: (l, r) => {
-                    audioQueue.push((l + r) / 2);
-                    if (audioQueue.length > 8192) audioQueue.shift();
-                }
-            });
+                });
+            };
 
             document.addEventListener('keydown', (e) => {keys(1, e.keyCode, 'down', e)});
             document.addEventListener('keyup', (e) => {keys(1, e.keyCode, 'up', e)});
@@ -446,27 +464,36 @@
             nes.loadROM(rom);
 
             const run = () => {
-                if (emulationSpeed == 2) {
-                    nes.frame();
-                    nes.frame();
-                } else {
-                    frameskip = !frameskip;
-                    if (frameskip || emulationSpeed == 1) {
+                if (!gameCanvas.hidden) {
+                    if (emulationSpeed == 2) {
                         nes.frame();
-                    }
-                }
+                        nes.frame();
+                    } else {
+                        frameskip = !frameskip;
+                        if (frameskip || emulationSpeed == 1) {
+                            nes.frame();
+                        }
+                    };
+                };
                 requestAnimationFrame(run);
             };
             gameCanvas.hidden = false;
-            compileButton.disabled = false;
-            run();
+            if (firstRun) run();
 
             setTimeout(()=>{document.getElementById('collapse').style.height = '10px'}, 250);
-        }
+
+            cc65Module = ca65Module1 = ca65Module2 = ld65Module = null;
+            toolchainPromise = initToolchains();
+
+            firstRun = false;
+        };
 
         compileButton.onclick = async () => {
-            if (compileButton.textContent == 'Download') {
-                a.click();
+            if (compileButton.textContent == 'Restart') {
+                document.getElementById('collapse').style.height = '266px';
+                downloadButton.style.display = 'none';
+                gameCanvas.hidden = true;
+                compileButton.textContent = 'Compile';
             } else {
                 compileButton.disabled = true;
                 try {
@@ -476,8 +503,13 @@
                     //logLine(err.stack);
                     console.error(err);
                 } finally {
+                    compileButton.disabled = false;
                 }
-            };
-        }
+            }
+        };
+
+        downloadButton.addEventListener('click', ()=> {
+            a.click();
+        });
     </script>
 </body></html>
