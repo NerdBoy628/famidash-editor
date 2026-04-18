@@ -307,7 +307,7 @@
             metadata = metadataUpload.value;
             let fullMetadata = await (await fetch('project/LEVELS/metadata/METADATA_TEMPLATE_A.json5', {cache: 'no-store'})).text();
             fullMetadata = fullMetadata.replace('--COMPILERPLACEHOLDER--',
-                `${metadata.split('level:')[0]}level: "stereomadness",${metadata.split('level')[1].split(',').slice(1).join(',')
+                `${metadata.split('level:')[0]}level: "stereomadness",${metadata.split('level:')[1].split(',').slice(1).join(',')
                 .split('songID:')[0]}songID: "song_${songSelect.value}",${metadata.split('songID')[1].split(',').slice(1).join(',')}`
             );
             pyodide.FS.writeFile('/project/LEVELS/metadata/lvlset_A_metadata.json5',fullMetadata);
@@ -322,7 +322,7 @@
             logLine('Loading files...');
             pyodide = await pyodidePromise;
             if (firstRun) await loadProjectInto(pyodide);
-            logLine('Exporting levels...');
+            logLine('Exporting level...');
             await export_levels();
 
             logLine('Buliding ROM...');
