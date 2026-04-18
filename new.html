@@ -1593,6 +1593,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
         let nes;
         let emulationSpeed = 1;
         let frameskip = false;
+        let lastFrame = 0;
         songSelect.addEventListener('change', (e)=>{
             localStorage.setItem('fdcompiler_song', songSelect.value);
         });
@@ -1845,14 +1846,15 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             
             nes.loadROM(rom);
 
-            const run = () => {
+            const run = (time) => {
                 if (playtesting) {
                     if (emulationSpeed == 2) {
                         nes.frame();
                         nes.frame();
                     } else {
                         frameskip = !frameskip;
-                        if (frameskip || emulationSpeed == 1) {
+                        if ((frameskip || emulationSpeed == 1) && time-lastFrame > 15) {
+                            lastFrame = time;
                             nes.ppu.palTable.curTable = [
                                 0x666666,0x83290D,0xA01214,0x9D0535,
                                 0x790C54,0x3F1064,0x091363,0x08214F,
