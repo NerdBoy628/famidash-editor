@@ -222,6 +222,7 @@
         }
         .toolButton {
             display: inline-block;
+            vertical-align: top;
             width: 80px;
             height: 80px;
             margin-left: 20px;
@@ -354,13 +355,13 @@
                     <option value=96>C</option>
                 </select>
             </button>
-            <br><br>
-            <div class="toolButton" style="transform: none; width: 150px; height: 80px; text-align: center">
+            <div class="toolButton" style="transition: none; transform: none; width: 150px; height: 80px; text-align: center">
                 <p id="widthText" style="margin: 0px; margin-top: 7px;">Width: 128</p>
                 <input id="widthInput" type="range" value=128 min=128 max=2048>
                 <p id="heightText" style="margin: 0px; margin-top: 7px;">Height: 32</p>
                 <input id="heightInput" type="range" value=32 min=16 max=57>
             </div>
+            <button id="clearButton" class="toolButton">Clear<br>🔄</button>
         </div>
         <div class="vr" style="top: 0px; right: 250px"></div>
         <!-- <button class="roundButton" style="right: 30px; top: 30px; width: 180px; height: 80px">idk</button>
@@ -673,6 +674,12 @@
         gid('fillTool').addEventListener('click', ()=>{toolButton(3)});
         gid('moveTool').addEventListener('click', ()=>{toolButton(4)});
         gid('structureTool').addEventListener('click', ()=>{toolButton(5)});
+        function toolButton(x) {
+            tool = x;
+            const tools = ['pen','line','rect','fill','move','structure'];
+            for (let i of tools) {gid(`${i}Tool`).classList.remove('cyanButton')};
+            gid(`${tools[tool]}Tool`).classList.add('cyanButton');
+        };
         gid('widthInput').value = gridSize[0];
         gid('heightInput').value = gridSize[1];
         gid('widthInput').addEventListener('change', ()=>{
@@ -707,12 +714,20 @@
             spriteGrid = newSpriteGrid;
             draw();
         });
-        function toolButton(x) {
-            tool = x;
-            const tools = ['pen','line','rect','fill','move','structure'];
-            for (let i of tools) {gid(`${i}Tool`).classList.remove('cyanButton')};
-            gid(`${tools[tool]}Tool`).classList.add('cyanButton');
-        };
+        gid('clearButton').addEventListener('click', ()=>{
+            if (window.confirm('Are you sure you want to clear all tiles and sprites?')) {
+                gridSize = [128,32];
+                [widthInput.value, heightInput.value] = gridSize;
+                widthText.textContent = `Width: ${widthInput.value}`;
+                heightText.textContent = `Height: ${heightInput.value}`;
+                tileGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(0));
+                spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
+                options = JSON.parse(JSON.stringify(optionsDefault));
+                bgColor = 146; groundColor = 130; objColor = 176;
+                saveHistory(); updateJson(14,[]);
+                fileHandle = undefined;
+            };
+        });
         gid('settingsButton').addEventListener('click', ()=>{gid('levelSettings').style.display = 'block'});
         for (let i = 0; i < 6; i++) {
             gid(`setSpeed${i}`).addEventListener('mousedown', (e)=>{
