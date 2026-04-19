@@ -354,6 +354,13 @@
                     <option value=96>C</option>
                 </select>
             </button>
+            <br><br>
+            <div class="toolButton" style="transform: none; width: 150px; height: 80px; text-align: center">
+                <p id="widthText" style="margin: 0px; margin-top: 7px;">Width: 128</p>
+                <input id="widthInput" type="range" value=128 min=128 max=2048>
+                <p id="heightText" style="margin: 0px; margin-top: 7px;">Height: 32</p>
+                <input id="heightInput" type="range" value=32 min=16 max=57>
+            </div>
         </div>
         <div class="vr" style="top: 0px; right: 250px"></div>
         <!-- <button class="roundButton" style="right: 30px; top: 30px; width: 180px; height: 80px">idk</button>
@@ -666,6 +673,40 @@
         gid('fillTool').addEventListener('click', ()=>{toolButton(3)});
         gid('moveTool').addEventListener('click', ()=>{toolButton(4)});
         gid('structureTool').addEventListener('click', ()=>{toolButton(5)});
+        gid('widthInput').value = gridSize[0];
+        gid('heightInput').value = gridSize[1];
+        gid('widthInput').addEventListener('change', ()=>{
+            gridSize[0] = parseInt(gid('widthInput').value);
+            tileGrid = tileGrid.map(row => {
+                let newRow = row.slice(0, gridSize[0]);
+                while (newRow.length < gridSize[0]) newRow.push(0);
+                return newRow;
+            });
+            spriteGrid = spriteGrid.map(row => {
+                let newRow = row.slice(0, gridSize[0]);
+                while (newRow.length < gridSize[0]) newRow.push(-1);
+                return newRow;
+            });
+            draw();
+        });
+        gid('heightInput').addEventListener('change', ()=>{
+            camera.y += (gridSize[1] - gid('heightInput').value)*cellSize*camera.z;
+            for (let i = 0; i < options[14].length; i++) {
+                temp = JSON.parse(options[14][i][0]);
+                temp[1] += heightInput.value - gridSize[1];
+                options[14][i][0] = JSON.stringify(temp);
+            };
+            gridSize[1] = parseInt(heightInput.value);
+            let newTileGrid = tileGrid.slice(-gridSize[1]);
+            let newSpriteGrid = spriteGrid.slice(-gridSize[1]);
+            while (newTileGrid.length < gridSize[1]) {
+                newTileGrid.unshift(Array(gridSize[0]).fill(0));
+                newSpriteGrid.unshift(Array(gridSize[0]).fill(-1));
+            }
+            tileGrid = newTileGrid;
+            spriteGrid = newSpriteGrid;
+            draw();
+        });
         function toolButton(x) {
             tool = x;
             const tools = ['pen','line','rect','fill','move','structure'];
@@ -942,14 +983,13 @@
         }
         function draw() {
             if (!prefs[3]) {bgColor = 146; groundColor = 130; objColor = 176};
-            try {
-                if (playtesting) {
-                    [bgColor, groundColor, objColor] = [playtestState.bgColor, playtestState.groundColor, playtestState.objColor]
-                }setColor();
-            } catch {};
+            if (playtesting) {
+                [bgColor, groundColor, objColor] = [playtestState.bgColor, playtestState.groundColor, playtestState.objColor]
+            }
+            try {setColor()} catch {};
             if (camera.x*cellSize*camera.z>=0) {bgColor = options[5]+128; groundColor = options[6]+128; objColor = 176};
-            //widthText.textContent = `Width: ${widthInput.value}`;
-            //heightText.textContent = `Height: ${heightInput.value}`;
+            widthText.textContent = `Width: ${widthInput.value}`;
+            heightText.textContent = `Height: ${heightInput.value}`;
             ctx.clearRect(0,0,canvas.width,canvas.height);
             let parallaxOffset = [
                 -mod(-camera.x/2.75-canvas.width/2,(camera.z*cellSize*9)),
@@ -957,17 +997,17 @@
             ];
             if (playtesting) {
                 parallaxOffset = [
-                    -mod(-camera.x-(playtestState.parallaxScroll/144*9*cellSize)*camera.z,(camera.z*cellSize*9)),
-                    -mod(-camera.y+(playtestState.y+2915)*camera.z*4.5/256,(camera.z*cellSize*4.5))
+                    -mod(-camera.x-((playtestState.parallaxScroll-(!nes.cpu.mem[0x05BA]&&playtestState.x>0?1:0))/144*9*cellSize)*camera.z,(camera.z*cellSize*9)),
+                    -mod(-camera.y+(playtestState.y-2270*gridSize[1]-580)*camera.z*4.5/256,(camera.z*cellSize*4.5))
                 ]
             }
             for (let x = parallaxOffset[0]; x <= canvas.width; x+=camera.z*cellSize*9) {
                 for (let y = parallaxOffset[1]; y <= canvas.height; y+= camera.z*cellSize*4.5) {
-                    ctx.drawImage(parallaxCanvas, (x), (y), Math.ceil(camera.z*cellSize*9), Math.ceil(camera.z*cellSize*4.5));
+                    ctx.drawImage(parallaxCanvas, x, y, Math.ceil(camera.z*cellSize*9), Math.ceil(camera.z*cellSize*4.5));
                 }
             }
             for (let x = Math.max(-mod(-camera.x,(camera.z*4*cellSize)),camera.x); x<=Math.min(canvas.width,camera.x+cellSize*(gridSize[0]-.5)*camera.z); x+=camera.z*4*cellSize) {
-                ctx.drawImage(groundCanvas, Math.floor(x), camera.y+cellSize*gridSize[1]*camera.z, camera.z*4*cellSize, camera.z*8*cellSize);
+                ctx.drawImage(groundCanvas, x, camera.y+cellSize*gridSize[1]*camera.z, camera.z*4*cellSize, camera.z*8*cellSize);
             }
             if (prefs[1] && !playtesting) {
                 ctx.strokeStyle = '#eee';
@@ -1350,7 +1390,7 @@
             if (historyIndex > 0) {
                 historyIndex--;
                 [tileGrid, spriteGrid, gridSize, options] = structuredClone(history[historyIndex]);
-                // [widthInput.value, heightInput.value] = gridSize;
+                [widthInput.value, heightInput.value] = gridSize;
                 draw();
                 localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             }
@@ -1359,7 +1399,7 @@
             if (historyIndex < history.length-1) {
                 historyIndex++;
                 [tileGrid, spriteGrid, gridSize, options] = structuredClone(history[historyIndex]);
-                // [widthInput.value, heightInput.value] = gridSize;
+                [widthInput.value, heightInput.value] = gridSize;
                 draw();
                 localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             }
@@ -1435,6 +1475,9 @@ ${spriteData.slice(1,-1)}
             reader.onload = (e)=>{
                 data = e.target.result;
                 gridSize = [data.split('width="')[1].split('"')[0], data.split('height="')[1].split('"')[0]];
+                [gid('widthInput').value, gid('heightInput').value] = gridSize;
+                gid('widthText').textContent = `Width: ${gid('widthInput').value}`;
+                gid('heightText').textContent = `Height: ${gid('heightInput').value}`;
                 let tileData = data.split('<data encoding="csv">\n')[1].split('\n</data>')[0].split('\n');
                 let spriteData = data.split('<data encoding="csv">\n')[2].split('\n</data>')[0].split('\n');
                 tileGrid = tileData.map((x)=>x.split(',').map((x)=>Math.max(x-1,0)).slice(0,gridSize[0]));
@@ -1554,7 +1597,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             options[item] = value;
             gid(`setBlock${options[0]}`).classList.remove('grayButton');
             gid(`setSpike${options[1]}`).classList.remove('grayButton');
-            gid('setPlatformer').checked = options[2];
+            gid('setSlopes').checked = options[2];
             gid(`setSprite${'ABC'[spriteSets.indexOf(options[3])]}`).classList.remove('grayButton');
             gid('setPlatformer').checked = options[4];
             gid(`setGamemode${options[7]}`).style.opacity = '1';
@@ -1885,7 +1928,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                             if (playtestState.bgColor == 176) playtestState.bgColor = 160;
                             if (playtestState.groundColor == 176) playtestState.groundColor = 160;
                             playtestState.objColor = [48,17,18,19,20,21,22,39,40,41,42,43,44,33,23,15].indexOf(playtestState.objColor)+176
-                            if (!nes.cpu.mem[0x05BA] && playtestState.x > 0) playtestState.x -=1;
+                            if (!nes.cpu.mem[0x05BA] && playtestState.x > 0) playtestState.x -=2;
                             camera.x = canvas.width/2-(playtestState.x+256)*cellSize*camera.z/16+playtestScroll[0];
                             camera.y = canvas.height/2-(playtestState.y-(35-gridSize[1])*16)*cellSize*camera.z/16+playtestScroll[1];
                             draw();
