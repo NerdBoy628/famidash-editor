@@ -657,13 +657,12 @@
         fileLoad.addEventListener('change', (e)=>{load(e.target.files[0])});
         gid('play').addEventListener('click', async ()=>{
             if (playtesting) {
-                playtesting = false
-                gid('play').textContent = '▶️'
+                playtesting = false;
+                gid('play').textContent = '▶️';
             } else {
                 await buildMain();
                 playtesting = true;
-                playtestScroll = [0,0]
-                gid('play').textContent = '⏸️'
+                gid('play').textContent = '⏸️';
             }
         });
         gid('buildButton').addEventListener('click', ()=>{
@@ -757,7 +756,7 @@
             } else {
                 result = Math.floor(e.offsetY/70*3)*16+Math.floor(e.offsetX/280*13);
             };
-            options[5] = result; draw();
+            options[5] = result; setColor(true); draw();
         });
         gid('setG').addEventListener('mousedown', (e)=>{
             if (e.offsetX==280 || e.offsetY==70) return;
@@ -766,7 +765,7 @@
             } else {
                 result = Math.floor(e.offsetY/70*3)*16+Math.floor(e.offsetX/280*13);
             };
-            options[6] = result; draw();
+            options[6] = result; setColor(true); draw();
         });
         for (let i = 0; i < 4; i++) {
             gid(`setBlock${'ABCD'[i]}`).addEventListener('mousedown', (e)=>{updateJson(0, e.srcElement.id[8])});
@@ -1368,10 +1367,10 @@
             prevColors = [bgColor,groundColor,objColor];
 
             setBgCtx.drawImage(colorsImg,0,0,280,70);
-            if (bgColor%16 == 0 || bgColor%16 == 15) {
-                [x,y] = [6,bgColor==143?12:Math.floor(bgColor/16-7)*17+12]
+            if ((options[5]+128)%16 == 0 || (options[5]+128)%16 == 15) {
+                [x,y] = [6,(options[5]+128)==143?12:Math.floor((options[5]+128)/16-7)*17+12]
             } else {
-                [x,y] = [bgColor%16*21.5+6,Math.floor(bgColor/16-8)*23+14]
+                [x,y] = [(options[5]+128)%16*21.5+6,Math.floor((options[5]+128)/16-8)*23+14]
             };
             setBgCtx.lineCap = 'round'; 
             for (style of [['white',3],['black',2]]) {
@@ -1384,10 +1383,10 @@
                 setBgCtx.stroke();
             };
             setGCtx.drawImage(colorsImg,0,0,280,70);
-            if (groundColor%16 == 0 || groundColor%16 == 15) {
-                [x,y] = [6,groundColor==143?12:Math.floor(groundColor/16-7)*17+12]
+            if ((options[6]+128)%16 == 0 || (options[6]+128)%16 == 15) {
+                [x,y] = [6,(options[6]+128)==143?12:Math.floor((options[6]+128)/16-7)*17+12]
             } else {
-                [x,y] = [groundColor%16*21.5+6,Math.floor(groundColor/16-8)*23+14]
+                [x,y] = [(options[6]+128)%16*21.5+6,Math.floor((options[6]+128)/16-8)*23+14]
             };
             setGCtx.lineCap = "round"; 
             for (style of [['white',3],['black',2]]) {
