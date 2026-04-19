@@ -354,12 +354,22 @@
                     <option value=64>B</option>
                     <option value=96>C</option>
                 </select>
-            </button>
+            </button><br><br>
             <div class="toolButton" style="transition: none; transform: none; width: 150px; height: 80px; text-align: center">
                 <p id="widthText" style="margin: 0px; margin-top: 7px;">Width: 128</p>
                 <input id="widthInput" type="range" value=128 min=128 max=2048>
                 <p id="heightText" style="margin: 0px; margin-top: 7px;">Height: 32</p>
                 <input id="heightInput" type="range" value=32 min=16 max=57>
+            </div>
+            <div class="toolButton" style="transition: none; transform: none; width: 130px; height: 80px; text-align: center">
+                <p style="margin: 7px">Offset Map</p>
+                <table style="margin: 0 auto"><tr><th></th>
+                <th><button onclick="shiftGrid(0,-1)">↑</button></th>
+                <th></th></tr><tr>
+                <th><button onclick="shiftGrid(-1,0)">←</button></th>
+                <th><button onclick="shiftGrid(0,1)">↓</button></th>
+                <th><button onclick="shiftGrid(1,0)">→</button></th>
+                </tr></table>
             </div>
             <button id="clearButton" class="toolButton">Clear<br>🔄</button>
         </div>
@@ -1627,6 +1637,32 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             gid('setLowerText').value = options[13];
             createTileButtons(); draw();
             localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
+        };
+
+        function shiftGrid(x,y) {
+            if (x > 0) {
+                for (let row of tileGrid) { row.unshift(0); row.pop() }
+                for (let row of spriteGrid) { row.unshift(-1); row.pop() }
+            } else if (x < 0) {
+                for (let row of tileGrid) { row.push(0); row.shift() }
+                for (let row of spriteGrid) { row.push(-1); row.shift() }
+            }
+            if (y > 0) {
+                tileGrid.unshift(new Array(gridSize[0]).fill(0));
+                tileGrid.pop();
+                spriteGrid.unshift(new Array(gridSize[0]).fill(-1));
+                spriteGrid.pop();
+            } else if (y < 0) {
+                tileGrid.push(new Array(gridSize[0]).fill(0));
+                tileGrid.shift();
+                spriteGrid.push(new Array(gridSize[0]).fill(-1));
+                spriteGrid.shift();
+            }
+            for (offset of options[14]) {
+                offset[0] = JSON.stringify(JSON.parse(offset[0]).map((pos,idx)=>pos+[x,y][idx]));
+            }
+            draw();
+            saveHistory();
         };
 
         // COMPILER SCRIPTS
