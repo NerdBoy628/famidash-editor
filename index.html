@@ -485,7 +485,7 @@
             'canvas', 'parallaxCanvas', 'groundCanvas', 'tilesetCanvas', 'attemptCanvas', 'setBg', 'setG', 'gameCanvas'
         ]) {window[el] = gid(el)};
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight*.7;
+        canvas.height = window.innerHeight-240;
         setBg.width = setG.width = 280;
         setBg.height = setG.height = 70;
         gameCanvas.width = 256;
@@ -625,7 +625,7 @@
             if (mouseState == 3) {
                 camera.x += e.clientX-mousepos[0]
                 camera.y += e.clientY-mousepos[1];
-            }
+            };
             mousepos = [e.clientX,e.clientY];
             [drag[2],drag[3]] = mousepos;
             if (tool==0 && mouseState==1) placeBlock();
@@ -800,7 +800,7 @@
         gid('spritePreviewEnable').addEventListener('click', (e)=>{prefs[4] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
         window.addEventListener('resize', ()=>{
             canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight*.7;
+            canvas.height = window.innerHeight-240;
             ctx.imageSmoothingEnabled = false;
             draw();
         });
