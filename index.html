@@ -790,6 +790,7 @@
         gid('setDifficulty').addEventListener('change', (e)=>{updateJson(11, e.srcElement.value)});
         gid('setUpperText').addEventListener('input', (e)=>{updateJson(12, e.srcElement.value)});
         gid('setLowerText').addEventListener('input', (e)=>{updateJson(13, e.srcElement.value)});
+        updateJson(0,options[0]);
         gid('saveMetadata').addEventListener('click', saveMetadata);
         gid('loadMetadata').addEventListener('click', loadMetadata);
         gid('editorSettingsButton').addEventListener('click', ()=>{gid('editorSettings').style.display = 'block'});
@@ -868,7 +869,7 @@
                     } else {
                         options[14].push(result);
                     }
-                    //updateJson(0,options[0]); ADD FUNCTION BACK IN LATER
+                    updateJson(14,options[14]);
                 } else {
                     placeBlock();
                 }
