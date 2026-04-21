@@ -346,6 +346,7 @@
             <button id="lineTool" class="toolButton">LINE<br>➖</button>
             <button id="rectTool" class="toolButton">RECT<br>🔲</button>
             <button id="fillTool" class="toolButton">FILL<br>🪣</button>
+            <button id="slopeTool" class="toolButton">SLOPE<br>⊿</button>
             <button id="moveTool" class="toolButton">MOVE<br>👆</button>
             <button id="structureTool" class="toolButton" style="width: 150px">
                 STRUCTURE<br>
@@ -421,6 +422,12 @@
             <h2>Max Fall Speed:</h2> <!-- its sad that i have to reverse these -->
             <button id="setMax7" class="smallButton">7</button>
             <button id="setMax6" class="smallButton grayButton">6</button>
+            <h2>Spawn Y Position:</h2>
+            <input type="text" id="setSpawnHi" maxlength=2 style="font-family: Pusab; text-align: center; width: 50px;" value="B0">
+            <input type="text" id="setSpawnLo" maxlength=2 style="font-family: Pusab; text-align: center; width: 50px;" value="00">
+            <h2>Scroll Y Position:</h2>
+            <input type="text" id="setScrollHi" maxlength=2 style="font-family: Pusab; text-align: center; width: 50px;" value="02">
+            <input type="text" id="setScrollLo" maxlength=2 style="font-family: Pusab; text-align: center; width: 50px;" value="EF">
             <br><br>
             <button class="smallButton" style="width: 100px; height: 50px; font-size: 30px;"
             onclick="gid('levelSettings').style.display = 'none'">OK</button>
@@ -441,12 +448,13 @@
             <input type="text" id="setUpperText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="LEVEL">
             <h2>Lower Text:</h2>
             <input type="text" id="setLowerText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="NAME">
+            <h2>Song:</h2>
+            <select id="songSelect"></select>
             <br><br>
             <button id="saveMetadata" class="smallButton" style="width: 220px; height: 25px;">Copy to Clipboard</button><br>
             <button id="loadMetadata" class="smallButton" style="width: 240px; height: 25px;">Load from Clipboard</button>
             <br><br>
             <button id="editorSettingsButton" class="smallButton" style="width: 230px; height: 40px; font-size: 25px;">Editor Options</button>
-            <select id="songSelect"></select>
         </td></tr></table>
     </div>
     <div id="editorSettings" class="menuPopup" style="display: none">
@@ -511,7 +519,7 @@
 
         let openTab = 0;
         let prefs = [1,1,1,1,0]; //autosave, gridlines, attempt, color preview, spritePreview
-        let tool = 0; // pen, line, rect, fill, move, structure
+        let tool = 0; // pen, line, rect, fill, move, slope, structure
         let openPopup = false;
         let camera = {x: 40, y: -1650+window.innerHeight, z: 1.01};
         let gridSize = [128,32];
@@ -533,12 +541,13 @@
             'NORMAL', //difficulty (11)
             'LEVEL', 'NAME',
             [], //sprite shifts (14)
+            0xB0, 0x00, 0x02, 0xEF //player spawn and scroll y (15-18)
         ]
         let options = JSON.parse(JSON.stringify(optionsDefault));
         let tileGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(0));
         let spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
-        if (localStorage.getItem('famidash_editor_version')!=1) {
-            localStorage.setItem('famidash_editor_version',1);
+        if (localStorage.getItem('famidash_editor_version')!=2) {
+            localStorage.setItem('famidash_editor_version',2);
             localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
         }
@@ -681,11 +690,12 @@
         gid('lineTool').addEventListener('click', ()=>{toolButton(1)});
         gid('rectTool').addEventListener('click', ()=>{toolButton(2)});
         gid('fillTool').addEventListener('click', ()=>{toolButton(3)});
-        gid('moveTool').addEventListener('click', ()=>{toolButton(4)});
-        gid('structureTool').addEventListener('click', ()=>{toolButton(5)});
+        gid('slopeTool').addEventListener('click', ()=>{toolButton(4)});
+        gid('moveTool').addEventListener('click', ()=>{toolButton(5)});
+        gid('structureTool').addEventListener('click', ()=>{toolButton(6)});
         function toolButton(x) {
             tool = x;
-            const tools = ['pen','line','rect','fill','move','structure'];
+            const tools = ['pen','line','rect','fill','slope','move','structure'];
             for (let i of tools) {gid(`${i}Tool`).classList.remove('cyanButton')};
             gid(`${tools[tool]}Tool`).classList.add('cyanButton');
         };
@@ -790,6 +800,10 @@
         gid('setDifficulty').addEventListener('change', (e)=>{updateJson(11, e.srcElement.value)});
         gid('setUpperText').addEventListener('input', (e)=>{updateJson(12, e.srcElement.value)});
         gid('setLowerText').addEventListener('input', (e)=>{updateJson(13, e.srcElement.value)});
+        gid('setSpawnHi').addEventListener('input', (e)=>{updateJson(15, parseInt(e.srcElement.value,16))});
+        gid('setSpawnLo').addEventListener('input', (e)=>{updateJson(16, parseInt(e.srcElement.value,16))});
+        gid('setScrollHi').addEventListener('input', (e)=>{updateJson(17, parseInt(e.srcElement.value,16))});
+        gid('setScrollLo').addEventListener('input', (e)=>{updateJson(18, parseInt(e.srcElement.value,16))});
         updateJson(0,options[0]);
         gid('saveMetadata').addEventListener('click', saveMetadata);
         gid('loadMetadata').addEventListener('click', loadMetadata);
@@ -832,18 +846,14 @@
             if (e.button == 0) {
                 mouseState = 1;
                 if (tool==0 || selectionGrid) {placeBlock()} else {
-                    if (tool==4) {
+                    if (tool==5) {
                         let coords = dispToGrid(drag[0],drag[1]);
                         selectedTile = ((selectedTile>255)?spriteGrid:tileGrid)[coords[1]][coords[0]]+256*(selectedTile>255);
                         if (e.shiftKey) {shiftingSprite = coords} else {
                             ((selectedTile>255)?spriteGrid:tileGrid)[coords[1]][coords[0]] = (selectedTile>255)?-1:0;
                         }
                     };
-                    if (tool==5) structure();
-                    if (tool==6) {
-                        let [x,y] = dispToGrid(drag[0],drag[1]);
-                        startPos = [x,gridSize[1]-y-1];
-                    }
+                    if (tool==6) structure();
                 }
                 draw();
             };
@@ -856,8 +866,8 @@
             }
         }, {passive: false});
         canvas.addEventListener('mouseup', (e)=>{
-            if (mouseState==1 && tool>0 && tool<4 && !selectionGrid) {drawShape(); draw()};
-            if (mouseState==1 && tool==4 && !selectionGrid) {
+            if (mouseState==1 && tool>0 && tool<5 && !selectionGrid) {drawShape(); draw()};
+            if (mouseState==1 && tool==5 && !selectionGrid) {
                 if (shiftingSprite && spriteGrid[shiftingSprite[1]][shiftingSprite[0]]!=-1) {
                     result = [JSON.stringify(shiftingSprite),
                         [Math.max(-16,Math.min(Math.floor((drag[2]-drag[0])/camera.z/cellSize*16),16)),
@@ -1097,21 +1107,13 @@
                             cellSize*camera.z, cellSize*camera.z
                         )
                     }
-                    if (tool==6 && JSON.stringify(startPos) == JSON.stringify([x,gridSize[1]-y-1])) {
-                        ctx.drawImage(
-                            startPosImg, 0, 0, 16, 16,
-                            x*cellSize*camera.z + camera.x,
-                            y*cellSize*camera.z + camera.y,
-                            cellSize*camera.z, cellSize*camera.z
-                        )
-                    }
                 }
             }
             if (prefs[2]) {
                 ctx.drawImage(attemptCanvas, camera.x+3*cellSize*camera.z, camera.y+(gridSize[1]-4.5)*cellSize*camera.z, 7.4375*cellSize*camera.z, .5*cellSize*camera.z);
             }
             ctx.globalAlpha = 0.5;
-            if (!selectionGrid && !(tool==4 && mouseState!=1) && tool!=5 && tool!=6) {
+            if (!selectionGrid && !(tool==5 && mouseState!=1) && tool<4) {
                 if (shiftingSprite) {
                     ctx.drawImage(
                         spriteImg,
@@ -1133,13 +1135,16 @@
                         cellSize*camera.z, cellSize*camera.z
                     );
                 }
-            } else if (tool==6) {
+            } else if (tool==4 && mouseState==0) {
                 ctx.drawImage(
-                    startPosImg, 0, 0, 16, 16,
-                    (Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z)+camera.x,
-                    (Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z)+camera.y,
+                    tileImg,
+                    0, 144, 16, 16,
+                    Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
+                    Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
                     cellSize*camera.z, cellSize*camera.z
                 );
+            } else if (tool==6) {
+                
             } else {
                 for (let y = 0; y < selectionGrid.length; y++) {
                     for (let x = 0; x < selectionGrid[y].length; x++) {
@@ -1158,7 +1163,7 @@
                 }
             };
             ctx.globalAlpha = 1;
-            if ((mouseState==1) && (tool>0)&&(tool<4) && !selectionGrid) {
+            if ((mouseState==1) && (tool>0)&&(tool<5) && !selectionGrid) {
                 drawShape(true)
             };
             ctx.fillStyle = '#FFF';
@@ -1208,7 +1213,7 @@
                         cellSize*camera.z, cellSize*camera.z
                     );
                 } else { placeBlock([x,y]) }
-            }
+            };
             function bucketFill(x,y,target) {
                 if (x<0 || x>=gridSize[0] || y<0 || y>=gridSize[1]) return;
                 if (((selectedTile>255)?spriteGrid:tileGrid)[y][x]!=target || ((selectedTile>255)?spriteGrid:tileGrid)[y][x]==selectedTile) return;
@@ -1217,7 +1222,7 @@
                 bucketFill(x,y+1,target);
                 bucketFill(x-1,y,target);
                 bucketFill(x,y-1,target);
-            }
+            };
             let [x0,y0] = dispToGrid(drag[0],drag[1]);
             let [x1,y1] = dispToGrid(drag[2],drag[3]);
             let dx = x1-x0;
@@ -1252,7 +1257,7 @@
                     }
                 }
                 place(x1,y1)
-            }
+            };
             if (tool==2) { //draw rectangle
                 if (x0>x1) [x0,x1] = [x1,x0];
                 if (y0>y1) [y0,y1] = [y1,y0];
@@ -1260,10 +1265,61 @@
                 for (let y = y0; y < y1; y++) {place(x1,y)}
                 for (let x = x1; x > x0; x--) {place(x,y1)}
                 for (let y = y1; y > y0; y--) {place(x0,y)}
-            }
+            };
             if (tool==3) { //fill
                 bucketFill(x0,y0,((selectedTile>255)?spriteGrid:tileGrid)[y0][x0])
-            }
+            };
+            if (tool==4) { //slope
+                let prevSelected = selectedTile;
+                let dmax = Math.max(Math.abs(dx),Math.abs(dy));
+                if (Math.abs(dy)/Math.abs(dx) < 0.75) { // 26deg
+                    let baseTile = 148+(dy>0)*2+(dx<0)*4;
+                    let slopeShift = dx<0;
+                    for (let i = 0; i <= dmax; i++) {
+                        selectedTile = baseTile + slopeShift;
+                        if (dx>0 && dy<=0) {
+                            place(x0+i,y0-Math.floor(i/2))
+                        } else if (dx>0 && dy>0) {
+                            place(x0+i,y0+Math.floor(i/2))
+                        } else if (dx<0 && dy<=0) {
+                            place(x0-i,y0-Math.floor(i/2))
+                        } else if (dx<0 && dy>0) {
+                            place(x0-i,y0+Math.floor(i/2))
+                        };
+                        slopeShift = !slopeShift;
+                    };
+                } else if (Math.abs(dx)/Math.abs(dy) < 0.75) { // 63deg
+                    let baseTile = 156+(dy>0)*2+(dx<0)*4;
+                    let slopeShift = dx>=0;
+                    for (let i = 0; i <= dmax; i++) {
+                        selectedTile = baseTile + slopeShift;
+                        if (dx>=0 && dy<0) {
+                            place(x0+Math.floor(i/2),y0-i)
+                        } else if (dx>=0 && dy>0) {
+                            place(x0+Math.floor(i/2),y0+i)
+                        } else if (dx<0 && dy<0) {
+                            place(x0-Math.floor(i/2),y0-i)
+                        } else if (dx<0 && dy>0) {
+                            place(x0-Math.floor(i/2),y0+i)
+                        };
+                        slopeShift = !slopeShift;
+                    };
+                } else { //45deg
+                    selectedTile = 144+(dy>0)+(dx<0)*2;
+                    for (let i = 0; i <= dmax; i++) {
+                        if (dx>0 && dy<0) {
+                            place(x0+i,y0-i)
+                        } else if (dx>0 && dy>0) {
+                            place(x0+i,y0+i)
+                        } else if (dx<0 && dy<0) {
+                            place(x0-i,y0-i)
+                        } else if (dx<0 && dy>0) {
+                            place(x0-i,y0+i)
+                        };
+                    };
+                };
+                selectedTile = prevSelected;
+            };
         };
 
         function structure(x=false,y=false,target=false) {
@@ -1541,6 +1597,10 @@ ${spriteData.slice(1,-1)}
 	maxFallSpeed: 0x0${options[9]},
 	parallaxDisable: ${options[2]?'true':'false'},
 	forcePlatformer: ${options[4]},
+	spawnYPositionHi: 0x${options[15].toString(16).padStart(2,'0')},
+	spawnYPositionLow: 0x${options[16].toString(16).padStart(2,'0')},
+	scrollYPositionHi: 0x${options[17].toString(16).padStart(2,'0')},
+	scrollYPositionLow: 0x${options[18].toString(16).padStart(2,'0')},
 	objectOffsets: ${objectOffsets}
 }`;
             if (getText==true) {
@@ -1635,6 +1695,10 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             gid('setDifficulty').value = options[11];
             gid('setUpperText').value = options[12];
             gid('setLowerText').value = options[13];
+            gid('setSpawnHi').value = options[15].toString(16).padStart(2,'0');
+            gid('setSpawnLo').value = options[16].toString(16).padStart(2,'0');
+            gid('setScrollHi').value = options[17].toString(16).padStart(2,'0');
+            gid('setScrollLo').value = options[18].toString(16).padStart(2,'0');
             createTileButtons(); draw();
             localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
         };
