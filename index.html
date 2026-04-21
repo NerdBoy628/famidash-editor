@@ -1001,21 +1001,31 @@
                 //addButtons([320,321,322,323,363,364,382,397,413,429,461,462,511],15,511); // invalid
             };
             tileImg.src = `tilesets/Blocks${options[0].toLowerCase()}Spikes${options[1].toLowerCase()}SawsaSlopes${options[2]?'a':'none'}.png`;
-        }
+            gid('slopeTool').style.display = options[2]?'inline-block':'none';
+        };
         function setTab(tab) {
             gid(`tab${openTab}`).classList.remove('selectedTab');
             gid(`tc${openTab}`).style.display = 'none';
             openTab = tab;
             gid(`tab${openTab}`).classList.add('selectedTab');
             gid(`tc${openTab}`).style.display = 'block';
-        }
+        };
         function selectTile(tile) {
             if (selectedTile==-1) { gid('btn-1').style.transform = 'scale(1)' }
             else {gid(`btn${selectedTile}`).classList.remove('selectedTileButton')};
             selectedTile = tile;
+            selectionGrid = false;
             if (selectedTile==-1) {gid('btn-1').style.transform = 'scale(1.1)'}
             else {gid(`btn${selectedTile}`).classList.add('selectedTileButton')};
-        }
+        };
+
+        function drawCell(set, cx, cy, dx, dy) {
+            ctx.drawImage(
+                set?spriteImg:tilesetCanvas,
+                cx, cy, 16, 16, dx, dy,
+                cellSize*camera.z, cellSize*camera.z
+            )
+        };
         function draw() {
             if (!prefs[3]) {bgColor = 146; groundColor = 130; objColor = 176};
             if (playtesting) {
@@ -1034,16 +1044,16 @@
                 parallaxOffset = [
                     -mod(-camera.x-((playtestState.parallaxScroll-(!nes.cpu.mem[0x05BA]&&playtestState.x>0?1:0))/144*9*cellSize)*camera.z,(camera.z*cellSize*9)),
                     -mod(-camera.y+(playtestState.y-2270*gridSize[1]-580)*camera.z*4.5/256,(camera.z*cellSize*4.5))
-                ]
-            }
+                ];
+            };
             for (let x = parallaxOffset[0]; x <= canvas.width; x+=camera.z*cellSize*9) {
                 for (let y = parallaxOffset[1]; y <= canvas.height; y+= camera.z*cellSize*4.5) {
                     ctx.drawImage(parallaxCanvas, x, y, Math.ceil(camera.z*cellSize*9), Math.ceil(camera.z*cellSize*4.5));
-                }
-            }
+                };
+            };
             for (let x = Math.max(-mod(-camera.x,(camera.z*4*cellSize)),camera.x); x<=Math.min(canvas.width,camera.x+cellSize*(gridSize[0]-.5)*camera.z); x+=camera.z*4*cellSize) {
                 ctx.drawImage(groundCanvas, x, camera.y+cellSize*gridSize[1]*camera.z, camera.z*4*cellSize, camera.z*8*cellSize);
-            }
+            };
             if (prefs[1] && !playtesting) {
                 ctx.strokeStyle = '#eee';
                 ctx.lineWidth = 2;
@@ -1056,14 +1066,14 @@
                     ctx.lineTo(camera.x+i*cellSize*camera.z,camera.y+gridSize[1]*cellSize*camera.z);
                     ctx.stroke();
                     if (camera.x+i*cellSize*camera.z>canvas.width) break;
-                }
+                };
                 for (let i = 1; i < gridSize[1]; i++) {
                     ctx.beginPath();
                     ctx.moveTo(camera.x,camera.y+i*cellSize*camera.z);
                     ctx.lineTo(camera.x+gridSize[0]*cellSize*camera.z,camera.y+i*cellSize*camera.z);
                     ctx.stroke();
                     if (camera.y+i*cellSize*camera.z>canvas.height) break;
-                } 
+                };
             }
             for (let x = 0; x < gridSize[0]; x++) {
                 if (camera.x+x*cellSize*camera.z<-cellSize*camera.z) continue;
@@ -1072,16 +1082,11 @@
                     if (camera.y+y*cellSize*camera.z<-cellSize*camera.z) continue;
                     if (camera.y+y*cellSize*camera.z>canvas.height) break;
                     if (tileGrid[y][x]!=-1) {
-                        ctx.drawImage(
-                            tilesetCanvas,
-                            16*(tileGrid[y][x]%16), 
-                            16*(Math.floor(tileGrid[y][x]/16)), 
-                            16, 16,
-                            x*cellSize*camera.z + camera.x,
-                            y*cellSize*camera.z + camera.y,
-                            cellSize*camera.z, cellSize*camera.z
-                        )
-                    }
+                        drawCell(
+                            0,16*(tileGrid[y][x]%16),16*Math.floor(tileGrid[y][x]/16),
+                            x*cellSize*camera.z + camera.x, y*cellSize*camera.z + camera.y,
+                        );
+                    };
                     if (spriteGrid[y][x]!=-1) {
                         if (!playtesting) {
                             if (bgTriggers.includes(spriteGrid[y][x])) {
@@ -1097,15 +1102,10 @@
                         let shift = false;
                         try {shift = options[14].find(i=>i[0]==JSON.stringify([x,y]))} catch {};
                         if (shift) {shift = shift[1]} else {shift = [0,0]};
-                        ctx.drawImage(
-                            spriteImg,
-                            16*(spriteGrid[y][x]%16), 
-                            16*(Math.floor(spriteGrid[y][x]/16)), 
-                            16, 16,
-                            (x+shift[0]/16)*cellSize*camera.z + camera.x,
-                            (y+shift[1]/16)*cellSize*camera.z + camera.y,
-                            cellSize*camera.z, cellSize*camera.z
-                        )
+                        drawCell(
+                            1, 16*(spriteGrid[y][x]%16), 16*Math.floor(spriteGrid[y][x]/16),
+                            (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
+                        );
                     }
                 }
             }
@@ -1113,35 +1113,25 @@
                 ctx.drawImage(attemptCanvas, camera.x+3*cellSize*camera.z, camera.y+(gridSize[1]-4.5)*cellSize*camera.z, 7.4375*cellSize*camera.z, .5*cellSize*camera.z);
             }
             ctx.globalAlpha = 0.5;
-            if (!selectionGrid && !(tool==5 && mouseState!=1) && tool<4) {
+            if (!selectionGrid && !(tool==5 && mouseState!=1) && (tool<4 || tool==5)) {
                 if (shiftingSprite) {
-                    ctx.drawImage(
-                        spriteImg,
-                        16*(selectedTile%16),
-                        16*(Math.floor(selectedTile/16)%16), 
-                        16, 16,
+                    drawCell(
+                        1, 16*(selectedTile%16), 16*(Math.floor(selectedTile/16)%16),
                         shiftingSprite[0]*camera.z*cellSize+camera.x+Math.round((drag[2]-drag[0])/(camera.z*cellSize)*16)*(camera.z*cellSize)/16,
                         shiftingSprite[1]*camera.z*cellSize+camera.y+Math.round((drag[3]-drag[1])/(camera.z*cellSize)*16)*(camera.z*cellSize)/16,
-                        cellSize*camera.z, cellSize*camera.z
                     );
                 } else {
-                    ctx.drawImage(
-                        (selectedTile>255)?spriteImg:tileImg,
-                        16*(selectedTile%16),
-                        16*(Math.floor(selectedTile/16)%16), 
-                        16, 16,
+                    drawCell(
+                        (selectedTile>255)?1:0, 16*(selectedTile%16), 16*(Math.floor(selectedTile/16)%16),
                         Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
                         Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
-                        cellSize*camera.z, cellSize*camera.z
                     );
                 }
             } else if (tool==4 && mouseState==0) {
-                ctx.drawImage(
-                    tileImg,
-                    0, 144, 16, 16,
+                drawCell(
+                    0, 0, 144,
                     Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
                     Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
-                    cellSize*camera.z, cellSize*camera.z
                 );
             } else if (tool==6) {
                 
@@ -1149,15 +1139,11 @@
                 for (let y = 0; y < selectionGrid.length; y++) {
                     for (let x = 0; x < selectionGrid[y].length; x++) {
                         if (selectionGrid[y][x]) {
-                            ctx.drawImage(
-                                (selectedTile>255)?spriteImg:tileImg,
-                                16*(selectionGrid[y][x]%16), 
-                                16*(Math.floor(selectionGrid[y][x]/16)), 
-                                16, 16,
+                            drawCell(
+                                (selectedTile>255)?1:0, 16*(selectionGrid[y][x]%16), 16*(Math.floor(selectionGrid[y][x]/16)),
                                 (Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)+x)*cellSize*camera.z+camera.x,
                                 (Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)+y)*cellSize*camera.z+camera.y,
-                                cellSize*camera.z, cellSize*camera.z
-                            );
+                            )
                         }
                     }
                 }
@@ -1203,14 +1189,9 @@
         function drawShape(preview=false) {
             function place(x,y) {
                 if (preview) {
-                    ctx.drawImage(
-                        (selectedTile>255)?spriteImg:tileImg,
-                        16*(selectedTile%16), 
-                        16*(Math.floor(selectedTile/16)), 
-                        16, 16,
-                        x*cellSize*camera.z+camera.x,
-                        y*cellSize*camera.z+camera.y,
-                        cellSize*camera.z, cellSize*camera.z
+                    drawCell(
+                        (selectedTile>255)?1:0, 16*(selectedTile%16), 16*(Math.floor(selectedTile/16)),
+                        x*cellSize*camera.z+camera.x, y*cellSize*camera.z+camera.y,
                     );
                 } else { placeBlock([x,y]) }
             };
@@ -1225,13 +1206,10 @@
             };
             let [x0,y0] = dispToGrid(drag[0],drag[1]);
             let [x1,y1] = dispToGrid(drag[2],drag[3]);
-            let dx = x1-x0;
-            let dy = y1-y0;
-            let sx = Math.sign(dx);
-            let sy = Math.sign(dy);
+            let [dx,dy] = [x1-x0,y1-y0];
+            let [sx,sy] = [Math.sign(dx),Math.sign(dy)];
             if (tool==1) { //draw line
-                dx = Math.abs(dx);
-                dy = Math.abs(dy);
+                [dx,dy] = [Math.abs(dx),Math.abs(dy)];
                 let err;
                 if (dx>dy) {
                     err = dx/2;
@@ -1277,15 +1255,7 @@
                     let slopeShift = dx<0;
                     for (let i = 0; i <= dmax; i++) {
                         selectedTile = baseTile + slopeShift;
-                        if (dx>0 && dy<=0) {
-                            place(x0+i,y0-Math.floor(i/2))
-                        } else if (dx>0 && dy>0) {
-                            place(x0+i,y0+Math.floor(i/2))
-                        } else if (dx<0 && dy<=0) {
-                            place(x0-i,y0-Math.floor(i/2))
-                        } else if (dx<0 && dy>0) {
-                            place(x0-i,y0+Math.floor(i/2))
-                        };
+                        place(x0+i*(dx<0?-1:1),y0+Math.floor(i/2)*(dy<=0?-1:1));
                         slopeShift = !slopeShift;
                     };
                 } else if (Math.abs(dx)/Math.abs(dy) < 0.75) { // 63deg
@@ -1293,29 +1263,13 @@
                     let slopeShift = dx>=0;
                     for (let i = 0; i <= dmax; i++) {
                         selectedTile = baseTile + slopeShift;
-                        if (dx>=0 && dy<0) {
-                            place(x0+Math.floor(i/2),y0-i)
-                        } else if (dx>=0 && dy>0) {
-                            place(x0+Math.floor(i/2),y0+i)
-                        } else if (dx<0 && dy<0) {
-                            place(x0-Math.floor(i/2),y0-i)
-                        } else if (dx<0 && dy>0) {
-                            place(x0-Math.floor(i/2),y0+i)
-                        };
+                        place(x0+Math.floor(i/2)*(dx<0?-1:1),y0+i*(dy<0?-1:1));
                         slopeShift = !slopeShift;
                     };
                 } else { //45deg
                     selectedTile = 144+(dy>0)+(dx<0)*2;
                     for (let i = 0; i <= dmax; i++) {
-                        if (dx>0 && dy<0) {
-                            place(x0+i,y0-i)
-                        } else if (dx>0 && dy>0) {
-                            place(x0+i,y0+i)
-                        } else if (dx<0 && dy<0) {
-                            place(x0-i,y0-i)
-                        } else if (dx<0 && dy>0) {
-                            place(x0-i,y0+i)
-                        };
+                        place(x0+i*(dx<0?-1:1),y0+i*(dy<0?-1:1));
                     };
                 };
                 selectedTile = prevSelected;
@@ -1363,15 +1317,15 @@
                     if (tilesetMap) {
                         if (i<16384&&(i%1024>=64&&i%1024<192||i%1024>=320&&i%1024<448) || i>131072&&i<147456&&i%1024>=512&&i%1024<640) {
                             key = `${r},${g},${b}*`;
-                        }
-                    }
+                        };
+                    };
                     if (map[key]) {
                         const [nr, ng, nb] = map[key];
                         data[i] = nr;
                         data[i + 1] = ng;
                         data[i + 2] = nb;
                         data[i + 3] = 255;
-                    }
+                    };
                 }
                 return data;
             };
@@ -1465,7 +1419,7 @@
             if (fileHandle) {
                 clearTimeout(autosaveTimeout);
                 autosaveTimeout = setTimeout(()=>{save()},1000);
-            }
+            };
         };
         function undo() {
             if (historyIndex > 0) {
@@ -1474,7 +1428,7 @@
                 [widthInput.value, heightInput.value] = gridSize;
                 draw();
                 localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
-            }
+            };
         };
         function redo() {
             if (historyIndex < history.length-1) {
@@ -1483,7 +1437,7 @@
                 [widthInput.value, heightInput.value] = gridSize;
                 draw();
                 localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
-            }
+            };
         };
 
         async function save(getText=false) {
@@ -1492,7 +1446,7 @@
             for (let y = 0; y < gridSize[1]; y++) {
                 tileData = `${tileData}\n${tileGrid[y].map((x)=>x+1).join(',')},`;
                 spriteData = `${spriteData}\n${spriteGrid[y].map((x)=>(x==-1)?0:x+257).join(',')},`;
-            }
+            };
             let output = `<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="${gridSize[0]}" height="${gridSize[1]}" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
  <editorsettings>
@@ -1555,7 +1509,7 @@ ${spriteData.slice(1,-1)}
             const reader = new FileReader();
             reader.onload = (e)=>{
                 data = e.target.result;
-                gridSize = [data.split('width="')[1].split('"')[0], data.split('height="')[1].split('"')[0]];
+                gridSize = [parseInt(data.split('width="')[1].split('"')[0]), parseInt(data.split('height="')[1].split('"')[0])];
                 [gid('widthInput').value, gid('heightInput').value] = gridSize;
                 gid('widthText').textContent = `Width: ${gid('widthInput').value}`;
                 gid('heightText').textContent = `Height: ${gid('heightInput').value}`;
@@ -1577,7 +1531,7 @@ ${spriteData.slice(1,-1)}
                     if (shift[1][1] != 0) objectOffsets += `\t\t\toffsetY: ${shift[1][1]},\n`;
                     objectOffsets += '\t\t},\n';
                 };
-            }
+            };
             objectOffsets += '\t]';
             let output = `{
 	level: "${options[12].toLowerCase().replaceAll(' ','')}${options[13].toLowerCase().replaceAll(' ','')}",
@@ -1608,7 +1562,7 @@ ${spriteData.slice(1,-1)}
             } else {
                 navigator.clipboard.writeText(output);
             }
-        }
+        };
 
         async function loadMetadata() {
             navigator.clipboard.readText().then((pastedText)=>{
