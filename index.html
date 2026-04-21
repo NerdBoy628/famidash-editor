@@ -718,7 +718,7 @@
         gid('heightInput').addEventListener('change', ()=>{
             camera.y += (gridSize[1] - gid('heightInput').value)*cellSize*camera.z;
             for (let i = 0; i < options[14].length; i++) {
-                temp = JSON.parse(options[14][i][0]);
+                let temp = JSON.parse(options[14][i][0]);
                 temp[1] += heightInput.value - gridSize[1];
                 options[14][i][0] = JSON.stringify(temp);
             };
@@ -726,8 +726,8 @@
             let newTileGrid = tileGrid.slice(-gridSize[1]);
             let newSpriteGrid = spriteGrid.slice(-gridSize[1]);
             while (newTileGrid.length < gridSize[1]) {
-                newTileGrid.unshift(Array(gridSize[0]).fill(0));
-                newSpriteGrid.unshift(Array(gridSize[0]).fill(-1));
+                newTileGrid.unshift(Array(parseInt(gridSize[0])).fill(0));
+                newSpriteGrid.unshift(Array(parseInt(gridSize[0])).fill(-1));
             }
             tileGrid = newTileGrid;
             spriteGrid = newSpriteGrid;
