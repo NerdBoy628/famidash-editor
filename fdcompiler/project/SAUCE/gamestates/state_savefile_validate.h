@@ -49,7 +49,7 @@ void state_savefile_validate(){
         forceNoFadeOut = 0; // not really a state here lmoa
     #endif
 
-    gameState = STATE_LEVELSELECT;
+    gameState = STATE_GAME;
     return;
 }
 
