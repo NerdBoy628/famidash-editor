@@ -375,8 +375,10 @@
             <button id="clearButton" class="toolButton">Clear<br>🔄</button>
         </div>
         <div class="vr" style="top: 0px; right: 250px"></div>
-        <!-- <button class="roundButton" style="right: 30px; top: 30px; width: 180px; height: 80px">idk</button>
-        <button class="roundButton" style="right: 30px; top: 140px; width: 180px; height: 80px">idk</button> -->
+        <div class="rectButton" style="transform: none; text-align: center; right: 30px; top: 30px; width: 180px; height: 80px">
+            <button id="toggleTiles" style="width: 160px; height: 30px" class="smallButton grayButton" onclick="toggleLayer(0)">Hide Tiles</button>
+            <button id="toggleSprites" style="width: 160px; height: 30px" class="smallButton grayButton" onclick="toggleLayer(1)">Hide Sprites</button>
+        </div>
     </div>
     <div id="levelSettings" class="menuPopup" style="display: none">
         <h1>Level Settings</h1>
@@ -516,6 +518,7 @@
             .map(i => Object.assign(new Image(), {src: i}));
         let tileImg = new Image(); tileImg.src = `tilesets/BlocksaSpikesaSawsaSlopesnone.png`;
         let spriteImg = new Image(); spriteImg.src = `sprites.png`;
+        let previewSpriteImg = new Image();
 
         let openTab = 0;
         let prefs = [1,1,1,1,0]; //autosave, gridlines, attempt, color preview, spritePreview
@@ -525,6 +528,7 @@
         let gridSize = [128,32];
         let selectedTile = 16;
         let selectionGrid = false;
+        let layerShown = [true,true];
         const cellSize = 40;
         const optionsDefault = [
             'A', //block set (0)
@@ -610,7 +614,7 @@
             [[131,225,82],[66,145,40]],
             [[118,221,139],[62,141,62]],
             [[112,202,219],[53,122,139]],
-        ]
+        ];
         const objColors = [
             [255,255,255],
             [45,94,209],
@@ -628,12 +632,50 @@
             [118,174,249],
             [143,82,27],
             [0,0,0]
-        ]
+        ];
+        const spriteFrames = [
+            1,1,1,1,1,4,4,4,1,1,4,4,4,4,4,0,
+            1,1,1,1,1,1,1,1,1,1,4,4,0,0,0,0,
+            1,1,1,1,1,4,4,4,4,0,2,2,2,1,1,1,
+            1,1,2,2,2,2,2,2,2,2,2,2,2,1,2,2,
+            0,0,0,0,4,2,2,0,0,2,2,1,2,2,1,1,
+            2,2,4,4,2,2,1,1,1,2,2,2,2,2,2,1,
+            1,1,1,1,0,4,1,1,1,1,0,0,0,1,4,0,
+            0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,
+        ];
+        // PRELOAD IMAGES
+        let imgPreload = [];
+        for (let i of ['parallax.bmp','noparallax.bmp']) {
+            const img = new Image();
+            img.src = i;
+            imgPreload.push(img);
+        }
+        for (let blocks of ['a','b','c','d']) {
+            for (let spikes of ['a','b','c']) {
+                for (let slopes of ['a','none']) {
+                    const img = new Image();
+                    img.src = `tilesets/Blocks${blocks}Spikes${spikes}SawsaSlopes${slopes}.png`;
+                    imgPreload.push(img);
+                }}}
+        for (let i = 0; i < 128; i++) {
+            if (spriteFrames[i]) {
+                for (let j = 0; j < spriteFrames[i]; j++) {
+                    const img = new Image();
+                    img.src = `sprites/${i}_${j}.png`;
+                    imgPreload.push(img);
+                }}}
         let mousepos = [0,0];
         document.addEventListener('mousemove', (e)=>{
             if (mouseState == 3) {
-                camera.x += e.clientX-mousepos[0]
-                camera.y += e.clientY-mousepos[1];
+                let deltaX = e.clientX-mousepos[0];
+                let deltaY = e.clientY-mousepos[1];
+                if (playtesting) {
+                    playtestScroll[0] += e.shiftKey?deltaY:deltaX;
+                    playtestScroll[1] += e.shiftKey?deltaX:deltaY;
+                } else {
+                    camera.x += e.shiftKey?deltaY:deltaX;
+                    camera.y += e.shiftKey?deltaX:deltaY;
+                }
             };
             mousepos = [e.clientX,e.clientY];
             [drag[2],drag[3]] = mousepos;
@@ -1020,17 +1062,19 @@
         };
 
         function drawCell(set, cx, cy, dx, dy) {
-            ctx.drawImage(
-                set?spriteImg:tilesetCanvas,
-                cx, cy, 16, 16, dx, dy,
-                cellSize*camera.z, cellSize*camera.z
-            )
+            if (layerShown[set] || playtesting) {
+                ctx.drawImage(
+                    set?spriteImg:tilesetCanvas,
+                    cx, cy, 16, 16, dx, dy,
+                    cellSize*camera.z, cellSize*camera.z
+                );
+            };
         };
         function draw() {
             if (!prefs[3]) {bgColor = 146; groundColor = 130; objColor = 176};
             if (playtesting) {
                 [bgColor, groundColor, objColor] = [playtestState.bgColor, playtestState.groundColor, playtestState.objColor]
-            }
+            };
             try {setColor()} catch {};
             if (camera.x*cellSize*camera.z>=0) {bgColor = options[5]+128; groundColor = options[6]+128; objColor = 176};
             widthText.textContent = `Width: ${widthInput.value}`;
@@ -1102,10 +1146,29 @@
                         let shift = false;
                         try {shift = options[14].find(i=>i[0]==JSON.stringify([x,y]))} catch {};
                         if (shift) {shift = shift[1]} else {shift = [0,0]};
-                        drawCell(
-                            1, 16*(spriteGrid[y][x]%16), 16*Math.floor(spriteGrid[y][x]/16),
-                            (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
-                        );
+                        if ((prefs[4] || playtesting) && spriteFrames[spriteGrid[y][x]]) {
+                            previewSpriteImg.src = `sprites/${spriteGrid[y][x]}_0.png`;
+                            const previewOffsets = {
+                                16: [0,-8], 18: [0,-8], 103:[0,-8], 104:[0,-8],
+                                24: [-8,0], 95: [-8,0], 96: [-8,0], 97: [-8,0],
+                                42: [0,-16],43: [0,-8], 45: [0,-8], 62: [-8,0],
+                                46: [0,-4], 47: [0,4],  48: [0,-4], 49: [0,4],
+                            };
+                            if (previewOffsets[spriteGrid[y][x]]) {
+                                shift[0] += previewOffsets[spriteGrid[y][x]][0];
+                                shift[1] += previewOffsets[spriteGrid[y][x]][1];
+                            };
+                            ctx.drawImage(
+                                previewSpriteImg,
+                                (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
+                                cellSize*camera.z*previewSpriteImg.naturalWidth/16, cellSize*camera.z*previewSpriteImg.naturalHeight/16
+                            );
+                        } else {
+                            drawCell(
+                                1, 16*(spriteGrid[y][x]%16), 16*Math.floor(spriteGrid[y][x]/16),
+                                (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
+                            );
+                        }
                     }
                 }
             }
@@ -1681,6 +1744,14 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             }
             draw();
             saveHistory();
+        };
+        function toggleLayer(layer) {
+            layerShown[layer] = !layerShown[layer];
+            if (layer) {
+                gid('toggleSprites').textContent = layerShown[layer]?'Hide Sprites':'Show Sprites'
+            } else {
+                gid('toggleTiles').textContent = layerShown[layer]?'Hide Tiles':'Show Tiles'
+            };
         };
 
         // COMPILER SCRIPTS
