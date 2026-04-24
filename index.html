@@ -528,6 +528,7 @@
         let gridSize = [128,32];
         let selectedTile = 16;
         let selectionGrid = false;
+        let selectedArea = false;
         let layerShown = [true,true];
         const cellSize = 40;
         const optionsDefault = [
@@ -901,7 +902,7 @@
             };
             if (e.button == 2) {
                 mouseState = 2;
-                selectionGrid = false;
+                selectionGrid = selectedArea = false;
             };
             if (e.button == 1) {
                 mouseState = 3;
@@ -930,7 +931,7 @@
             };
             if (mouseState==2) {
                 let coords = dispToGrid(drag[0],drag[1]);
-                let newCoords = dispToGrid(drag[2],drag[3])
+                let newCoords = dispToGrid(drag[2],drag[3]);
                 if (coords[0] == newCoords[0] && coords[1] == newCoords[1]) {
                     let bgTile = tileGrid[coords[1]][coords[0]];
                     let spriteTile = spriteGrid[coords[1]][coords[0]];
@@ -945,11 +946,12 @@
                         selectTile(newTile);
                     }
                 } else {
-                    let selectedArea = [...coords,...newCoords];
+                    selectedArea = [...coords,...newCoords];
                     selectionGrid = [];
                     let [x0,y0,x1,y1] = selectedArea;
                     if (x0>x1) [x0,x1] = [x1,x0];
                     if (y0>y1) [y0,y1] = [y1,y0];
+                    selectedArea = [x0,y0,x1,y1];
                     for (let y = y0; y <= y1; y++) {
                         selectionGrid.push([]);
                         for (let x = x0; x <= x1; x++) {
@@ -960,6 +962,29 @@
             };
             mouseState = 0;
             saveHistory();
+        });
+        document.addEventListener('keydown', (e)=>{
+            if (e.key == 'z' && (e.ctrlKey||e.metaKey) && !e.shiftKey) {e.preventDefault(); undo()};
+            if (e.key == 'z' && (e.ctrlKey||e.metaKey) && e.shiftKey) {e.preventDefault(); redo()};
+            if (e.key == 'y' && (e.ctrlKey||e.metaKey)) {e.preventDefault(); redo()};
+            if (e.key == 's' && (e.ctrlKey||e.metaKey)) {e.preventDefault(); gid('save').click()};
+            if (e.key == 'c' && (e.ctrlKey||e.metaKey) && selectionGrid) {
+                e.preventDefault();
+                navigator.clipboard.writeText(JSON.stringify(selectionGrid));
+            };
+            if (e.key == 'v' && (e.ctrlKey||e.metaKey) && gid('levelSettings').style.display == 'none') {
+                e.preventDefault();
+                navigator.clipboard.readText().then((pastedText)=>{selectionGrid = JSON.parse(pastedText)});
+            };
+        });
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            let droppedFile = e.dataTransfer.files[0];
+            if (droppedFile.name.endsWith('.tmx')) load(droppedFile);
+            draw();
         });
         
         window.addEventListener('load', () => {
@@ -1056,7 +1081,7 @@
             if (selectedTile==-1) { gid('btn-1').style.transform = 'scale(1)' }
             else {gid(`btn${selectedTile}`).classList.remove('selectedTileButton')};
             selectedTile = tile;
-            selectionGrid = false;
+            selectionGrid = selectedArea = false;
             if (selectedTile==-1) {gid('btn-1').style.transform = 'scale(1.1)'}
             else {gid(`btn${selectedTile}`).classList.add('selectedTileButton')};
         };
@@ -1210,6 +1235,25 @@
                         }
                     }
                 }
+            };
+            if (selectionGrid) {
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = '#04F';
+                ctx.fillRect(
+                    camera.x+selectedArea[0]*cellSize*camera.z,
+                    camera.y+selectedArea[1]*cellSize*camera.z,
+                    (selectedArea[2]-selectedArea[0]+1)*cellSize*camera.z,
+                    (selectedArea[3]-selectedArea[1]+1)*cellSize*camera.z,
+                );
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = '#48F';
+                ctx.lineWidth = 5*camera.z;
+                ctx.strokeRect(
+                    camera.x+selectedArea[0]*cellSize*camera.z,
+                    camera.y+selectedArea[1]*cellSize*camera.z,
+                    (selectedArea[2]-selectedArea[0]+1)*cellSize*camera.z,
+                    (selectedArea[3]-selectedArea[1]+1)*cellSize*camera.z,
+                );
             };
             ctx.globalAlpha = 1;
             if ((mouseState==1) && (tool>0)&&(tool<5) && !selectionGrid) {
@@ -1653,6 +1697,8 @@ options[4] = false; if (input.forcePlatformer) updateJson(4, input.forcePlatform
                     if (input.difficulty) updateJson(11, input.difficulty);
 options[12] = '';   if (input.upperText) updateJson(12, input.upperText);
 options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
+                    if (gid('songSelect').options.contains(input.songID.split('song_')[1])) {
+                        gid('songSelect').value = input.songID.split('song_')[1]};
                     objectOffsets = objectOffsets.replaceAll('},','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','').replaceAll('\t','').replaceAll(' ','')
                     .replace('[','').split('{').map((offset)=>{
                         if (offset && offset!=']') {
@@ -1777,15 +1823,15 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
         let emulationSpeed = 1;
         let frameskip = false;
         let lastFrame = 0;
-        songSelect.addEventListener('change', (e)=>{
-            localStorage.setItem('fdcompiler_song', songSelect.value);
+        gid('songSelect').addEventListener('change', (e)=>{
+            localStorage.setItem('fdcompiler_song', gid('songSelect').value);
         });
 
         for (let song of ['stereo_madness','back_on_track','polargeist','dry_out','base_after_base','cant_let_go','jumper','time_machine','cycles','xstep','clutterfunk','theory_of_everything','electroman_adventures','clubstep','electrodynamix','hexagon_force','blast_processing','toe_2','geometrical_dominator','deadlocked','fingerdash','dash','desert_city','the_challenge','practice','scheming_weasel','atthespeedoflight','atthespeedoflight2','extraordinary_excitement','retray','ground_to_space','haunted_woods','infernoplex','just_right','midnight','rainbow_tylenol','stalemate_greif_cut','menu_theme']) {
-            songSelect.innerHTML += `<option>${song}</option>`
+            gid('songSelect').innerHTML += `<option>${song}</option>`
         };
 
-        if (localStorage.getItem('fdcompiler_song')) songSelect.value = localStorage.getItem('fdcompiler_song');
+        if (localStorage.getItem('fdcompiler_song')) gid('songSelect').value = localStorage.getItem('fdcompiler_song');
 
         async function initToolchains() {
             if (cc65Module && ca65Module1 && ca65Module2 && ld65Module) return;
@@ -1892,7 +1938,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             let fullMetadata = await (await fetch('fdcompiler/project/LEVELS/metadata/METADATA_TEMPLATE_A.json5', {cache: 'no-store'})).text();
             fullMetadata = fullMetadata.replace('--COMPILERPLACEHOLDER--',
                 `${metadata.split('level:')[0]}level: "stereomadness",\n${metadata.split('level:')[1].split(',').slice(1).join(',')
-                .split('songID:')[0]}songID: "song_${songSelect.value}",${metadata.split('songID')[1].split(',').slice(1).join(',')}`
+                .split('songID:')[0]}songID: "song_${gid('songSelect').value}",${metadata.split('songID')[1].split(',').slice(1).join(',')}`
             );
             pyodide.FS.writeFile('/project/LEVELS/metadata/lvlset_A_metadata.json5',fullMetadata);
             setProgress(2/4);
