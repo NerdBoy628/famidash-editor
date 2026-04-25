@@ -1292,11 +1292,17 @@
                 let [x,y] = dispToGrid(mousepos[0],mousepos[1]);
                 if (pos) [x,y] = pos;
                 if (x < 0 || y < 0 || x >= gridSize[0] || y >= gridSize[1]) return;
-                ((selectedTile>255||selectedTile==-1)?spriteGrid:tileGrid)[y][x] = tile;
                 if (selectedTile==-1) {
-                    idx = options[14].findIndex(i=>i[0]==`[${x},${y}]`);
-                    if (idx>-1) options[14].splice(idx,1);
-                }
+                    if (spriteGrid[y][x]!=-1) {
+                        spriteGrid[y][x] = -1;
+                        idx = options[14].findIndex(i=>i[0]==`[${x},${y}]`);
+                        if (idx>-1) options[14].splice(idx,1);
+                    } else {
+                        tileGrid[y][x] = 0;
+                    }
+                } else {
+                    ((selectedTile>255)?spriteGrid:tileGrid)[y][x] = tile;
+                };
             }
         };
 
