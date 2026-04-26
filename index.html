@@ -1190,11 +1190,13 @@
                                 shift[0] += previewOffsets[spriteGrid[y][x]][0];
                                 shift[1] += previewOffsets[spriteGrid[y][x]][1];
                             };
-                            ctx.drawImage(
-                                previewSpriteImg,
-                                (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
-                                cellSize*camera.z*previewSpriteImg.naturalWidth/16, cellSize*camera.z*previewSpriteImg.naturalHeight/16
-                            );
+                            if (layerShown[1]) {
+                                ctx.drawImage(
+                                    previewSpriteImg,
+                                    (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
+                                    cellSize*camera.z*previewSpriteImg.naturalWidth/16, cellSize*camera.z*previewSpriteImg.naturalHeight/16
+                                );
+                            };
                         } else {
                             drawCell(
                                 1, 16*(spriteGrid[y][x]%16), 16*Math.floor(spriteGrid[y][x]/16),
@@ -1243,7 +1245,7 @@
                     }
                 }
             };
-            if (selectionGrid) {
+            if (selectionGrid && !playtesting) {
                 ctx.globalAlpha = 0.3;
                 ctx.fillStyle = '#04F';
                 ctx.fillRect(
@@ -1822,7 +1824,7 @@ options[4] = false; if (input.forcePlatformer) updateJson(4, input.forcePlatform
                     if (input.difficulty) updateJson(11, input.difficulty);
 options[12] = '';   if (input.upperText) updateJson(12, input.upperText);
 options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
-                    if (gid('songSelect').options.contains(input.songID.split('song_')[1])) {
+                    if ([...songSelect.options].map(x=>x.value).includes(input.songID.split('song_')[1])) {
                         gid('songSelect').value = input.songID.split('song_')[1]};
                     objectOffsets = objectOffsets.replaceAll('},','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','').replaceAll('\t','').replaceAll(' ','')
                     .replace('[','').split('{').map((offset)=>{
