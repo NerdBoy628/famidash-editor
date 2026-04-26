@@ -479,6 +479,8 @@
                 <input id="colorPreviewEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
             <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Sprite Preview:
                 <input id="spritePreviewEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
+            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Playtest Shadow:
+                <input id="shadowEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
             <button class="smallButton" style="width: 100px; height: 50px; margin-left: 10vw; font-size: 30px"
             onclick="gid('editorSettings').style.display = 'none'">OK</button>
         </td></tr></table>
@@ -528,7 +530,7 @@
         let previewSpriteImg = new Image();
 
         let openTab = 0;
-        let prefs = [1,1,1,1,0]; //autosave, gridlines, attempt, color preview, spritePreview
+        let prefs = [1,1,1,1,0,0]; //autosave, gridlines, attempt, colorPreview, spritePreview, shadow
         let tool = 0; // pen, line, rect, fill, move, slope, structure
         let openPopup = false;
         let camera = {x: 40, y: -1650+window.innerHeight, z: 1.01};
@@ -562,11 +564,12 @@
             localStorage.setItem('famidash_editor_version',2);
             localStorage.setItem('famidash_editor_autosave',JSON.stringify([tileGrid,spriteGrid,gridSize,options]));
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
-        }
+        };
         if (localStorage.getItem('famidash_editor_prefs')) prefs = JSON.parse(localStorage.getItem('famidash_editor_prefs'));
-        for (let i = 0; i < 5; i++) {
-            gid(['autosave','gridline','attempt','colorPreview','spritePreview'][i]+'Enable').checked = prefs[i];
-        }
+        if (prefs.length == 5) prefs.push(0);
+        for (let i = 0; i < 6; i++) {
+            gid(['autosave','gridline','attempt','colorPreview','spritePreview','shadow'][i]+'Enable').checked = prefs[i];
+        };
         if (localStorage.getItem('famidash_editor_autosave')&&prefs[0]) [tileGrid,spriteGrid,gridSize,options]=JSON.parse(localStorage.getItem('famidash_editor_autosave'));
         let fileHandle, autosaveTimeout;
         let history = [];
@@ -863,6 +866,7 @@
         gid('attemptEnable').addEventListener('click', (e)=>{prefs[2] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
         gid('colorPreviewEnable').addEventListener('click', (e)=>{prefs[3] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
         gid('spritePreviewEnable').addEventListener('click', (e)=>{prefs[4] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
+        gid('shadowEnable').addEventListener('click', (e)=>{prefs[5] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
         window.addEventListener('resize', ()=>{
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight-240;
@@ -1271,6 +1275,11 @@
             ctx.fillStyle = '#FFF';
             ctx.fillText(`${dispToGrid(mousepos[0],0)[0]},${dispToGrid(0,mousepos[1])[1]}`,10,15);
             if (playtesting) {
+                ctx.save();
+                if (prefs[5]) {
+                    ctx.shadowColor = 'rgba(0, 0, 0, 1)';
+                    ctx.shadowBlur = 100;
+                };
                 ctx.drawImage(
                     gameCanvas,
                     8,8,240,224,
@@ -1278,6 +1287,7 @@
                     camera.y+(playtestState.y+8-(43-gridSize[1])*16)*cellSize*camera.z/16,
                     cellSize*camera.z*15,cellSize*camera.z*14,
                 );
+                ctx.restore();
             };
         };
 
