@@ -556,7 +556,7 @@
             'LEVEL', 'NAME',
             [], //sprite shifts (14)
             0xB0, 0x00, 0x02, 0xEF //player spawn and scroll y (15-18)
-        ]
+        ];
         let options = JSON.parse(JSON.stringify(optionsDefault));
         let tileGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(0));
         let spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
@@ -859,7 +859,7 @@
         gid('setScrollLo').addEventListener('input', (e)=>{updateJson(18, parseInt(e.srcElement.value,16))});
         updateJson(0,options[0]);
         gid('saveMetadata').addEventListener('click', saveMetadata);
-        gid('loadMetadata').addEventListener('click', loadMetadata);
+        gid('loadMetadata').addEventListener('click', ()=>{navigator.clipboard.readText().then((pastedText)=>{loadMetadata(pastedText)})});
         gid('editorSettingsButton').addEventListener('click', ()=>{gid('editorSettings').style.display = 'block'});
         gid('autosaveEnable').addEventListener('click', (e)=>{prefs[0] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
         gid('gridlineEnable').addEventListener('click', (e)=>{prefs[1] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
@@ -1181,7 +1181,7 @@
                         }
                         let shift = false;
                         try {shift = options[14].find(i=>i[0]==JSON.stringify([x,y]))} catch {};
-                        if (shift) {shift = shift[1]} else {shift = [0,0]};
+                        if (shift) {shift = structuredClone(shift[1])} else {shift = [0,0]};
                         if ((prefs[4] || playtesting) && spriteFrames[spriteGrid[y][x]]) {
                             previewSpriteImg.src = `sprites/${spriteGrid[y][x]}_0.png`;
                             const previewOffsets = {
@@ -1808,65 +1808,72 @@ ${spriteData.slice(1,-1)}
             }
         };
 
-        async function loadMetadata() {
-            navigator.clipboard.readText().then((pastedText)=>{
-                try {
-                    let input = pastedText;
-                    let objectOffsets = input.split('objectOffsets: ')[1];
-                    input = pastedText.replaceAll('{','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','')
-                    .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split('objectOffsets')[0].split(',');
-                    for (let i = 0; i < input.length; i++) {
-                        input[i] = input[i].split('/')[0].split(': ');
-                        input[i][0] = input[i][0].replaceAll(' ','')
-                    };
-                    input = Object.fromEntries(input);
-                    if (input.blockSet) updateJson(0, input.blockSet);
-                    if (input.spikeSet) updateJson(1, input.spikeSet);
+        async function loadMetadata(input) {
+            try {
+                let objectOffsets = input.split('objectOffsets: ')[1];
+                input = pastedText.replaceAll('{','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','')
+                .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split('objectOffsets')[0].split(',');
+                for (let i = 0; i < input.length; i++) {
+                    input[i] = input[i].split('/')[0].split(': ');
+                    input[i][0] = input[i][0].replaceAll(' ','')
+                };
+                input = Object.fromEntries(input);
+                if (input.blockSet) updateJson(0, input.blockSet);
+                if (input.spikeSet) updateJson(1, input.spikeSet);
 options[2] = false; if (input.parallaxDisable) updateJson(2, input.parallaxDisable=='true');
-                    if (input.decoType) updateJson(3, input.decoType);
+                if (input.decoType) updateJson(3, input.decoType);
 options[4] = false; if (input.forcePlatformer) updateJson(4, input.forcePlatformer=='true');
-                    if (input.startingBackgroundColor) updateJson(5, parseInt(input.startingBackgroundColor,16));
-                    if (input.startingGroundColor) updateJson(6, parseInt(input.startingGroundColor,16));
-                    if (input.startingGameMode) updateJson(7, parseInt(input.startingGameMode));
-                    if (input.startingSpeed) updateJson(8, parseInt(input.startingSpeed));
-                    if (input.maxFallSpeed) updateJson(9, parseInt(input.maxFallSpeed));
-                    if (input.stars) updateJson(10, parseInt(input.stars));
-                    if (input.difficulty) updateJson(11, input.difficulty);
+                if (input.startingBackgroundColor) updateJson(5, parseInt(input.startingBackgroundColor,16));
+                if (input.startingGroundColor) updateJson(6, parseInt(input.startingGroundColor,16));
+                if (input.startingGameMode) updateJson(7, parseInt(input.startingGameMode));
+                if (input.startingSpeed) updateJson(8, parseInt(input.startingSpeed));
+                if (input.maxFallSpeed) updateJson(9, parseInt(input.maxFallSpeed));
+                if (input.stars) updateJson(10, parseInt(input.stars));
+                if (input.difficulty) updateJson(11, input.difficulty);
 options[12] = '';   if (input.upperText) updateJson(12, input.upperText);
 options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
-                    if ([...songSelect.options].map(x=>x.value).includes(input.songID.split('song_')[1])) {
-                        gid('songSelect').value = input.songID.split('song_')[1]};
-                    objectOffsets = objectOffsets.replaceAll('},','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','').replaceAll('\t','').replaceAll(' ','')
-                    .replace('[','').split('{').map((offset)=>{
-                        if (offset && offset!=']') {
-                            offset = offset.split(/[\[\]]/);
-                            offset[1] = offset[1].split(',').map((x)=>parseInt(x));
-                            offset[2] = offset[2].split(',');
-                            offset[2].pop();
-                            offset[2].shift();
-                            offset[2] = offset[2].map((x)=>x.split(':'));
-                            offset.shift();
+                if ([...songSelect.options].map(x=>x.value).includes(input.songID.split('song_')[1])) {
+                    gid('songSelect').value = input.songID.split('song_')[1]};
+                
+                options[14] = [];
+                objectOffsets = objectOffsets.replaceAll('},','').replaceAll('}','').replaceAll('\r','').replaceAll('\t','').replaceAll(' ','').replace('[','').split('{')
+                .map((i) => {
+                    i = i.split('offset');
+                    i[0] = i[0].split('coordinates:')[1];
+                    if (i[0]) {
+                        if (i[0].includes('//')) {
+                            i[0] = i[0].split('//');
+                            for (let j = 1; j < i[0].length; j++) {
+                                i[0][j] = i[0][j].split('\n')[1];
+                            };
+                            i[0] = i[0].join('');
                         }
-                        return offset;
-                    });
-                    objectOffsets.shift();
-                    options[14] = [];
-                    for (let offset of objectOffsets) {
-                        if (offset) {
+                        for (let j = 0; j < i.length; j++) {
+                            i[j] = i[j].replaceAll('\n','');
+                            if (j>0) {
+                                i[j] = i[j].replaceAll(']','');
+                            };
+                        };
+                        if (i[0].startsWith('[[')) {
+                            i[0] = i[0].replaceAll('],[','*').replaceAll('[','').replaceAll('],','').split('*');
+                        } else {
+                            i[0] = [i[0].slice(1,-2)];
+                        };
+                        for (let j = 0; j < i[0].length; j++) {
                             let amount = [0,0];
-                            for (let x of offset[1]) {
-                                if (x[0]=='offsetX') amount[0] = parseInt(x[1]);
-                                if (x[0]=='offsetY') amount[1] = parseInt(x[1]);
+                            for (let x of i.slice(1)) {
+                                if (x.startsWith('X')) amount[0] = parseInt(x.replaceAll('X:',''));
+                                if (x.startsWith('Y')) amount[1] = parseInt(x.replaceAll('Y:',''));
                             }
-                            options[14].push([JSON.stringify(offset[0]),amount]);
-                        }
+                            options[14].push([`[${i[0][j]}]`,amount]);
+                        };
                     };
-                } catch (e) {
-                    alert(`JSON load failed! Make sure the clipboard contains valid data.\n${e.stack}`);
-                    throw(e);
-                };
-                gid(`setBlock${options[0]}`).dispatchEvent(new Event('mousedown')); createTileButtons();
-            });
+                });
+            } catch (e) {
+                alert(`JSON load failed! Make sure the clipboard contains valid data.\n${e.stack}`);
+                throw(e);
+            };
+            gid(`setBlock${options[0]}`).dispatchEvent(new Event('mousedown')); createTileButtons();
         };
 
         function updateJson(item, value) {
