@@ -287,7 +287,7 @@
             top: 25vh;
             box-shadow: 0 0 0 4px black, 0 0 0 7px white, 0 0 0 30vw #0008;
         }
-        #popup {
+        .smallPopup {
             width: 20vw;
             height: 10vh;
             left: 40vw;
@@ -299,6 +299,13 @@
             color: white;
             align-items: center;
             justify-content: center;
+        }
+        #metadataPopup {
+            top: calc(35vh - 80px);
+            left: calc(50vw - 150px);
+            width: 300px;
+            height: 80px;
+            padding-top: 10px;
         }
         #saveContainer {
             transition: all 0.3s ease-in-out;
@@ -444,7 +451,7 @@
             <h2 id="starsLabel">Stars: 3</h2>
             <input type="range" id="setStars" min="1" max="15" value="3" step="1">
             <h2>Difficulty:</h2>
-            <select id="setDifficulty" style="font-family: Pusab">
+            <select id="setDifficulty">
                 <option value="AUTO">Auto</option>
                 <option value="EASY">Easy</option>
                 <option value="NORMAL" selected>Normal</option>
@@ -485,7 +492,11 @@
             onclick="gid('editorSettings').style.display = 'none'">OK</button>
         </td></tr></table>
     </div>
-    <div id="popup" class="menuPopup" style="display: none">Loading...</div>
+    <div id="loadingPopup" class="menuPopup smallPopup" style="display: none">Loading...</div>
+    <div id="metadataPopup" class="menuPopup smallPopup" style="display: none">
+        Select Metadata to Load:
+        <br><select id="metadataSelect"></select><br>
+    </div>
     <input type="file" id="fileLoad" accept=".tmx,.xml" hidden>
     <script src="fdcompiler/cc65.js"></script>
     <script src="fdcompiler/ca65.js"></script>
@@ -835,8 +846,7 @@
         };
         for (let i = 0; i < 3; i++) {
             gid(`setSpike${'ABC'[i]}`).addEventListener('mousedown', (e)=>{updateJson(1, e.srcElement.id[8])});
-        };
-        for (let i = 0; i < 3; i++) {
+
             gid(`setSprite${'ABC'[i]}`).addEventListener('mousedown', (e)=>{
                 const spriteSets = ['DECO1','DECOCLOUD','EXTRASPRITES1'];
                 updateJson(3,spriteSets['ABC'.indexOf(e.srcElement.id[9])]);
@@ -991,11 +1001,26 @@
         document.addEventListener('dragover', (e) => {
             e.preventDefault();
         });
-        document.addEventListener('drop', (e) => {
+        document.addEventListener('drop', async (e) => {
             e.preventDefault();
             let droppedFile = e.dataTransfer.files[0];
-            if (droppedFile.name.endsWith('.tmx')) load(droppedFile);
+            if (droppedFile.name.endsWith('.tmx') || droppedFile.name.endsWith('.xml')) load(droppedFile);
+            if (droppedFile.name.endsWith('.json5') || droppedFile.name.endsWith('.txt')) {
+                let input = await droppedFile.text();
+                gid('metadataSelect').innerHTML = '<option></option>';
+                for (let song of input.replaceAll(' ','').split('level:"').map(x=>x.split('"')[0]).slice(1)) {
+                    gid('metadataSelect').innerHTML += `<option>${song}</option>`
+                };
+                gid('metadataPopup').style.display = 'block';
+                gid('metadataSelect').input = input;
+            };
             draw();
+        });
+        gid('metadataSelect').addEventListener('change', (e)=>{
+            if (gid('metadataSelect').value) {
+                gid('metadataPopup').style.display = 'none';
+                loadMetadata(`level: "${gid('metadataSelect').value}${gid('metadataSelect').input.split('"'+gid('metadataSelect').value)[1].split('level:')[0]}`);
+            };
         });
         
         window.addEventListener('load', () => {
@@ -1811,7 +1836,7 @@ ${spriteData.slice(1,-1)}
         async function loadMetadata(input) {
             try {
                 let objectOffsets = input.split('objectOffsets: ')[1];
-                input = pastedText.replaceAll('{','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','')
+                input = input.replaceAll('{','').replaceAll('}','').replaceAll('\n','').replaceAll('\r','')
                 .replaceAll('\t','').replaceAll('"','').replaceAll("'",'').split('objectOffsets')[0].split(',');
                 for (let i = 0; i < input.length; i++) {
                     input[i] = input[i].split('/')[0].split(': ');
@@ -2059,8 +2084,8 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
         };
 
         async function buildMain() {
-            function log(x) {console.log(x); gid('popup').textContent = x}
-            gid('popup').style.display = 'flex';
+            function log(x) {console.log(x); gid('loadingPopup').textContent = x}
+            gid('loadingPopup').style.display = 'flex';
             log('Loading files...');
             if (firstRun) pyodidePromise = loadPyodide();
             pyodide = await pyodidePromise;
@@ -2155,7 +2180,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                 '/project/LIB/nes.lib',
                 '--dbgfile', '/project/BUILD/main/famidash.dbg'
             ]);
-            gid('popup').style.display = 'none';
+            gid('loadingPopup').style.display = 'none';
             const rom = ld65Module.FS.readFile('/project/BUILD/main/famidash.nes');
 
             const imageData = ctx.createImageData(256, 240);
