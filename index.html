@@ -2276,9 +2276,9 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                                 x: (nes.cpu.mem[0x04A6]+nes.cpu.mem[0x04A7]*256+nes.cpu.mem[0x04A8]* 2**16 +nes.cpu.mem[0x04A9]* 2**24) % 2**32,
                                 y: nes.cpu.mem[0x04AD]+nes.cpu.mem[0x04AE]*240-224,
                                 parallaxScroll: nes.cpu.mem[0x04A4],
-                                bgColor: nes.cpu.mem[0x0180]+128,
-                                objColor: nes.cpu.mem[0x0183],
-                                groundColor: nes.cpu.mem[0x0186]+128,
+                                bgColor: nes.ppu.vramMem[0x3F00]+128,
+                                objColor: nes.ppu.vramMem[0x3F03],
+                                groundColor: nes.ppu.vramMem[0x3F06]+128,
                             };
                             if (playtestState.bgColor == 176) playtestState.bgColor = 160;
                             if (playtestState.groundColor == 176) playtestState.groundColor = 160;
