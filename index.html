@@ -1786,7 +1786,7 @@ ${spriteData.slice(1,-1)}
                 let tileData = data.split('<data encoding="csv">\n')[1].split('\n</data>')[0].split('\n');
                 let spriteData = data.split('<data encoding="csv">\n')[2].split('\n</data>')[0].split('\n');
                 tileGrid = tileData.map((x)=>x.split(',').map((x)=>Math.max(x-1,0)).slice(0,gridSize[0]));
-                spriteGrid = spriteData.map((x)=>x.split(',').map((x)=>(x==0)?-1:x-257).slice(0,gridSize[0]));
+                spriteGrid = spriteData.map((x)=>x.split(',').map((x)=>x==0?-1:x%256-1).slice(0,gridSize[0]));
                 saveHistory();
             }
             reader.readAsText(data);
