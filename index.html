@@ -557,16 +557,31 @@
         let spriteImg = new Image(); spriteImg.src = `sprites.png`;
         let previewSpriteImg = new Image();
 
+        let fileHandle, autosaveTimeout;
+        let compiledState = false; //editor state from when game was last compiled, don't recompile if identical to current state
         let openTab = 0;
-        let prefs = [1,1,1,1,0,0,1]; //autosave, gridlines, attempt, colorPreview, spritePreview, shadow, autodetect
-        let tool = 0; // pen, line, rect, fill, move, slope, structure
-        let openPopup = false;
+        let tool = 0; //pen, line, rect, fill, move, slope, structure
         let camera = {x: 40, y: -1650+window.innerHeight, z: 1.01};
-        let gridSize = [128,32];
         let selectedTile = 16;
         let selectionGrid = false;
         let selectedArea = false;
+        let shiftingSprite = false;
         let layerShown = [true,true];
+        let history = [];
+        let historyIndex = -1;
+        let openPopup = false;
+        let prefs = [1,1,1,1,0,0,1]; //autosave, gridlines, attempt, colorPreview, spritePreview, shadow, autodetect
+        let gridSize = [128,32];
+        let bgColor = 146;
+        let groundColor = 130;
+        let objColor = 176;
+        let prevColors = [0,0,0];
+        let playtesting = false;
+        let playtestState = {x:0,y:0};
+        let playtestScroll = [0,0];
+        const levelSong = new Audio();
+        let songFrames = -1;
+        let muteGame = false; // replace ingame audio with uploaded audio
         const cellSize = 40;
         const optionsDefault = [
             'A', //block set (0)
@@ -606,18 +621,7 @@
                 updateJson(i,loaded[3][i])
             };
         };
-        let fileHandle, autosaveTimeout;
-        let history = [];
-        let historyIndex = -1;
-        let drag = [0,0,0,0];
-        let bgColor = 146;
-        let groundColor = 130;
-        let objColor = 176;
-        let prevColors = [0,0,0];
-        let playtesting = false;
-        let playtestState = {x:0,y:0};
-        let playtestScroll = [0,0];
-        let shiftingSprite = false; // if the user is shifting a sprite
+        
         const bgTriggers = [128,129,130,131,132,133,134,135,136,137,138,139,140,143,144,145,146,147,148,149,150,151,152,153,154,155,156,160,161,162,163,164,165,166,167,168,169,170,171,172];
         const bgColors = [
             [[102,102,102],[0,0,0]],
@@ -689,31 +693,31 @@
             1,1,1,1,0,4,1,1,1,1,0,0,0,1,4,0,
             0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,
         ];
-        const levelSong = new Audio();
-        let songFrames = -1;
-        let muteGame = false; // replace ingame audio with uploaded audio
         // PRELOAD IMAGES
         let imgPreload = [];
         for (let i of ['parallax.bmp','noparallax.bmp']) {
             const img = new Image();
             img.src = i;
             imgPreload.push(img);
-        }
+        };
         for (let blocks of ['a','b','c','d']) {
             for (let spikes of ['a','b','c']) {
                 for (let slopes of ['a','none']) {
                     const img = new Image();
                     img.src = `tilesets/Blocks${blocks}Spikes${spikes}SawsaSlopes${slopes}.png`;
                     imgPreload.push(img);
-                }}}
+                }}};
         for (let i = 0; i < 128; i++) {
             if (spriteFrames[i]) {
                 for (let j = 0; j < spriteFrames[i]; j++) {
                     const img = new Image();
                     img.src = `sprites/${i}_${j}.png`;
                     imgPreload.push(img);
-                }}}
+                }}};
+
         let mousepos = [0,0];
+        let drag = [0,0,0,0];
+        let mouseState = 0; // 0=none, 1=left, 2=right
         document.addEventListener('mousemove', (e)=>{
             if (mouseState == 3) {
                 let deltaX = e.clientX-mousepos[0];
@@ -732,7 +736,6 @@
             draw();
         });
 
-        let mouseState = 0; // 0=none, 1=left, 2=right
         gid('triangleLeft').addEventListener('click', ()=>{
             gid(`tc${openTab}`).scrollTop -= 219;
         });
@@ -761,7 +764,13 @@
                 gid('play').textContent = '▶️';
                 levelSong.pause();
             } else {
-                await buildMain();
+                let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options]);
+                if (currentState==compiledState) {
+                    nes.reloadROM();
+                } else {
+                    compiledState = currentState;
+                    await buildMain();
+                };
                 playtesting = true;
                 gid('play').textContent = '⏸️';
             }
@@ -2149,7 +2158,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             if (firstRun) pyodidePromise = loadPyodide();
             pyodide = await pyodidePromise;
             if (firstRun) await loadProjectInto(pyodide);
-            log('Exporting level...');
+            log('Compiling level...');
 
             setProgress(0);
             await pyodide.loadPackage('micropip');
