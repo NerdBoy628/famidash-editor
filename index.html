@@ -343,6 +343,7 @@
     <canvas hidden id="tilesetCanvas" width=256 height=256></canvas>
     <canvas hidden id="attemptCanvas" width=119 height=8></canvas>
     <canvas hidden id="gameCanvas" width=256 height=240></canvas>
+    <canvas hidden id="webglCanvas"></canvas>
     <button id="undo" class="roundButton" style="left: 30px; top: 30px">↩️</button>
     <button id="redo" class="roundButton" style="left: 150px; top: 30px">↪️</button>
     <button class="roundButton grayButton" style="left: 270px; top: 30px" id="btn-1">🗑</button>
@@ -1617,75 +1618,260 @@
             saveHistory(); draw();
         };
 
+        const ShaderProcessor = (function() { // made with ai because i don't know how shaders work
+            const gl = gid('webglCanvas').getContext('webgl', { premultipliedAlpha: false });
+
+            const vsSource = `
+                attribute vec2 a_position;
+                attribute vec2 a_texCoord;
+                varying vec2 v_texCoord;
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                    v_texCoord = a_texCoord;
+                }
+            `;
+
+            const fsSource = `
+                precision mediump float;
+                varying vec2 v_texCoord;
+                uniform sampler2D u_image;
+                uniform vec2 u_resolution;
+                
+                uniform int u_numColors;
+                uniform vec3 u_fromColors[8];
+                uniform vec3 u_toColors[8];
+                uniform int u_isAsteriskRule[8];
+                
+                uniform bool u_isTileset;
+
+                void main() {
+                    vec4 color = texture2D(u_image, v_texCoord);
+                    vec3 rgb = floor((color.rgb * 255.0) + 0.5);
+                    vec3 finalColor = rgb;
+                    float alpha = color.a;
+
+                    bool isAsterisk = false;
+                    if (u_isTileset) {
+                        float x = floor(v_texCoord.x * u_resolution.x);
+                        float y = floor(v_texCoord.y * u_resolution.y);
+                        
+                        if ((y < 16.0 && ((x >= 16.0 && x < 48.0) || (x >= 80.0 && x < 112.0))) ||
+                            (y >= 128.0 && y < 144.0 && x >= 128.0 && x < 160.0)) {
+                            isAsterisk = true;
+                        }
+                    }
+
+                    for (int i = 0; i < 8; i++) {
+                        if (i >= u_numColors) break;
+
+                        if (distance(rgb, u_fromColors[i]) < 1.0) {
+                            bool ruleMatches = !u_isTileset || (u_isAsteriskRule[i] == 1 && isAsterisk) || (u_isAsteriskRule[i] == 0 && !isAsterisk);
+                            if (ruleMatches) {
+                                finalColor = u_toColors[i];
+                                alpha = 1.0;
+                                break;
+                            }
+                        }
+                    }
+
+                    gl_FragColor = vec4(finalColor / 255.0, alpha);
+                }
+            `;
+
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                return shader;
+            }
+
+            const program = gl.createProgram();
+            gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vsSource));
+            gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fsSource));
+            gl.linkProgram(program);
+            gl.useProgram(program);
+
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                -1,  1,  0, 0,
+                -1, -1,  0, 1,
+                1,  1,  1, 0,
+                1, -1,  1, 1
+            ]), gl.STATIC_DRAW);
+
+            const posLoc = gl.getAttribLocation(program, "a_position");
+            const texLoc = gl.getAttribLocation(program, "a_texCoord");
+            gl.enableVertexAttribArray(posLoc);
+            gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0);
+            gl.enableVertexAttribArray(texLoc);
+            gl.vertexAttribPointer(texLoc, 2, gl.FLOAT, false, 16, 8);
+
+            const texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+            const locs = {
+                res: gl.getUniformLocation(program, "u_resolution"),
+                num: gl.getUniformLocation(program, "u_numColors"),
+                from: gl.getUniformLocation(program, "u_fromColors"),
+                to: gl.getUniformLocation(program, "u_toColors"),
+                ast: gl.getUniformLocation(program, "u_isAsteriskRule"),
+                tileset: gl.getUniformLocation(program, "u_isTileset")
+            };
+
+            return {
+                process: function(targetCtx, width, height, mappings, isTileset = false) {
+                    gid('webglCanvas').width = width;
+                    gid('webglCanvas').height = height;
+                    gl.viewport(0, 0, width, height);
+
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, targetCtx.canvas);
+
+                    const fromData = new Float32Array(24);
+                    const toData = new Float32Array(24);
+                    const astData = new Int32Array(8);
+
+                    for(let i=0; i<mappings.length; i++) {
+                        fromData[i*3] = mappings[i].from[0];
+                        fromData[i*3+1] = mappings[i].from[1];
+                        fromData[i*3+2] = mappings[i].from[2];
+                        
+                        toData[i*3] = mappings[i].to[0];
+                        toData[i*3+1] = mappings[i].to[1];
+                        toData[i*3+2] = mappings[i].to[2];
+
+                        astData[i] = mappings[i].asterisk ? 1 : 0;
+                    }
+
+                    gl.uniform2f(locs.res, width, height);
+                    gl.uniform1i(locs.num, mappings.length);
+                    gl.uniform3fv(locs.from, fromData);
+                    gl.uniform3fv(locs.to, toData);
+                    gl.uniform1iv(locs.ast, astData);
+                    gl.uniform1i(locs.tileset, isTileset ? 1 : 0);
+
+                    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+                    targetCtx.clearRect(0, 0, width, height);
+                    targetCtx.drawImage(gid('webglCanvas'), 0, 0);
+                }
+            };
+        })();
+
         function setColor(forceUpdate=false) {
             if (JSON.stringify(prevColors) == JSON.stringify([bgColor,groundColor,objColor]) && !forceUpdate) return; // i hate javascript list comparisons
-            function applyMap(data,tilesetMap=false) {
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-                    let key = `${r},${g},${b}`;
-                    if (tilesetMap) {
-                        if (i<16384&&(i%1024>=64&&i%1024<192||i%1024>=320&&i%1024<448) || i>131072&&i<147456&&i%1024>=512&&i%1024<640) {
-                            key = `${r},${g},${b}*`;
-                        };
-                    };
-                    if (map[key]) {
-                        const [nr, ng, nb] = map[key];
-                        data[i] = nr;
-                        data[i + 1] = ng;
-                        data[i + 2] = nb;
-                        data[i + 3] = 255;
-                    };
-                }
-                return data;
-            };
-            parallaxCtx.clearRect(0,0,144,72);
-            groundCtx.clearRect(0,0,64,128);
             tilesetCtx.clearRect(0,0,256,256);
-            attemptCtx.clearRect(0,0,119,8);
             parallaxCtx.drawImage(options[2]?noParallaxImg:parallaxImg,0,0);
             groundCtx.drawImage(groundImg,0,0);
             tilesetCtx.drawImage(tileImg,0,0);
             attemptCtx.drawImage(attemptImg,0,0);
-            let map, imageData, data;
-            map = {
-                '0,0,0':bgColors[bgTriggers.indexOf(bgColor)][0],
-                '0,0,128':bgColors[bgTriggers.indexOf(bgColor)][1],
-            };
-            imageData = parallaxCtx.getImageData(0,0,144,72);
-            imageData.data = applyMap(imageData.data);
-            parallaxCtx.putImageData(imageData, 0, 0);
+            if (window.WebGLRenderingContext) {
+                const bgCurrent = bgColors[bgTriggers.indexOf(bgColor)];
+                const groundCurrent = bgColors[bgTriggers.indexOf(groundColor)];
+                const objCurrent = objColors[objColor - 176];
 
-            map = {
-                '0,0,255':bgColors[bgTriggers.indexOf(groundColor)][0],
-                '0,31,157':bgColors[bgTriggers.indexOf(groundColor)][1],
-                '255,255,255':objColors[objColor-176],
-            };
-            imageData = groundCtx.getImageData(0,0,64,128);
-            imageData.data = applyMap(imageData.data);
-            groundCtx.putImageData(imageData, 0, 0);
+                ShaderProcessor.process(
+                    parallaxCtx, 144, 72, 
+                    [
+                        { from: [0, 0, 0],   to: bgCurrent[0], asterisk: false },
+                        { from: [0, 0, 128], to: bgCurrent[1], asterisk: false }
+                    ]
+                );
+                ShaderProcessor.process(
+                    groundCtx, 64, 128, 
+                    [
+                        { from: [0, 0, 255],     to: groundCurrent[0], asterisk: false },
+                        { from: [0, 31, 157],    to: groundCurrent[1], asterisk: false },
+                        { from: [255, 255, 255], to: objCurrent,       asterisk: false }
+                    ]
+                );
+                ShaderProcessor.process(
+                    tilesetCtx, 256, 256, 
+                    [
+                        { from: [0, 66, 198],    to: bgCurrent[0],     asterisk: false },
+                        { from: [0, 16, 132],    to: bgCurrent[1],     asterisk: false },
+                        { from: [239, 239, 239], to: objCurrent,       asterisk: false },
+                        
+                        { from: [0, 66, 198],    to: groundCurrent[0], asterisk: true },
+                        { from: [0, 16, 132],    to: groundCurrent[1], asterisk: true },
+                        { from: [239, 239, 239], to: objCurrent,       asterisk: true }
+                    ], 
+                    true
+                );
+                ShaderProcessor.process(
+                    attemptCtx, 119, 8, 
+                    [
+                        { from: [20, 18, 167],   to: bgCurrent[0], asterisk: false },
+                        { from: [66, 64, 255],   to: bgCurrent[1], asterisk: false },
+                        { from: [255, 254, 255], to: objCurrent,   asterisk: false }
+                    ]
+                );
+            } else {
+                function applyMap(data,tilesetMap=false) {
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+                        let key = `${r},${g},${b}`;
+                        if (tilesetMap) {
+                            if (i<16384&&(i%1024>=64&&i%1024<192||i%1024>=320&&i%1024<448) || i>131072&&i<147456&&i%1024>=512&&i%1024<640) {
+                                key = `${r},${g},${b}*`;
+                            };
+                        };
+                        if (map[key]) {
+                            const [nr, ng, nb] = map[key];
+                            data[i] = nr;
+                            data[i + 1] = ng;
+                            data[i + 2] = nb;
+                            data[i + 3] = 255;
+                        };
+                    }
+                    return data;
+                };
+                let map, imageData, data;
+                map = {
+                    '0,0,0':bgColors[bgTriggers.indexOf(bgColor)][0],
+                    '0,0,128':bgColors[bgTriggers.indexOf(bgColor)][1],
+                };
+                imageData = parallaxCtx.getImageData(0,0,144,72);
+                imageData.data = applyMap(imageData.data);
+                parallaxCtx.putImageData(imageData, 0, 0);
 
-            map = {
-                '0,66,198':bgColors[bgTriggers.indexOf(bgColor)][0],
-                '0,16,132':bgColors[bgTriggers.indexOf(bgColor)][1],
-                '0,66,198*':bgColors[bgTriggers.indexOf(groundColor)][0],
-                '0,16,132*':bgColors[bgTriggers.indexOf(groundColor)][1],
-                '239,239,239':objColors[objColor-176],
-                '239,239,239*':objColors[objColor-176],
-            };
-            imageData = tilesetCtx.getImageData(0,0,256,256);
-            imageData.data = applyMap(imageData.data,true);
-            tilesetCtx.putImageData(imageData, 0, 0);
+                map = {
+                    '0,0,255':bgColors[bgTriggers.indexOf(groundColor)][0],
+                    '0,31,157':bgColors[bgTriggers.indexOf(groundColor)][1],
+                    '255,255,255':objColors[objColor-176],
+                };
+                imageData = groundCtx.getImageData(0,0,64,128);
+                imageData.data = applyMap(imageData.data);
+                groundCtx.putImageData(imageData, 0, 0);
 
-            map = {
-                '20,18,167':bgColors[bgTriggers.indexOf(bgColor)][0],
-                '66,64,255':bgColors[bgTriggers.indexOf(bgColor)][1],
-                '255,254,255':objColors[objColor-176],
-            }
-            imageData = attemptCtx.getImageData(0,0,119,8);
-            imageData.data = applyMap(imageData.data);
-            attemptCtx.putImageData(imageData, 0, 0);
+                map = {
+                    '0,66,198':bgColors[bgTriggers.indexOf(bgColor)][0],
+                    '0,16,132':bgColors[bgTriggers.indexOf(bgColor)][1],
+                    '0,66,198*':bgColors[bgTriggers.indexOf(groundColor)][0],
+                    '0,16,132*':bgColors[bgTriggers.indexOf(groundColor)][1],
+                    '239,239,239':objColors[objColor-176],
+                    '239,239,239*':objColors[objColor-176],
+                };
+                imageData = tilesetCtx.getImageData(0,0,256,256);
+                imageData.data = applyMap(imageData.data,true);
+                tilesetCtx.putImageData(imageData, 0, 0);
+
+                map = {
+                    '20,18,167':bgColors[bgTriggers.indexOf(bgColor)][0],
+                    '66,64,255':bgColors[bgTriggers.indexOf(bgColor)][1],
+                    '255,254,255':objColors[objColor-176],
+                }
+                imageData = attemptCtx.getImageData(0,0,119,8);
+                imageData.data = applyMap(imageData.data);
+                attemptCtx.putImageData(imageData, 0, 0);
+            };
             prevColors = [bgColor,groundColor,objColor];
 
             setBgCtx.drawImage(colorsImg,0,0,280,70);
