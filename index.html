@@ -41,11 +41,6 @@
             color: white;
             font-size: 20px;
             text-shadow: 0 0 2px black;
-            background-color: #969696;
-            border-left: 3px solid #c4c4c4;
-            border-top: 3px solid #c4c4c4;
-            border-right: 3px solid #5a5a5a;
-            border-bottom: 3px solid #5a5a5a;
             border-radius: 10px;
             padding: 5px;
         }
@@ -247,13 +242,6 @@
             border-right: 5px solid #0aa;
             border-bottom: 5px solid #0aa;
         }
-        #toolsContainer > .cyanButton {
-            background-color: #0dd;
-            border-left: 5px solid #5fe;
-            border-top: 5px solid #5fe;
-            border-right: 5px solid #0aa;
-            border-bottom: 5px solid #0aa;
-        }
         .menuPopup {
             position: absolute;
             overflow: scroll;
@@ -292,11 +280,6 @@
             color: white;
             font-size: 20px;
             text-shadow: 0 0 2px black;
-            background-color: #969696;
-            border-left: 3px solid #c4c4c4;
-            border-top: 3px solid #c4c4c4;
-            border-right: 3px solid #5a5a5a;
-            border-bottom: 3px solid #5a5a5a;
             border-radius: 10px;
             padding: 5px;
         }
@@ -372,7 +355,7 @@
             <button id="moveTool" class="toolButton">MOVE<br>👆</button>
             <button id="structureTool" class="toolButton" style="width: 150px">
                 STRUCTURE<br>
-                <select id="structureType">
+                <select id="structureType" class="grayButton">
                     <option value=32>A</option>
                     <option value=64>B</option>
                     <option value=96>C</option>
@@ -465,7 +448,7 @@
             <h2 id="starsLabel">Stars: 3</h2>
             <input type="range" id="setStars" min="1" max="15" value="3" step="1">
             <h2>Difficulty:</h2>
-            <select id="setDifficulty">
+            <select id="setDifficulty" class="grayButton">
                 <option value="AUTO">Auto</option>
                 <option value="EASY">Easy</option>
                 <option value="NORMAL" selected>Normal</option>
@@ -479,8 +462,8 @@
             <h2>Lower Text:</h2>
             <input type="text" id="setLowerText" maxlength=15 style="font-family: Pusab; text-align: center; width: 220px;" value="NAME">
             <h2>Song:</h2>
-            <select id="songSelect" style="width: 200px"></select><br>
-            <button id="audioLoadButton" onclick="gid('audioLoad').click()">Upload...</button>
+            <select id="songSelect" class="grayButton" style="width: 200px"></select><br>
+            <button id="audioLoadButton" class="grayButton" onclick="gid('audioLoad').click()">Upload...</button>
             <input type="file" id="audioLoad" accept="audio/*" hidden>
             <br><br>
             <button id="saveMetadata" class="smallButton" style="width: 220px; height: 25px;">Copy to Clipboard</button><br>
@@ -513,7 +496,7 @@
     <div id="loadingPopup" class="menuPopup smallPopup" style="display: none">Loading...</div>
     <div id="metadataPopup" class="menuPopup smallPopup" style="display: none">
         Select Metadata to Load:
-        <br><select id="metadataSelect"></select><br>
+        <br><select id="metadataSelect" class="grayButton"></select><br>
     </div>
     <input type="file" id="fileLoad" accept=".tmx,.xml" hidden>
     <script src="fdcompiler/cc65.js"></script>
