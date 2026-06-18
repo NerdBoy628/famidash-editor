@@ -32,6 +32,7 @@
             height: calc(100vh - 240px);
         }
         img {
+            -webkit-user-drag: none;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             -ms-interpolation-mode: nearest-neighbor;
@@ -57,7 +58,7 @@
             border-bottom: 3px solid #222;
             border-radius: 10px;
         }
-        .roundButton, .rectButton {
+        .rectButton {
             font-family: Pusab;
             color: white;
             font-size: 40px;
@@ -65,22 +66,27 @@
             position: absolute;
             width: 75px;
             height: 75px;
+            font-size: 30px;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
             background-color: #78dc2e;
             border-left: 5px solid #c3f047;
             border-top: 5px solid #c3f047;
             border-right: 5px solid #498519;
             border-bottom: 5px solid #498519;
             box-shadow: 0 0 0 5px black, 0 0 0 9px white, 5px 5px 5px #000b;
-            border-radius: 100px;
             transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
         }
-        .roundButton:active, .rectButton:active, .toolButton:active, .smallButton:active { transform: scale(1.08) }
-        .rectButton {
-            font-size: 30px;
-            width: 100px;
-            height: 100px;
-            border-radius: 10px;
+        .roundButtonImg {
+            position: absolute;
+            image-rendering: initial;
+            image-rendering: initial;
+            -ms-interpolation-mode: initial;
+            width: 96px;
+            transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
         }
+        .roundButtonImg:active, .rectButton:active, .toolButton:active, .smallButton:active { transform: scale(1.08) }
         .smallButton {
             font-family: Pusab;
             color: white;
@@ -304,19 +310,23 @@
             padding-top: 10px;
         }
         #saveContainer {
-            transition: all 0.3s ease-in-out;
-            border-radius: 38px;
-            width: 65px;
-            height: 65px;
-            text-align: center;
+            position: absolute;
             overflow: hidden;
+            display: grid;
+            align-content: center;
+            right: 188px;
+            top: 21px;
+            width: 0px;
+            height: 94px;
+            transition: width .5s ease;
         }
-        #saveContainer:hover {
-            border-radius: 10px;
-            width: 140px;
-            height: 80px;
+        .saveButton {
+            width: 120px;
+            height: 30px;
+            visibility: hidden;
+            opacity: 0%;
+            transition: all .5s ease;
         }
-        #saveContainer:active {transform: scale(1)}
     </style>
 </head>
 <body>
@@ -327,16 +337,16 @@
     <canvas hidden id="attemptCanvas" width=119 height=8></canvas>
     <canvas hidden id="gameCanvas" width=256 height=240></canvas>
     <canvas hidden id="webglCanvas"></canvas>
-    <button id="undo" class="roundButton" style="left: 30px; top: 30px">↩️</button>
-    <button id="redo" class="roundButton" style="left: 150px; top: 30px">↪️</button>
-    <button class="roundButton grayButton" style="left: 270px; top: 30px" id="btn-1">🗑</button>
-    <div id="saveContainer" class="roundButton" style="left: 30px; top: 150px">
-        <div id="saveIcon" style="position: absolute; left: 10px; top: 8px;">💾</div>
-        <button id="save" style="width: 120px; height: 30px; visibility: hidden;" class="smallButton grayButton">Save TMX</button>
-        <button id="load" style="width: 120px; height: 30px; visibility: hidden;" class="smallButton grayButton">Load TMX</button>
+    <img id="undo" class="roundButtonImg" src="ui/undo.png" style="left: 21px; top: 21px">
+    <img id="redo" class="roundButtonImg" src="ui/redo.png" style="left: 141px; top: 21px">
+    <img id="btn-1" class="roundButtonImg" src="ui/trash.png" style="left: 261px; top: 21px">
+    <div id="saveContainer">
+        <button id="save" class="smallButton grayButton saveButton">Save TMX</button>
+        <button id="load" class="smallButton grayButton saveButton">Load TMX</button>
     </div>
-    <button id="play" class="roundButton" style="left: 30px; top: 270px">▶️</button>
-    <button id="settingsButton" class="roundButton" style="right: 30px; top: 30px">⚙️</button>
+    <img id="saveIcon2" class="roundButtonImg" src="ui/save.png" style="right: 139px; top: 21px">
+    <img id="play" class="roundButtonImg" src="ui/play.png" style="left: 21px; top: 141px">
+    <img id="settingsButton" class="roundButtonImg" src="ui/gear.png" style="right: 19px; top: 21px">
     <div class="bottomContainer">
         <button id="buildButton" class="rectButton cyanButton" style="left: 30px; top: 30px; width: 180px; height: 80px">BUILD</button>
         <button id="toolsButton" class="rectButton" style="left: 30px; top: 140px; width: 180px; height: 80px">TOOLS</button>
@@ -718,6 +728,11 @@
             [drag[2],drag[3]] = mousepos;
             if (tool==0 && mouseState==1) placeBlock();
             draw();
+            if (mousepos[1]>125) {
+                gid('save').style.visibility = gid('load').style.visibility = 'hidden';
+                gid('save').style.opacity = gid('load').style.opacity = '0%';
+                gid('saveContainer').style.width = '0px';
+            };
         });
 
         gid('triangleLeft').addEventListener('click', ()=>{
@@ -729,15 +744,16 @@
         gid('btn-1').addEventListener('click', ()=>{selectTile(-1)});
         gid('undo').addEventListener('click', undo);
         gid('redo').addEventListener('click', redo);
-        gid('saveContainer').addEventListener('mouseenter', ()=>{
-            gid('saveIcon').style.visibility = 'hidden';
-            gid('save').style.visibility = 'visible';
-            gid('load').style.visibility = 'visible';
-        });
-        gid('saveContainer').addEventListener('mouseleave', ()=>{
-            gid('saveIcon').style.visibility = 'visible';
-            gid('save').style.visibility = 'hidden';
-            gid('load').style.visibility = 'hidden';
+        gid('saveIcon2').addEventListener('click', ()=>{
+            if (gid('saveContainer').style.width == '0px') {
+                gid('save').style.visibility = gid('load').style.visibility = 'visible';
+                gid('save').style.opacity = gid('load').style.opacity = '100%';
+                gid('saveContainer').style.width = '200px';
+            } else {
+                gid('save').style.visibility = gid('load').style.visibility = 'hidden';
+                gid('save').style.opacity = gid('load').style.opacity = '0%';
+                gid('saveContainer').style.width = '0px';
+            }
         });
         gid('save').addEventListener('click', save);
         gid('load').addEventListener('click', ()=>{gid('fileLoad').click()});
@@ -745,7 +761,7 @@
         gid('play').addEventListener('click', async ()=>{
             if (playtesting) {
                 playtesting = false;
-                gid('play').textContent = '▶️';
+                gid('play').src = 'ui/play.png';
                 levelSong.pause();
             } else {
                 let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options]);
@@ -756,7 +772,7 @@
                     await buildMain();
                 };
                 playtesting = true;
-                gid('play').textContent = '⏸️';
+                gid('play').src = 'ui/pause.png';
             }
         });
         gid('buildButton').addEventListener('click', ()=>{
