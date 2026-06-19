@@ -951,16 +951,25 @@
             [drag[0],drag[1]] = mousepos;
             if (e.button == 0) {
                 mouseState = 1;
-                if (tool==0 || selectionGrid) {placeBlock()} else {
+                if ((tool==0 || selectionGrid) && tool!=5) {placeBlock()} else {
                     if (tool==5) {
-                        let coords = dispToGrid(drag[0],drag[1]);
-                        selectedTile = ((selectedTile>255)?spriteGrid:tileGrid)[coords[1]][coords[0]]+256*(selectedTile>255);
-                        if (e.shiftKey) {shiftingSprite = coords} else {
-                            ((selectedTile>255)?spriteGrid:tileGrid)[coords[1]][coords[0]] = (selectedTile>255)?-1:0;
-                        }
-                    };
-                    if (tool==6) structure();
-                }
+                        let pos = dispToGrid(drag[0],drag[1]);
+                        if (selectionGrid) {
+                            for (let y = selectedArea[1]; y <= selectedArea[3]; y++) {
+                                for (let x = selectedArea[0]; x <= selectedArea[2]; x++) {
+                                    tileGrid[y][x] = 0;
+                                    spriteGrid[y][x] = -1;
+                                };
+                            };
+                        } else {
+                            let movingSprite = spriteGrid[pos[1]][pos[0]]!=-1;
+                            selectedTile = (movingSprite?spriteGrid:tileGrid)[pos[1]][pos[0]]+256*movingSprite;
+                            if (e.shiftKey) {shiftingSprite = pos} else {
+                                (movingSprite?spriteGrid:tileGrid)[pos[1]][pos[0]] = movingSprite?-1:0;
+                            };
+                        };
+                    } else if (tool==6) structure();
+                };
                 draw();
             };
             if (e.button == 2) {
@@ -969,30 +978,38 @@
             };
             if (e.button == 1) {
                 mouseState = 3;
-            }
+            };
         }, {passive: false});
         canvas.addEventListener('mouseup', (e)=>{
-            if (mouseState==1 && tool>0 && tool<5 && !selectionGrid) {drawShape(); draw()};
-            if (mouseState==1 && tool==5 && !selectionGrid) {
-                if (shiftingSprite && spriteGrid[shiftingSprite[1]][shiftingSprite[0]]!=-1) {
-                    result = [JSON.stringify(shiftingSprite),
-                        [Math.max(-16,Math.min(Math.floor((drag[2]-drag[0])/camera.z/cellSize*16),16)),
-                        Math.max(-16,Math.min(Math.floor((drag[3]-drag[1])/camera.z/cellSize*16),16))]
-                    ]
-                    idx = options[14].findIndex(i=>i[0]==JSON.stringify(shiftingSprite));
-                    if (idx>-1) {
-                        options[14][idx] = result
+            if (mouseState==1) {
+                if (tool>0 && tool<5 && !selectionGrid) {drawShape(); draw()};
+                if (tool==5) {
+                    if (selectionGrid) {
+                        placeBlock();
+                        let pos = dispToGrid(mousepos[0],mousepos[1]);
+                        selectedArea = [pos[0],pos[1],pos[0]+selectionGrid[0][0].length-1,pos[1]+selectionGrid[0].length-1];
+                        draw();
                     } else {
-                        options[14].push(result);
-                    }
-                    updateJson(14,options[14]);
-                } else {
-                    placeBlock();
-                }
-                draw();
-                shiftingSprite = false;
-            };
-            if (mouseState==2) {
+                        if (shiftingSprite && spriteGrid[shiftingSprite[1]][shiftingSprite[0]]!=-1) {
+                            result = [JSON.stringify(shiftingSprite),
+                                [Math.max(-16,Math.min(Math.floor((drag[2]-drag[0])/camera.z/cellSize*16),16)),
+                                Math.max(-16,Math.min(Math.floor((drag[3]-drag[1])/camera.z/cellSize*16),16))]
+                            ];
+                            idx = options[14].findIndex(i=>i[0]==JSON.stringify(shiftingSprite));
+                            if (idx>-1) {
+                                options[14][idx] = result
+                            } else {
+                                options[14].push(result);
+                            };
+                            updateJson(14,options[14]);
+                        } else {
+                            placeBlock();
+                        };
+                        draw();
+                        shiftingSprite = false;
+                    };
+                };
+            } else if (mouseState==2) {
                 let coords = dispToGrid(drag[0],drag[1]);
                 let newCoords = dispToGrid(drag[2],drag[3]);
                 if (coords[0] == newCoords[0] && coords[1] == newCoords[1]) {
@@ -1003,25 +1020,27 @@
                     } else if (bgTile != 0 && spriteTile == -1) {
                         selectTile(bgTile);
                     } else if (bgTile == 0 && spriteTile == -1) {
-                        selectTile((selectedTile>255||selectedTile==-1)?-1:0);
+                        selectTile(-1);
                     } else {
                         let newTile = ((selectedTile>255||selectedTile==-1)?spriteGrid:tileGrid)[coords[1]][coords[0]] + (selectedTile>255)*256;
                         selectTile(newTile);
                     }
                 } else {
                     selectedArea = [...coords,...newCoords];
-                    selectionGrid = [];
+                    selectionGrid = [[],[]];
                     let [x0,y0,x1,y1] = selectedArea;
                     if (x0>x1) [x0,x1] = [x1,x0];
                     if (y0>y1) [y0,y1] = [y1,y0];
                     selectedArea = [x0,y0,x1,y1];
                     for (let y = y0; y <= y1; y++) {
-                        selectionGrid.push([]);
+                        selectionGrid[0].push([]);
+                        selectionGrid[1].push([]);
                         for (let x = x0; x <= x1; x++) {
-                            selectionGrid[y-y0].push(((selectedTile>255)?spriteGrid:tileGrid)[y][x]);
-                        }
-                    }
-                }
+                            selectionGrid[0][y-y0].push(tileGrid[y][x]);
+                            selectionGrid[1][y-y0].push(spriteGrid[y][x]);
+                        };
+                    };
+                };
             };
             mouseState = 0;
             saveHistory();
@@ -1127,7 +1146,7 @@
                 addButtons([17,26,27,28,18,29,30,31,244,245,246,249,250,251,193,194,195,196,240,241,242,243,24,23,94,95,92,93,130,131,59,12,13,133,134,135,138,139],2,17); // spikes
                 addButtons([125,127,4,8,9,10,11,116,117,118,119,120,121,122,123,124],3,125); // saws
                 if (options[2]) addButtons([144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,215,216],4,144); // slopes
-                addButtons([0,7,19,20,14,15,132,197,198,203,204,205,206,207,208,209,210,52,53,54,232,233,234,142,235,236,237,238,239,128,129,212,213,214],5,197); // deco
+                addButtons([7,19,20,14,15,132,197,198,203,204,205,206,207,208,209,210,52,53,54,232,233,234,142,235,236,237,238,239,128,129,212,213,214],5,197); // deco
                 addButtons([176,177,178,179,180,181,182,183,184,185,186,187,188,189,211,168,169,170,171,172,173,174,175,190,191,192,227,223,254,255],6,211); // miniblocks
                 addButtons([143,217,218,219,220,221,222,224,225,226,228,229,230,231,252,253],7,252); // customcollision
                 addButtons([
@@ -1221,7 +1240,7 @@
                     ctx.stroke();
                     if (camera.y+i*cellSize*camera.z>canvas.height) break;
                 };
-            }
+            };
             for (let x = 0; x < gridSize[0]; x++) {
                 if (camera.x+x*cellSize*camera.z<-cellSize*camera.z) continue;
                 if (camera.x+x*cellSize*camera.z>canvas.width) break;
@@ -1273,13 +1292,13 @@
                                 1, 16*(spriteGrid[y][x]%16), 16*Math.floor(spriteGrid[y][x]/16),
                                 (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
                             );
-                        }
-                    }
-                }
-            }
+                        };
+                    };
+                };
+            };
             if (prefs[2]) {
                 ctx.drawImage(attemptCanvas, camera.x+3*cellSize*camera.z, camera.y+(gridSize[1]-4.5)*cellSize*camera.z, 7.4375*cellSize*camera.z, .5*cellSize*camera.z);
-            }
+            };
             ctx.globalAlpha = 0.5;
             if (!selectionGrid && !(tool==5 && mouseState!=1) && (tool<4 || tool==5)) {
                 if (shiftingSprite) {
@@ -1294,27 +1313,28 @@
                         Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
                         Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
                     );
-                }
+                };
             } else if (tool==4 && mouseState==0) {
                 drawCell(
                     0, 0, 144,
                     Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
                     Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
                 );
-            } else if (tool==6) {
-                
-            } else {
-                for (let y = 0; y < selectionGrid.length; y++) {
-                    for (let x = 0; x < selectionGrid[y].length; x++) {
-                        if (selectionGrid[y][x]) {
-                            drawCell(
-                                (selectedTile>255)?1:0, 16*(selectionGrid[y][x]%16), 16*(Math.floor(selectionGrid[y][x]/16)),
-                                (Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)+x)*cellSize*camera.z+camera.x,
-                                (Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)+y)*cellSize*camera.z+camera.y,
-                            )
-                        }
-                    }
-                }
+            } else if (tool==6) { // do nothing
+            } else if (selectionGrid && (tool==0 || (tool==5 && mouseState==1))) {
+                for (let i = 0; i < 2; i++) {
+                    for (let y = 0; y < selectionGrid[i].length; y++) {
+                        for (let x = 0; x < selectionGrid[i][y].length; x++) {
+                            if (selectionGrid[i][y][x]) {
+                                drawCell(
+                                    i, 16*(selectionGrid[i][y][x]%16), 16*(Math.floor(selectionGrid[i][y][x]/16)),
+                                    (Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)+x)*cellSize*camera.z+camera.x,
+                                    (Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)+y)*cellSize*camera.z+camera.y,
+                                );
+                            };
+                        };
+                    };
+                };
             };
             if (selectionGrid && !playtesting) {
                 ctx.globalAlpha = 0.3;
@@ -1360,13 +1380,15 @@
 
         function placeBlock(pos=false,tile=selectedTile%256) {
             if (selectionGrid) {
-                for (let y = 0; y < selectionGrid.length; y++) {
-                    for (let x = 0; x < selectionGrid[y].length; x++) {
-                        let pos = dispToGrid(mousepos[0],mousepos[1]);
-                        if (pos[0]+x < 0 || pos[1]+y < 0 || pos[0]+x >= gridSize[0] || pos[1]+y >= gridSize[1]) continue;
-                        ((selectedTile>255)?spriteGrid:tileGrid)[pos[1]+y][pos[0]+x] = selectionGrid[y][x]
-                    }
-                }
+                for (let i = 0; i < 2; i++) {
+                    for (let y = 0; y < selectionGrid[i].length; y++) {
+                        for (let x = 0; x < selectionGrid[i][y].length; x++) {
+                            let pos = dispToGrid(mousepos[0],mousepos[1]);
+                            if (pos[0]+x < 0 || pos[1]+y < 0 || pos[0]+x >= gridSize[0] || pos[1]+y >= gridSize[1]) continue;
+                            (i?spriteGrid:tileGrid)[pos[1]+y][pos[0]+x] = selectionGrid[i][y][x];
+                        };
+                    };
+                };
             } else {
                 let [x,y] = dispToGrid(mousepos[0],mousepos[1]);
                 if (pos) [x,y] = pos;
