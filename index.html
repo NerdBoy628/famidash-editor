@@ -323,7 +323,7 @@
         .saveButton {
             width: 120px;
             height: 30px;
-            visibility: hidden;
+            position: absolute;
             opacity: 0%;
             transition: all .5s ease;
         }
@@ -352,10 +352,11 @@
     <img id="redo" class="roundButtonImg" src="ui/redo.png" style="left: 141px; top: 21px">
     <img id="btn-1" class="roundButtonImg" src="ui/trash.png" style="left: 261px; top: 21px">
     <div id="saveContainer">
-        <button id="save" class="smallButton grayButton saveButton">Save TMX</button>
-        <button id="load" class="smallButton grayButton saveButton">Load TMX</button>
+        <button id="exportRom" class="smallButton grayButton saveButton" style="left: 0px; top: 7px; height: 70px">Export ROM</button>
+        <button id="save" class="smallButton grayButton saveButton" style="left: 130px; top: 7px">Save TMX</button>
+        <button id="load" class="smallButton grayButton saveButton" style="left: 130px; top: 47px">Load TMX</button>
     </div>
-    <img id="saveIcon2" class="roundButtonImg" src="ui/save.png" style="right: 139px; top: 21px">
+    <img id="saveIcon" class="roundButtonImg" src="ui/save.png" style="right: 139px; top: 21px">
     <img id="play" class="roundButtonImg" src="ui/play.png" style="left: 21px; top: 141px">
     <img id="settingsButton" class="roundButtonImg" src="ui/gear.png" style="right: 19px; top: 21px">
     <div class="bottomContainer">
@@ -745,8 +746,6 @@
             if (tool==0 && mouseState==1) placeBlock();
             draw();
             if (mousepos[1]>125) {
-                gid('save').style.visibility = gid('load').style.visibility = 'hidden';
-                gid('save').style.opacity = gid('load').style.opacity = '0%';
                 gid('saveContainer').style.width = '0px';
             };
         });
@@ -777,20 +776,34 @@
         gid('btn-1').addEventListener('click', ()=>{selectTile(-1)});
         gid('undo').addEventListener('click', undo);
         gid('redo').addEventListener('click', redo);
-        gid('saveIcon2').addEventListener('click', ()=>{
+        gid('saveIcon').addEventListener('click', ()=>{
             if (gid('saveContainer').style.width == '0px') {
-                gid('save').style.visibility = gid('load').style.visibility = 'visible';
-                gid('save').style.opacity = gid('load').style.opacity = '100%';
-                gid('saveContainer').style.width = '200px';
+                gid('save').style.opacity = gid('load').style.opacity = gid('exportRom').style.opacity = '100%';
+                gid('saveContainer').style.width = '320px';
             } else {
-                gid('save').style.visibility = gid('load').style.visibility = 'hidden';
-                gid('save').style.opacity = gid('load').style.opacity = '0%';
+                gid('save').style.opacity = gid('load').style.opacity = gid('exportRom').style.opacity = '0%';
                 gid('saveContainer').style.width = '0px';
             }
         });
         gid('save').addEventListener('click', save);
         gid('load').addEventListener('click', ()=>{gid('fileLoad').click()});
         gid('fileLoad').addEventListener('change', (e)=>{load(e.target.files[0])});
+        gid('exportRom').addEventListener('click', async ()=>{
+            let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options]);
+            if (currentState!=compiledState) {
+                compiledState = currentState;
+                await buildMain(true);
+            };
+            const url = URL.createObjectURL(new Blob([nes.romData], { type: 'application/octet-stream' }));
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'famidash.nes';
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
         gid('play').addEventListener('click', async ()=>{
             if (playtesting) {
                 playtesting = false;
@@ -2087,7 +2100,7 @@ ${spriteData.slice(1,-1)}
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-            }
+            };
         };
 
         function load(data) {
