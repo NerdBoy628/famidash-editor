@@ -1082,7 +1082,8 @@
                     } else if (bgTile == 0 && spriteTile == -1) {
                         selectTile(-1);
                     } else {
-                        let newTile = ((selectedTile>255||selectedTile==-1)?spriteGrid:tileGrid)[coords[1]][coords[0]] + (selectedTile>255)*256;
+                        let selectingSprite = spriteGrid[coords[1]][coords[0]]!=-1;
+                        let newTile = (selectingSprite?spriteGrid:tileGrid)[coords[1]][coords[0]] + selectingSprite*256;
                         selectTile(newTile);
                     }
                 } else {
