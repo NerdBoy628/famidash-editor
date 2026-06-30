@@ -399,9 +399,13 @@
                 <th><button onclick="shiftGrid(1,0)">→</button></th>
                 </tr></table>
             </div>
-            <div class="toolButton" style="transition: none; transform: none; width: 150px; height: 80px; text-align: center">
-                <button class="smallButton grayButton" onclick="tool = 7" style="width: 140px; height: 30px">Insert Row</button>
-                <button class="smallButton grayButton" onclick="tool = 8" style="width: 140px; height: 30px; font-size: 16px">Insert Column</button>
+            <div id="insertTool" class="toolButton" style="width: 150px; height: 80px; text-align: center">
+                <select id="insertType" class="grayButton" style="text-wrap: wrap; text-align: center; width: 120px; height: 60px; margin-top: 7px">
+                    <option value=0>Insert Row</option>
+                    <option value=1>Insert Column</option>
+                    <option value=2>Delete Row</option>
+                    <option value=3>Delete Column</option>
+                </select>
             </div>
             <button id="clearButton" class="toolButton">Clear<br>🔄</button>
         </div>
@@ -572,7 +576,7 @@
         let fileHandle, autosaveTimeout;
         let compiledState = false; //editor state from when game was last compiled, don't recompile if identical to current state
         let openTab = 0;
-        let tool = 0; //pen, line, rect, fill, move, slope, structure, insert row, insert col
+        let tool = 0; //pen, line, rect, fill, move, slope, structure, insert
         let camera = {x: 40, y: -1650+window.innerHeight, z: 1.01};
         let selectedTile = 16;
         let selectionGrid = false;
@@ -858,9 +862,10 @@
         gid('slopeTool').addEventListener('click', ()=>{toolButton(4)});
         gid('moveTool').addEventListener('click', ()=>{toolButton(5)});
         gid('structureTool').addEventListener('click', ()=>{toolButton(6)});
+        gid('insertTool').addEventListener('click', ()=>{toolButton(7)});
         function toolButton(x) {
             tool = x;
-            const tools = ['pen','line','rect','fill','slope','move','structure'];
+            const tools = ['pen','line','rect','fill','slope','move','structure','insert'];
             for (let i of tools) {gid(`${i}Tool`).classList.remove('cyanButton')};
             gid(`${tools[tool]}Tool`).classList.add('cyanButton');
         };
@@ -1073,18 +1078,28 @@
                         shiftingSprite = false;
                     };
                 } else if (tool==7) {
-                    if (gridSize[1]==57) return;
-                    gridSize[1]++;
-                    let position = dispToGrid(0,mousepos[1]+camera.z*cellSize*.5)[1];
-                    tileGrid.splice(position, 0, new Array(gridSize[0]).fill(0));
-                    spriteGrid.splice(position, 0, new Array(gridSize[0]).fill(-1));
-                    [widthInput.value, heightInput.value] = gridSize;
-                    draw();
-                } else if (tool==8) {
-                    gridSize[0]++;
-                    let position = dispToGrid(mousepos[0]+camera.z*cellSize*.5,0)[0];
-                    tileGrid = tileGrid.map(row => row.toSpliced(position, 0, 0));
-                    spriteGrid = spriteGrid.map(row => row.toSpliced(position, 0, -1));
+                    if (gid('insertType').value==0) {
+                        if (gridSize[1]==57) return;
+                        gridSize[1]++;
+                        let position = dispToGrid(0,mousepos[1]+camera.z*cellSize*.5)[1];
+                        tileGrid.splice(position, 0, new Array(gridSize[0]).fill(0));
+                        spriteGrid.splice(position, 0, new Array(gridSize[0]).fill(-1));
+                    } else if (gid('insertType').value==1) {
+                        gridSize[0]++;
+                        let position = dispToGrid(mousepos[0]+camera.z*cellSize*.5,0)[0];
+                        tileGrid = tileGrid.map(row => row.toSpliced(position, 0, 0));
+                        spriteGrid = spriteGrid.map(row => row.toSpliced(position, 0, -1));
+                    } else if (gid('insertType').value==2) {
+                        gridSize[1]--;
+                        let position = dispToGrid(...mousepos)[1];
+                        tileGrid.splice(position, 1);
+                        spriteGrid.splice(position, 1);
+                    } else if (gid('insertType').value==3) {
+                        gridSize[0]--;
+                        let position = dispToGrid(...mousepos)[0];
+                        tileGrid = tileGrid.map(row => row.toSpliced(position, 1));
+                        spriteGrid = spriteGrid.map(row => row.toSpliced(position, 1));
+                    };
                     [widthInput.value, heightInput.value] = gridSize;
                     draw();
                 };
@@ -1398,18 +1413,34 @@
             };
             ctx.globalAlpha = 0.5;
             if (!isMobile) {
-                if (tool==7 || tool==8) {
-                    ctx.fillStyle = (tool==7 && gridSize[1]==57)?'#F40':'#04F';
-                    if (tool==7 && dispToGrid(...mousepos)[1]<gridSize[1] && dispToGrid(...mousepos)[1]>=0) {
+                if (tool==7) {
+                    ctx.fillStyle = (gid('insertType').value==0 && gridSize[1]==57)?'#F40':'#04F';
+                    if (dispToGrid(...mousepos)[0]>=gridSize[0] || dispToGrid(...mousepos)[0]<0
+                    || dispToGrid(...mousepos)[1]>=gridSize[1] || dispToGrid(...mousepos)[1]<0) {} //draw nothing if mouse is outside of grid
+                    else if (gid('insertType').value==0) {
                         ctx.fillRect(
                             Math.max(0,camera.x),
                             camera.y+(dispToGrid(0,mousepos[1]+camera.z*cellSize*.5)[1]-.5)*cellSize*camera.z,
                             Math.min((gridSize[0])*cellSize*camera.z+Math.min(0,camera.x),canvas.width),
                             cellSize*camera.z,
                         );
-                    } else if (tool==8 && dispToGrid(...mousepos)[0]<gridSize[0] && dispToGrid(...mousepos)[0]>=0) {
+                    } else if (gid('insertType').value==1) {
                         ctx.fillRect(
                             camera.x+(dispToGrid(mousepos[0]+camera.z*cellSize*.5,0)[0]-.5)*cellSize*camera.z,
+                            Math.max(0,camera.y),
+                            cellSize*camera.z,
+                            Math.min((gridSize[1])*cellSize*camera.z+Math.min(0,camera.y),canvas.height),
+                        );
+                    } else if (gid('insertType').value==2) {
+                        ctx.fillRect(
+                            Math.max(0,camera.x),
+                            camera.y+dispToGrid(0,mousepos[1])[1]*cellSize*camera.z,
+                            Math.min((gridSize[0])*cellSize*camera.z+Math.min(0,camera.x),canvas.width),
+                            cellSize*camera.z,
+                        );
+                    } else if (gid('insertType').value==3) {
+                        ctx.fillRect(
+                            camera.x+dispToGrid(mousepos[0],0)[0]*cellSize*camera.z,
                             Math.max(0,camera.y),
                             cellSize*camera.z,
                             Math.min((gridSize[1])*cellSize*camera.z+Math.min(0,camera.y),canvas.height),
