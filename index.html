@@ -845,7 +845,6 @@
             gid('swipeButton').hidden = false;
             gid('transformContainer').style.right = '120px';
             gid('transformContainer').style.width = '90px';
-            gid('play').hidden = true;
         };
         gid('swipeButton').addEventListener('click', ()=>{
             swiping = !swiping;
@@ -1170,6 +1169,9 @@
                 prevZoomDistance = pinchDist(e.touches[0], e.touches[1]);
                 initZoom = camera.z;
             } else {
+                if (playtesting) {
+                    document.dispatchEvent(new KeyboardEvent('keydown', {keyCode: 38}));
+                };
                 mousepos = [e.touches[0].clientX,e.touches[0].clientY];
                 [drag[2],drag[3]] = mousepos;
                 canvas.dispatchEvent(new MouseEvent('mousedown', {
@@ -1179,7 +1181,10 @@
                 }));
             };
         });
-        canvas.addEventListener('touchend', (e)=>{
+        canvas.addEventListener('touchend', ()=>{
+            if (playtesting) {
+                document.dispatchEvent(new KeyboardEvent('keyup', {keyCode: 38}));
+            };
             canvas.dispatchEvent(new MouseEvent('mouseup'));
         });
         document.addEventListener('keydown', (e)=>{
@@ -2459,12 +2464,13 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                     noInitialRun: true,
                 });
             } catch (err) {
+                gid('play').hidden = true; //not enough memory to compile
                 throw err;
-            }
+            };
 
             if (!cc65Module.FS || !ca65Module1.FS || !ca65Module2.FS || !ld65Module.FS) {
                 throw new Error('One of the modules does not expose FS()');
-            }
+            };
         };
 
         async function loadProjectInto(module) {
@@ -2482,19 +2488,18 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                 const file = zip.files[filename];
                 const fsPath = '/project/' + filename;
                 if (file.dir) {
-                    try { module.FS.mkdirTree(fsPath); } catch (e) {}
+                    try { module.FS.mkdirTree(fsPath); } catch (e) {};
                 } else {
                     const content = await file.async('uint8array');
                     const dir = fsPath.substring(0, fsPath.lastIndexOf('/'));
                     if (dir) {
-                        try { module.FS.mkdirTree(dir); } catch (e) {}
-                    }
+                        try { module.FS.mkdirTree(dir); } catch (e) {};
+                    };
                     module.FS.writeFile(fsPath, content);
-                }
+                };
                 idx++;
                 setProgress(idx / fileKeys.length);
-            }
-            //compileButton.style.backgroundImage = '';
+            };
         };
 
         function mirrorFS(fromModule, toModule, root = '/project') {
@@ -2508,18 +2513,18 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                     if (entry === '.' || entry === '..') continue;
                     const fullPath = path + '/' + entry;
                     let stat;
-                    try { stat = fromModule.FS.stat(fullPath); } catch (e) { continue; }
+                    try { stat = fromModule.FS.stat(fullPath); } catch (e) { continue };
                     if (fromModule.FS.isDir(stat.mode)) {
-                        try { toModule.FS.mkdirTree(fullPath); } catch (e) {}
+                        try { toModule.FS.mkdirTree(fullPath); } catch (e) {};
                         copyDir(fullPath);
                     } else {
                         const data = fromModule.FS.readFile(fullPath);
                         const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
-                        try { toModule.FS.mkdirTree(dir); } catch (e) {}
+                        try { toModule.FS.mkdirTree(dir) } catch (e) {};
                         toModule.FS.writeFile(fullPath, data);
-                    }
-                }
-            }
+                    };
+                };
+            };
 
             copyDir(root);
         };
@@ -2645,7 +2650,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                 scriptProcessor.connect(audioCtx.destination);
             }
 
-            const keys = (player, key, type, e=undefined) => {
+            const keys = (key, type, e=undefined) => {
                 const map = {
                     38: jsnes.Controller.BUTTON_UP,
                     40: jsnes.Controller.BUTTON_DOWN,
@@ -2658,7 +2663,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                 };
                 if (map[key] !== undefined) {
                     if (e) e.preventDefault();
-                    type === 'down' ? nes.buttonDown(player, map[key]) : nes.buttonUp(player, map[key]);
+                    type === 'down' ? nes.buttonDown(1, map[key]) : nes.buttonUp(1, map[key]);
                 };
                 if (e.key == '.') {if (type == 'down') {emulationSpeed = 2} else {emulationSpeed = 1}};
                 if (e.key == ',') {if (type == 'down') {emulationSpeed = .5} else {emulationSpeed = 1}};
@@ -2678,8 +2683,8 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                         if (audioQueue.length > 8192) audioQueue.shift();
                     }
                 });
-                document.addEventListener('keydown', (e) => {keys(1, e.keyCode, 'down', e)});
-                document.addEventListener('keyup', (e) => {keys(1, e.keyCode, 'up', e)});
+                document.addEventListener('keydown', (e) => {keys(e.keyCode, 'down', e)});
+                document.addEventListener('keyup', (e) => {keys(e.keyCode, 'up', e)});
             };
 
             if (!audioCtx) initAudio();
