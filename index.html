@@ -2321,7 +2321,7 @@ ${spriteData.slice(1,-1)}
                     if (cell>64 && cell<=84) tilesetsFound[0] = true;
                     if (cell>96 && cell<=116) tilesetsFound[1] = true;
                     if (cell>144 && cell<=164) tilesetsFound[2] = true;
-                    return Math.max(cell-1,0);
+                    return Math.max(cell%256-1,0);
                 }).slice(0,gridSize[0]));
                 spriteGrid = spriteData.map((row)=>row.split(',').map((cell)=>{
                     if ((cell>42 && cell<55)||(cell>55 && cell<65)||cell==75) spritesetsFound[0]++;
