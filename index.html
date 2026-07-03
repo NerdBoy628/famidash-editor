@@ -1646,11 +1646,19 @@
             if (prefs[2]) {
                 imageCtx.drawImage(attemptCanvas, 3*16, (gridSize[1]-4.5)*16, 7.4375*16, .5*16);
             };
-            const a = document.createElement('a');
-            a.href = imageCanvas.toDataURL('image/png');
-            a.download = 'level.png';
-            a.click();
             camera.z = prevCameraZ;
+            imageCanvas.toBlob((blob) => {
+                if (!blob) {
+                    alert('Export failed because the level is too big!')
+                } else {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url
+                    a.download = 'level.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+            }, 'image/png');
         };
 
         function placeBlock(pos=false,tile=selectedTile%256) {
