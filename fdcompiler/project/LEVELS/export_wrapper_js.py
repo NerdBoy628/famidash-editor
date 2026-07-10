@@ -12,7 +12,7 @@ metadataFileRegex = "lvlset_(.+)_metadata.json5"
 metadataFileGlob = "lvlset_*_metadata.json5"
 metadataFile = lambda lvlset: metadataPath / f"lvlset_{lvlset}_metadata.json5"
 outputFolder = lambda lvlset: own_path / "include" / f"lvlset_{lvlset}"
-csvFolder = lambda lvlset : own_path / "LEVEL DATA" / f"lvlset_{lvlset}"
+csvFolder = lambda lvlset : own_path / "LEVEL DATA" / f"lvlset_HUGE"
 innerScript = own_path / "export_levels_js.py"
 
 availableLevelSets = {re.findall(metadataFileRegex, i.name)[0] for i in (metadataPath).glob(metadataFileGlob)}
@@ -80,13 +80,8 @@ if False:
 
 	verbose = args.verbose
 
-levelSet = 'A'
-levelSetsToExport = [levelSet]
+metaFile = pathlib.Path('/project/LEVELS/metadata/lvlset_A_metadata.json5') # metadataFile(levelSet) if not args.metadata else args.metadata
+outFolder = pathlib.Path('/project/LEVELS/include/lvlset_A') # outputFolder(levelSet) if not args.outputFolder else args.outputFolder
+csvFolderArg = pathlib.Path('/project/LEVELS/LEVEL DATA/lvlset_HUGE') # csvFolder(levelSet) if not args.csvFolder else args.csvFolder
 
-for levelSet in levelSetsToExport:
-	metaFile = pathlib.Path('/project/LEVELS/metadata/lvlset_A_metadata.json5') # metadataFile(levelSet) if not args.metadata else args.metadata
-	outFolder = pathlib.Path('/project/LEVELS/include/lvlset_A') # outputFolder(levelSet) if not args.outputFolder else args.outputFolder
-	csvFolderArg = pathlib.Path('/project/LEVELS/LEVEL DATA/lvlset_A') # csvFolder(levelSet) if not args.csvFolder else args.csvFolder
-	
-	print(f"Running export script for level set {levelSet}...")
-	export_levels_js.main(csvFolderArg, metaFile, outFolder)
+export_levels_js.main(csvFolderArg, metaFile, outFolder)

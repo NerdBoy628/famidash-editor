@@ -220,3 +220,108 @@ const unsigned char bgmtestscreen[482]={
 0x01,0x00
 };
 
+
+
+void decrement_was_on_slope() {
+	if (currplayer_was_on_slope_counter) {
+		currplayer_was_on_slope_counter--;
+		
+		if (!currplayer_was_on_slope_counter) {
+			if (gamemode == GAMEMODE_CUBE || gamemode == GAMEMODE_BALL) {
+				// Set carry to 1 if slope is upside down
+				__A__ = (currplayer_slope_type & SLOPE_UPSIDEDOWN) + (256 - SLOPE_UPSIDEDOWN);
+				__A__ = currplayer_table_idx & ~TBLIDX_GRAV;
+				__asm__ ("adc #0 \n tay");
+				// Thus, gravity in the table index is replaced with SLOPE_UPSIDEDOWN
+				switch (gamemode) {
+					case GAMEMODE_BALL:
+						switch (currplayer_slope_type) {
+							case SLOPE_22DEG_UP:
+							case SLOPE_22DEG_UP_UD:
+								currplayer_vel_y += EXIT_SLOPE_BALL_22(get_Y);
+								break;
+							case SLOPE_66DEG_UP:
+							case SLOPE_66DEG_UP_UD:
+								currplayer_vel_y += EXIT_SLOPE_BALL_66(get_Y);
+						}
+						break;
+					case GAMEMODE_CUBE:
+						switch (currplayer_slope_type) {
+							case SLOPE_22DEG_UP:
+							case SLOPE_22DEG_UP_UD:
+								currplayer_vel_y += EXIT_SLOPE_CUBE_22(get_Y);
+								break;
+						}
+						break;
+				}
+			}
+			currplayer_slope_type = 0;
+		}
+	} else {
+		currplayer_last_slope_type = 0;
+		currplayer_slope_type = 0;
+	}	
+}
+
+
+void check_practice_point_deletion() {
+	if (practicebuffer || (practice_point_count > 1 && (joypad1.press_select || (mouse.left && mouse.right_press)) && !(joypad1.hold & (PAD_UP | PAD_DOWN)))) {
+				curr_practice_point--;
+				practicebuffer = 0;
+				if (latest_practice_point) latest_practice_point--;
+				if (curr_practice_point >= practice_point_count)
+					curr_practice_point = practice_point_count - 1;
+	}
+}
+
+void end_level_debug() {
+				END_LEVEL_TIMER = 0;
+				kandokidshack4 = 0;
+				oam_clear();
+				gameState = STATE_LVLDONE;
+				//DEBUG_MODE = 0;
+				famistudio_music_stop();
+}				
+
+
+
+void set_completion_data() {
+	if (!DEBUG_MODE && !kandokidshack && !kandokidshack3 && !kandokidshack4) {
+		if (!practice_point_count) {
+			if (!invisblocks) {
+				LEVELCOMPLETE[level] = 1;
+				if (coins & COIN_1) coin1_obtained[level] = 1;
+				if (coins & COIN_2) coin2_obtained[level] = 1;
+				if (coins & COIN_3) coin3_obtained[level] = 1;
+				level_completeness_normal[level] = 100;
+			}
+			else {
+				invisible_LEVELCOMPLETE[level] = 1;
+				if (coins & COIN_1) invisible_coin1_obtained[level] = 1;
+				if (coins & COIN_2) invisible_coin2_obtained[level] = 1;
+				if (coins & COIN_3) invisible_coin3_obtained[level] = 1;
+				invisible_level_completeness_normal[level] = 100;
+			}			
+		} else {
+			if (!invisblocks) level_completeness_practice[level] = 100;
+			else invisible_level_completeness_practice[level] = 100;
+		}
+	}
+}
+
+void set_lvldone_palette() {
+	mmc3_set_1kb_chr_bank_0(LEVELCOMPLETEBANK);
+	mmc3_set_1kb_chr_bank_1(PRACTICECOMPLETEBANK);
+	mmc3_set_1kb_chr_bank_2(LEVELCOMPLETEBANK+2);
+	mmc3_set_1kb_chr_bank_3(LEVELCOMPLETEBANK+3);
+	mmc3_set_2kb_chr_bank_1(MOUSEBANK);
+
+	// Set palettes back to natural colors since we aren't fading back in
+	pal_bright(4);
+	pal_bg(paletteMenu);
+	pal_col(0x0A,0x2A);
+	pal_col(0x0B,0x21);
+	pal_set_update();
+    //pal_spr(paletteMenu);
+	pal_spr(paletteDefaultSP);
+}

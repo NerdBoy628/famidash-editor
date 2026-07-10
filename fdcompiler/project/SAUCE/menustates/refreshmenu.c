@@ -11,9 +11,15 @@ const char coin_counter[][3];
 /*
 	Refreshes level name & number
 */
+
+const unsigned char invisibletext[9]="INVISIBLE";
+
 void refreshmenu() {
 	tmp5 = ((level&1)<<2)<<8;	// Which nametable to put the data into
 	set_scroll_x(((level-tmp4)&1)<<8);
+	
+	if (invisblocks) { multi_vram_buffer_horz((const char*)invisibletext,sizeof(invisibletext),NTADR_A(12, 9));
+	multi_vram_buffer_horz((const char*)invisibletext,sizeof(invisibletext),NTADR_B(12, 9)); }
 	
 	__A__ = idx16_load_hi_NOC(levelTextsUpper, level);
 	if (__A__) draw_padded_text(levelTextsUpper[level & 0x7F], levelTextsUpperSize[level], 17, NTADR_A(8, 10)|(tmp5 & 0xFF00));
@@ -21,7 +27,7 @@ void refreshmenu() {
 	// if (leveltexts2[level]) // always true
 	draw_padded_text(levelTextsLower[level & 0x7F], levelTextsLowerSize[level], 17, NTADR_A(8, 11)|(tmp5 & 0xFF00));
 
-	if (LEVELCOMPLETE[level]) { one_vram_buffer('y', NTADR_A(7, 9)|(tmp5 & 0xFF00));
+	if (invisblocks ? invisible_LEVELCOMPLETE[level] : LEVELCOMPLETE[level]) { one_vram_buffer('y', NTADR_A(7, 9)|(tmp5 & 0xFF00));
 	one_vram_buffer('z', NTADR_A(8, 9)|(tmp5 & 0xFF00)); }
 	else one_vram_buffer_horz_repeat(' ', 2, NTADR_A(7, 9)|(tmp5 & 0xFF00));
 
@@ -62,14 +68,15 @@ void refreshmenu() {
 
 	// then in the function...
 	// combine all three into a single number from 0 - 7 to represent which coins have been grabbed
-		tmp7 = byte((byte(coin3_obtained[level] << 1) | coin2_obtained[level]) << 1) | coin1_obtained[level];
+		if (!invisblocks) tmp7 = byte((byte(coin3_obtained[level] << 1) | coin2_obtained[level]) << 1) | coin1_obtained[level];
+		else tmp7 = byte((byte(invisible_coin3_obtained[level] << 1) | invisible_coin2_obtained[level]) << 1) | invisible_coin1_obtained[level];
 		tmp7 = byte(tmp7<<1) + tmp7;
 	// actually draw the coins
 		multi_vram_buffer_horz((const char * const)coin_counter+tmp7, 3, NTADR_A(22, 12)|(tmp5 & 0xFF00));
 
 }
 
-#if (LEVELSET != 'C') && (LEVELSET != 'D')
+#if (LEVELSET != 'D') && (LEVELSET != 'E')
 
 	const uint8_t difficulty_pal_A[] ={
 		0x21,	// easy
@@ -88,7 +95,7 @@ void refreshmenu() {
 		0x30,	// harder
 		0x06,	// insane
 		0x30,	// demon
-		0x0F,	// auto
+		0x21,	// auto
 	};
 	
 #else
@@ -104,13 +111,13 @@ void refreshmenu() {
 	};
 
 	const uint8_t difficulty_pal_B[] ={
-		0x30,	// easy
-		0x30,	// normal
-		0x30,	// hard
-		0x30,	// harder
-		0x30,	// insane
-		0x30,	// demon
-		0x30,	// auto
+		0x30,	// easy demon
+		0x30,	// medium demon
+		0x30,	// hard demon
+		0x30,	// insane demon
+		0x30,	// extreme demon
+		0x30,	// impossible demon
+		0x30,	// grandpa demon
 	};
 	
 #endif

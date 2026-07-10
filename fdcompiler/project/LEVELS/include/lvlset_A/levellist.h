@@ -26,6 +26,8 @@ const uint8_t difficulty_list[] = {
 	INSANE,	// dash
 	NORMAL,	// thetower
 	HARD,	// thesewers
+	HARDER,	// thecellar
+	HARDER,	// thesecrethollow
 	HARD,	// thechallenge
 	EASY,	// retray
 	NORMAL,	// leveleasy
@@ -41,11 +43,11 @@ const uint8_t difficulty_list[] = {
 	INSANE,	// lostinthewoods
 	INSANE,	// bloodbathbutno
 	INSANE,	// rainbowtylenol
-	INSANE,	// greif
 	INSANE,	// extraordinaryexcitement
 	DEMON,	// thelightningroad
 	DEMON,	// nightmare
 	DEMON,	// firetemple
+	DEMON,	// watertemple
 };
 
 const uint8_t stars_list[] = {
@@ -73,6 +75,8 @@ const uint8_t stars_list[] = {
 	12,	// dash
 	5,	// thetower
 	6,	// thesewers
+	7,	// thecellar
+	7,	// thesecrethollow
 	3,	// thechallenge
 	2,	// retray
 	3,	// leveleasy
@@ -88,9 +92,9 @@ const uint8_t stars_list[] = {
 	8,	// lostinthewoods
 	8,	// bloodbathbutno
 	8,	// rainbowtylenol
-	8,	// greif
 	9,	// extraordinaryexcitement
 	10,	// thelightningroad
 	10,	// nightmare
 	10,	// firetemple
+	10,	// watertemple
 };

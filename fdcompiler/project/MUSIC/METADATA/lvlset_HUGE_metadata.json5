@@ -106,7 +106,7 @@
 			upperText: "THEORY OF",
 			lowerText: "EVERYTHING",
 			originalArtist: "Dj Nate",
-			coveringArtist: ["ElAngel378"]
+			coveringArtist: "ElAngel378",
 		},
 		{
 			fmsSongName: "Electroman Adventures",
@@ -139,7 +139,7 @@
 			upperText: "BLAST",
 			lowerText: "PROCESSING",
 			originalArtist: "Waterflame",
-			coveringArtist: "ElAngel378",
+			coveringArtist: ["ElAngel378", "Crafty Jumper"],
 		},
 		{
 			fmsSongName: "TOE 2",
@@ -174,6 +174,12 @@
 			coveringArtist: "Crafty Jumper",
 		},
 		{
+			fmsSongName: "Explorers",
+			lowerText: "EXPLORERS",
+			originalArtist: "Hinkik",
+			coveringArtist: "Crafty Jumper",
+		},
+		{
 			fmsSongName: "Desert City",
 			lowerText: "DESERT CITY",
 			originalArtist: "Kevin MacLeod",
@@ -201,6 +207,13 @@
 		},
 		/*
 		{
+			fmsSongName: "Casual Game Music 09",
+			upperText: "CASUAL GAME",
+			lowerText: "MUSIC 09",
+			originalArtist: "Ostinarium",
+			coveringArtist: "NerdBoy628",
+		},
+		{
 			fmsSongName: "2NES",
 			lowerText: "2NES",
 			originalArtist: "Ranedom",
@@ -219,6 +232,18 @@
 			lowerText: "ACCELERATE",
 			originalArtist: "Acid Notation",
 			coveringArtist: "ElAngel378",
+		},
+		{
+			fmsSongName: "Aether [New]",
+			lowerText: "AETHER NEW",
+			originalArtist: "Jumper",
+			coveringArtist: "OkieAurie",
+		},
+		{
+			fmsSongName: "Apoplexy",
+			lowerText: "APOPLEXY",
+			originalArtist: "Bee Hunter",
+			coveringArtist: "Kabez",
 		},
 		{
 			fmsSongName: "Astronomical Expedition",
@@ -286,6 +311,13 @@
 		},
 		*/
 		{
+			fmsSongName: "Birdbrain",
+			upperText: "BIRDBRAIN",
+			lowerText: "HEV MIX",
+			originalArtist: ["Jamie Paige", "OK GLASS"],
+			coveringArtist: "SeaGlowingPro",
+		},
+		{
 			fmsSongName: "Bit Of A Vibe",
 			upperText: "BIT OF",
 			lowerText: "A VIBE",
@@ -319,6 +351,19 @@
 		},
 		*/
 		{
+			fmsSongName: "Carefree Victory (Remix)",
+			upperText: "CAREFREE",
+			lowerText: "VICTORY REMIX",
+			originalArtist: ["Mark Hadley", "Andrew   Toby"],
+			coveringArtist: "SeaGlowingPro",
+		},
+		{
+			fmsSongName: "Careless",
+			lowerText: "CARELESS",
+			originalArtist: "SpazeMusic",
+			coveringArtist: "ElAngel378",
+		},
+		{
 			fmsSongName: "ChaozFantasy",
 			lowerText: "CHAOZ FANTASY",
 			originalArtist: "ParagonX9",
@@ -345,10 +390,23 @@
 		},
 		*/
 		{
+			fmsSongName: "Clownparty Remix",
+			upperText: "CLOWNPARTY",
+			lowerText: "REMIX",
+			originalArtist: "Waterflame",
+			coveringArtist: "JuriJK",
+		},
+		{
 			fmsSongName: "clutterfunk 2",
 			lowerText: "CLUTTERFUNK 2",
 			originalArtist: "Waterflame",
 			coveringArtist: "cloud54",
+		},
+		{
+			fmsSongName: "Cosmic Dolphin",
+			lowerText: "COSMIC DOLPHIN",
+			originalArtist: "megawolf77",
+			coveringArtist: "SeaGlowingPro",
 		},
 		{
 			fmsSongName: "Cryogenic",
@@ -376,6 +434,19 @@
 			lowerText: "DEATH MOON",
 			originalArtist: "SoundHolicK",
 			coveringArtist: "ElAngel378",
+		},
+		{
+			fmsSongName: "Deep Swim",
+			lowerText: "DEEP SWIM",
+			originalArtist: "Windows96",
+			coveringArtist: "SeaGlowingPro",
+		},
+		{
+			fmsSongName: "Dastardly",
+			upperText: "DICK DASTARDLY",
+			lowerText: "RICHARDSON",
+			originalArtist: "lchavasse",
+			coveringArtist: ["Crafty Jumper","SeaGlowingPro"]
 		},
 		{
 			fmsSongName: "Driving By Night",
@@ -407,6 +478,13 @@
 			coveringArtist: "sussysy",
 		},
 		*/
+		{
+			fmsSongName: "Hungryman Adventures",
+			upperText: "ELECTROMAN",
+			lowerText: "MY VERSION",
+			originalArtist: ["Waterflame", "Stingy", "RobvaTopper"],
+			coveringArtist: "SeaGlowingPro",
+		},
 		{
 			fmsSongName: "endgame",
 			lowerText: "ENDGAME",
@@ -492,11 +570,20 @@
 			coveringArtist: "SeaGlowingPro",
 		},
 		{
+			fmsSongName: "Fracture (WcropoliX)",
+			upperText: "FRACTURE",
+			lowerText: "WCROPOLIX CUT",
+			originalArtist: "RUKKUS",
+			coveringArtist: ["SeaGlowingPro", "Crafty Jumper"],
+		},
+		/*
+		{
 			fmsSongName: "Free Mind",
 			lowerText: "FREE MIND",
 			originalArtist: "ElAngel378",
 			coveringArtist: "ElAngel378",
 		},
+		*/
 		/*
 		{
 			fmsSongName: "FREEDOM DiVE",
@@ -524,6 +611,13 @@
 			lowerText: "CUT",
 			originalArtist: "DetiousMusic",
 			coveringArtist: ["Crafty Jumper", "ElAngel378"]
+		},
+		{
+			fmsSongName: "Ground to ReTraY",
+			upperText: "GROUND TO",
+			lowerText: "RETRAY",
+			originalArtist: ["DetiousMusic", "SeaGlowingPro"],
+			coveringArtist: "Crafty Jumper",
 		},
 		{
 			fmsSongName: "Ground to Space",
@@ -580,13 +674,13 @@
 			originalArtist: "TheFatRat",
 			coveringArtist: ["ElAngel378", "SeaGlowingPro"]
 		},
+		/*
 		{
 			fmsSongName: "Isolation",
 			lowerText: "ISOLATION",
 			originalArtist: "NightHawk22",
-			coveringArtist: ["Crafty Jumper", "SeaGlowingPro"]
+			coveringArtist: "okujassu",
 		},
-		/*
 		{
 			fmsSongName: "jack russel",
 			lowerText: "JACK RUSSEL",
@@ -636,6 +730,12 @@
 			coveringArtist: "SeaGlowingPro",
 		},
 		{
+			fmsSongName: "Load",
+			lowerText: "LOAD",
+			originalArtist: "kiynaria",
+			coveringArtist: "Crafty Jumper",
+		},
+		{
 			fmsSongName: "lost",
 			lowerText: "LOST",
 			originalArtist: "Crim3s",
@@ -656,6 +756,14 @@
 			originalArtist: "Romos",
 			coveringArtist: "SeaGlowingPro",
 		},
+		/*
+		
+			fmsSongName: "Mario Kart 7 - Rainbow Road (Remix)",
+			upperText: "MARIO KART 7",
+			lowerText: "RAINBOW ROAD",
+			originalArtist: "Ackatos",
+			coveringArtist: "SeaGlowingPro",
+		},
 		{
 			fmsSongName: "Mayhem Re-NES",
 			lowerText: "MAYHEM",
@@ -667,7 +775,8 @@
 			lowerText: "MEGALOVANIA",
 			originalArtist: "Toby Fox",
 			coveringArtist: "Crafty Jumper",
-		},		
+		},
+		*/
 		{
 			fmsSongName: "Meltdown",
 			lowerText: "MELTDOWN",
@@ -701,11 +810,19 @@
 			originalArtist: "cornandbeans",
 			coveringArtist: "SeaGlowingPro",
 		},
+		/*
 		{
 			fmsSongName: "Moon Fries",
 			lowerText: "MOON FRIES",
 			originalArtist: "KingSammelot",
 			coveringArtist: "Kabez",
+		},
+		*/
+		{
+			fmsSongName: "New Dash City",
+			lowerText: "NEW DASH CITY",
+			originalArtist: "SeaGlowingPro",
+			coveringArtist: "SeaGlowingPro",
 		},
 		{
 			fmsSongName: "Nine Circles",
@@ -720,12 +837,20 @@
 			coveringArtist: "SeaGlowingPro",
 		},
 		{
+        	fmsSongName: "Off to Mars",
+	        lowerText: "OFF TO MARS",
+        	originalArtist: "cosmicspace33",
+        	coveringArtist: ["Crafty Jumper","cosmicspace33"],
+        },
+		/*
+		{
 			fmsSongName: "okiba crackdown",
 			upperText: "OKIBA",
 			lowerText: "CRACKDOWN",
 			originalArtist: "Bossfight",
 			coveringArtist: "sussysy",
 		},
+		*/
 		{
 			fmsSongName: "Power Trip",
 			lowerText: "POWER TRIP",
@@ -752,12 +877,14 @@
 			originalArtist: "Boom Kitty",
 			coveringArtist: "Crafty Jumper",
 		},
+		/*
         {
 			fmsSongName: "Pyrophoric",
 			lowerText: "PYROPHORIC",
 			originalArtist: "NerdBoy628",
 			coveringArtist: "NerdBoy628",
 		},
+		*/
 		{
 			fmsSongName: "Pyrophoric (Legacy Remix)",
 			upperText: "PYROPHORIC",
@@ -765,12 +892,20 @@
 			originalArtist: "NerdBoy628",
 			coveringArtist: ["NerdBoy628","alexmush","SeaGlowingPro"],
 		},
+		/*
 		{
 			fmsSongName: "Pyrophoric (apparently too many creative liberties mix)",
 			upperText: "PYROPHORIC",
             lowerText: "REMIX",
 			originalArtist: "NerdBoy628",
 			coveringArtist: ["NerdBoy628","alexmush"],
+		},
+		*/
+		{
+			fmsSongName: "Pyrophoric XL",
+			lowerText: "PYROPHORIC XL",
+			originalArtist: "NerdBoy628",
+			coveringArtist: ["NerdBoy628","alexmush","SeaGlowingPro"],
 		},
 		{
 			fmsSongName: "rainbow tylenol",
@@ -792,12 +927,14 @@
 			originalArtist: "Crafty Jumper",
 			coveringArtist: "Crafty Jumper",
 		},
+		/*
 		{
 			fmsSongName: "Shiawase VIP",
 			lowerText: "SHIAWASE VIP",
 			originalArtist: "Dion Timmer",
 			coveringArtist: "Crafty Jumper",
 		},
+		*/
 		{
 			fmsSongName: "Slash Inferno",
 			upperText: "SLASH",
@@ -818,6 +955,19 @@
 			coveringArtist: "SeaGlowingPro",
 		},
 		{
+			fmsSongName: "Solar Wind",
+			lowerText: "SOLAR WIND",
+			originalArtist: "Jumper",
+			coveringArtist: "Vikrinox",
+		},
+		{
+			fmsSongName: "Somewhere in a Forest",
+			upperText: "SOMEWHERE",
+			lowerText: "IN A FOREST",
+			originalArtist: ["CAMELLIA","TOBY   TEMMIE"],
+			coveringArtist: "SeaGlowingPro",
+		},	
+		{
 			fmsSongName: "Sonic blaster",
 			lowerText: "SONIC BLASTER",
 			originalArtist: "F777",
@@ -836,7 +986,7 @@
 			lowerText: "GREIF CUT",
 			originalArtist: "KayoszX",
 			coveringArtist: ["ElAngel378"]
-		},	
+		},
 		/*
 		{
 			fmsSongName: "Stalemate Full",
@@ -866,10 +1016,22 @@
 			coveringArtist: "ElAngel378",
 		},
 		{
+			fmsSongName: "Tetris Remix (Final)",
+			lowerText: "TETRIS REMIX",
+			originalArtist: "Parkerman1700",
+			coveringArtist: "SeaGlowingPro",
+		},
+		{
 			fmsSongName: "The Angel",
 			lowerText: "THE ANGEL",
 			originalArtist: "Cacola",
 			coveringArtist: "ElAngel378",
+		},
+		{
+			fmsSongName: "The Explorer",
+			lowerText: "THE EXPLORER",
+			originalArtist: "SpazeMusic",
+			coveringArtist: "NerdBoy628",
 		},
 		/*
 		{
@@ -893,13 +1055,13 @@
 			originalArtist: "Dj Nate",
 			coveringArtist: ["Vikrinox","SeaGlowingPro"],
 		},
+		/*
 		{
 			fmsSongName: "Thermodynamix Full",
 			lowerText: "THERMODYNAMIX",
 			originalArtist: "Dj Nate",
 			coveringArtist: ["Vikrinox","SeaGlowingPro"]
 		},
-		/*		
 		{
 			fmsSongName: "Time Machine Full",
 			upperText: "TIME MACHINE",
@@ -925,8 +1087,14 @@
 			upperText: "ULTIMATE",
 			lowerText: "DESTRUCTION",
 			originalArtist: "TMM43",
-			coveringArtist: "UserSniper",
-		},	
+			coveringArtist: ["UserSniper","Kabez"]
+		},
+		{
+			fmsSongName: "Unity",
+			lowerText: "UNITY",
+			originalArtist: "TheFatRat",
+			coveringArtist: ["ElAngel378", "okujassu"],
+		},
 		{
 			fmsSongName: "Future Funk PT1",
 			upperText: "WHATS A",
@@ -942,6 +1110,13 @@
 			coveringArtist: ["SeaGlowingPro", "ElAngel378"],
 		},
 		{
+			fmsSongName: "Win the Race",
+			upperText: "WIN THE",
+			lowerText: "RACE",
+			originalArtist: "cosmicspace33",
+			coveringArtist: "Crafty Jumper",
+		},
+		{
 			fmsSongName: "Windfall",
 			lowerText: "WINDFALL",
 			originalArtist: "TheFatRat",
@@ -953,19 +1128,21 @@
 			originalArtist: "TheFatRat",
 			coveringArtist: "Ranedom",
 		},
+		/*
 		{
 			fmsSongName: "XO",
 			lowerText: "XO",
 			originalArtist: ["EDEN     AARON", "   MUSSELWHITE"],
 			coveringArtist: "SeaGlowingPro",
-		},			
+		},
+		*/
 		{
 			fmsSongName: "Youve been Trolled",
 			upperText: "YOUVE BEEN",
 			lowerText: "TROLLED",
 			originalArtist: "TheClydeCash",
 			coveringArtist: "SeaGlowingPro",
-		},			
+		},
 	],
 	SFX: [
 		{

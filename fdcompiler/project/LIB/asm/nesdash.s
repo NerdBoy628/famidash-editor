@@ -171,7 +171,7 @@ end:
 	rts
 .endproc
 .endif
-.segment "RODATA"
+.segment "RODATA_2"
 
 .export _shiftBy4table := shiftBy4table
 shiftBy4table:
@@ -211,7 +211,7 @@ shiftBy4table:
 
 .global _level_list_lo, _level_list_hi, _level_list_bank, _sprite_list_lo, _sprite_list_hi, _sprite_list_bank
 .import _current_deco_type, _current_spike_set, _current_block_set, _current_saw_set
-.import _song, _speed, _lastgcolortype, _lastbgcolortype, _spawn_y_pos, _spawn_scroll_y_pos, _max_fallspeed
+.import _song, _speed, _lastgcolortype, _lastbgcolortype, _spawn_y_pos, _spawn_scroll_y_pos, _max_fallspeed_7
 .import _level_data_bank, _sprite_data_bank, _force_platformer
 .import _discomode
 
@@ -270,41 +270,62 @@ _init_rld:
 	LDA (ptr1),y		;spawn y position high byte
 	sta _spawn_y_pos+1
 	iny	
-	LDA (ptr1),y		;spawn y position low byte
-	sta _spawn_y_pos
-	iny
+;	LDA (ptr1),y		;spawn y position low byte
+;	sta _spawn_y_pos
+;	iny
 	
-	LDA (ptr1),y		;spawn scroll y position high byte
+;	LDA (ptr1),y		;spawn scroll y position high byte
+	LDA #$02		;no levels need this setting
 	sta _spawn_scroll_y_pos+1
-	iny	
+;	iny	
+
 	LDA (ptr1),y		;spawn scroll y position low byte
 	sta _spawn_scroll_y_pos
 	iny
 	
-	LDA (ptr1),y		;max fall speed high byte
-	sta _max_fallspeed
-	iny
-
 	LDA (ptr1),y		;__	Force platformer, Parallax disable
 	LSR					;__	Parallax disable in carry
 	ROL _force_platformer	;__	Store where it needs to go
 	STA _no_parallax	;	The rest is force platformer, store it
 	INY					;__
 
-	LDA (ptr1),y			;
-	STA _current_deco_type	;	Deco type
-	INY						;__
+	LDA (ptr1),y		;max fall speed high byte
+	and #$80
+	lsr
+	lsr
+	lsr
+	lsr
+	lsr
+	lsr
+	lsr
+	sta _max_fallspeed_7
+
+	LDA (ptr1),y		
+	and #$7F
+	sta _current_deco_type	;	Deco Type
+
+	iny
+
+	;LDA (ptr1),y			;
+	;STA _current_deco_type	;	Deco type
+	;INY						;__
 	
 	LDA (ptr1),y			;
+	and #$F0
+	lsr
+	lsr
+	lsr
+	lsr
 	STA _current_spike_set	;	Spike set
-	INY						;__
+;	INY						;__
 
 	LDA (ptr1),y			;
+	and #$0F
 	STA _current_block_set	;	Block set
-	INY						;__
+;	INY						;__
 
-	LDA (ptr1),y			;
-	STA _current_saw_set	;__	Saw set
+;	LDA (ptr1),y			;
+;	STA _current_saw_set	;__	Saw set
 
 	TYA						;
 	SEC						;
@@ -1941,7 +1962,7 @@ play:
 
 
 ; void load_next_sprite(uint8_t slot);
-.segment "CODE_2"
+.segment "CODE"
 
 .import _activesprites_x_lo, _activesprites_x_hi
 .import _activesprites_y_lo, _activesprites_y_hi
@@ -2009,7 +2030,7 @@ early_exit:
 .endproc
 
 ; uint16_t calculate_linear_scroll_y(uint16_t nonlinearScroll);
-.segment "CODE"
+.segment "RODATA_2"
 
 .export _calculate_linear_scroll_y
 .proc _calculate_linear_scroll_y
@@ -2153,7 +2174,7 @@ doit:
 .endif
 
 ; void check_spr_objects();
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .import _activesprites_active, _scroll_x, _scroll_y, _animating
 
@@ -2497,7 +2518,7 @@ drawplayer_center_offsets:
 		ora _player_vel_y+1
 		bne @normalstuff
 
-		lda _chargepower
+		lda _chargepower+0			;football
 		beq @normalstuff
 
 		cmp #10
@@ -2570,9 +2591,9 @@ drawplayer_center_offsets:
 		@fin:
 			LDX _cube_rotate+1
         @fin_nold:
-			LDA _gamemode
-			cmp #8
-			beq @noflip
+			;LDA _gamemode
+			;cmp #8
+			;beq @noflip
 
 			LDA _gameState
 			cmp #1	; STATE_MENU
@@ -2888,13 +2909,22 @@ drawplayer_center_offsets:
 	fin:
 			LDA _gamemode
 			cmp #$08
-			bne :+
-			LDA _player_gravity+0
-			BEQ :+
-			lda xargs+0
-			ORA #$80
-			STA xargs+0
-			:	
+			bne common
+			lda _player_vel_y+0
+			ora _player_vel_y+1
+			bne common
+			lda _player_gravity+0
+			beq :+
+			lda #0
+			sta _cube_rotate+0
+			lda #$0C
+			sta _cube_rotate+1
+			bne :++
+		:	
+			lda #0
+			sta _cube_rotate+0
+			sta _cube_rotate+1
+		:	
     common:
 		TYA					;
 		ASL					;	Double da index cuz it's a table of shorts
@@ -3110,7 +3140,7 @@ drawplayer_common := _drawplayerone::common
 		ora _player_vel_y+3
 		bne @normalstuff
 
-		lda _chargepower+1
+		lda _chargepower+1		;football
 		beq @normalstuff
 
 		cmp #5
@@ -3185,9 +3215,6 @@ drawplayer_common := _drawplayerone::common
 		@fin:
 			LDX _cube_rotate+3
         @fin_nold:
-			LDA _gamemode
-			cmp #8
-			beq @noflip	
 			LDA _icon
 			cmp #$12
 			beq @noflip
@@ -3216,13 +3243,22 @@ drawplayer_common := _drawplayerone::common
 
 			LDA _gamemode
 			cmp #$08
-			bne :+
-			LDA _player_gravity+1
-			BEQ :+
-			lda xargs+0
-			ORA #$80
-			STA xargs+0
-			:				
+			bne :++
+			lda _player_vel_y+2
+			ora _player_vel_y+3
+			bne :++
+			lda _player_gravity+1
+			beq :+
+			lda #0
+			sta _cube_rotate+2
+			lda #$0C
+			sta _cube_rotate+3
+			bne :++
+		:	
+			lda #0
+			sta _cube_rotate+2
+			sta _cube_rotate+3
+		:	
 
 			JMP drawplayer_common
 
@@ -3491,7 +3527,7 @@ drawplayer_common := _drawplayerone::common
 .endproc
 
 ; char bg_collision_sub();
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .importzp _temp_x, _temp_y, _temp_room, _collision
 
@@ -3539,7 +3575,7 @@ drawplayer_common := _drawplayerone::common
 
 .endif
 
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .export crossPRGBankJump
 .proc crossPRGBankJump
@@ -3773,7 +3809,7 @@ SSDPCM_getbyte:
 
 .endif
 ; uint16_t hexToDec (uint16_t input)
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .export _hexToDec
 .proc _hexToDec
@@ -3827,7 +3863,7 @@ SSDPCM_getbyte:
 
 
 ; void printDecimal (uintptr_t ppu_address, uint16_t value, uint8_t digits, uint8_t zeroChr, uint8_t spaceChr)
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .export __printDecimal
 .proc __printDecimal
@@ -3893,13 +3929,13 @@ SSDPCM_getbyte:
 
 .endproc
 
-.segment "CODE_2"
+.segment "RODATA_2"
 
 ; void update_level_completeness();
-.segment "CODE_2"
+.segment "RODATA_2"
 
-.import _level, _practice_point_count
-.import _level_completeness_normal
+.import _level, _practice_point_count, _make_cube_jump_higher, _minicoins, _wrap_mode, _forced_trails
+.import _level_completeness_normal, _invisible_level_completeness_normal, _invisblocks
 
 .export _update_level_completeness
 .proc _update_level_completeness
@@ -3910,6 +3946,8 @@ SSDPCM_getbyte:
 	levelLengthHi = tmp1
 
 	percentage = tmp2
+
+
 
 	start:
 		LDY	_level
@@ -4006,6 +4044,17 @@ SSDPCM_getbyte:
 		ADC _level				;
 		TAX						;__
 
+		lda _invisblocks
+		beq noinvis
+		TYA						;
+		CMP _invisible_level_completeness_normal, X
+		BCC :+					;	Update value if bigger than last one
+			STA _invisible_level_completeness_normal, X
+		:						;__
+		RTS
+
+
+noinvis:
 		TYA						;
 		CMP _level_completeness_normal, X
 		BCC :+					;	Update value if bigger than last one
@@ -4398,7 +4447,7 @@ vert_skip:
 
 
 ; void init_sprites();
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .importzp _sprite_data	
 .import _sprite_data_bank
@@ -4552,7 +4601,7 @@ vert_skip:
 
 
 ; void update_currplayer_table_idx();
-.segment "CODE_2"
+.segment "RODATA_2"
 
 .importzp _currplayer_mini, _currplayer_gravity, _currplayer_table_idx
 

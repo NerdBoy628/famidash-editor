@@ -132,7 +132,7 @@ void refresh_queue_screen() {
 	switch (tmp4) {
 		case 0:
 		case 0xFF:
-				update_text2();
+				crossPRGBankJump0(update_text2);
 				tmp4 = 2;
 				break;
 		case 1:
@@ -145,12 +145,12 @@ void refresh_queue_screen() {
 			one_vram_buffer_horz_repeat('$', 27, NTADR_A(3, (13 + (tmp1))));		
 			if (music_queue[tmp1] != 0xFF) {
 				tmp3 = music_queue[tmp1];
-				__A__ = idx16_load_hi_NOC(xbgmtextsUpper, tmp3);
+				__A__ = idx16_load_hi(xbgmtextsUpper, tmp3);
 				if (__A__) { 
-					multi_vram_buffer_horz(xbgmtextsUpper[tmp3 & 0x7F], xbgmtextsUpperSize[tmp3], NTADR_A(3, (13 + (tmp1))));
-					multi_vram_buffer_horz(xbgmtextsLower[tmp3 & 0x7F], xbgmtextsLowerSize[tmp3], NTADR_A((4 + xbgmtextsUpperSize[tmp3]), (13 + (tmp1))));
+					multi_vram_buffer_horz(xbgmtextsUpper[tmp3], xbgmtextsUpperSize[tmp3], NTADR_A(3, (13 + (tmp1))));
+					multi_vram_buffer_horz(xbgmtextsLower[tmp3], xbgmtextsLowerSize[tmp3], NTADR_A((4 + xbgmtextsUpperSize[tmp3]), (13 + (tmp1))));
 				} else {
-					multi_vram_buffer_horz(xbgmtextsLower[tmp3 & 0x7F], xbgmtextsLowerSize[tmp3], NTADR_A(3, (13 + (tmp1))));
+					multi_vram_buffer_horz(xbgmtextsLower[tmp3], xbgmtextsLowerSize[tmp3], NTADR_A(3, (13 + (tmp1))));
 					one_vram_buffer_horz_repeat('$', 7, NTADR_A((3 + xbgmtextsLowerSize[tmp3]), (13 + (tmp1))));
 				}				
 			} else one_vram_buffer_horz_repeat('$', 27, NTADR_A(3, (13 + (tmp1))));	
@@ -198,17 +198,17 @@ void refresh_queue_screen() {
 
 
 void update_text1() {
-	__A__ = idx16_load_hi_NOC(xbgmtextsUpper, tempsong);
+	__A__ = idx16_load_hi(xbgmtextsUpper, tempsong);
 	if (__A__) draw_padded_text(xbgmtextsUpper[tempsong], xbgmtextsUpperSize[tempsong], 14, NTADR_A(9, 7));
 	else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 7));
-	__A__ = idx16_load_hi_NOC(xbgmtextsLower, tempsong);
+	__A__ = idx16_load_hi(xbgmtextsLower, tempsong);
 	if (__A__) draw_padded_text(xbgmtextsLower[tempsong], xbgmtextsLowerSize[tempsong], 14, NTADR_A(9, 8));
 	else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 8));
 	
-	__A__ = idx16_load_hi_NOC(xbgmtextsLowerOrigArtist, tempsong);
+	__A__ = idx16_load_hi(xbgmtextsLowerOrigArtist, tempsong);
 	if (__A__) draw_padded_text(xbgmtextsLowerOrigArtist[tempsong], xbgmtextsLowerOrigArtistSize[tempsong], 14, NTADR_A(9, 14));
 	else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 14));
-	__A__ = idx16_load_hi_NOC(xbgmtextsUpperOrigArtist, tempsong);
+	__A__ = idx16_load_hi(xbgmtextsUpperOrigArtist, tempsong);
 	if (__A__) draw_padded_text(xbgmtextsUpperOrigArtist[tempsong], xbgmtextsUpperOrigArtistSize[tempsong], 14, NTADR_A(9, 13));
 	else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 13));
 
@@ -216,38 +216,25 @@ void update_text1() {
 }	
 
 void update_text3() {
-	__A__ = idx16_load_hi_NOC(xbgmtextsUpper, tempsong);
+	__A__ = idx16_load_hi(xbgmtextsUpper, tempsong);
 	if (__A__) draw_padded_text(xbgmtextsUpper[tempsong], xbgmtextsUpperSize[tempsong], 14, NTADR_A(9, 7));
 	else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 7));
-	__A__ = idx16_load_hi_NOC(xbgmtextsLower, tempsong);
+	__A__ = idx16_load_hi(xbgmtextsLower, tempsong);
 	if (__A__) draw_padded_text(xbgmtextsLower[tempsong], xbgmtextsLowerSize[tempsong], 14, NTADR_A(9, 8));
 	else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 8));
 }
-void update_text2() {
-	if (music_queue[0] != 0xFF) one_vram_buffer(0x9F, NTADR_A(1, 13));
-	else one_vram_buffer(0xFF, NTADR_A(1, 13));
-	for (tmp1 = 0; tmp1 < 2; tmp1++) {			//limited to 5??
-		if (music_queue[tmp1] != 0xFF) {
-			one_vram_buffer_horz_repeat('$', 27, NTADR_A(3, (13 + (tmp1))));	
-			crossPRGBankJump0(text_stuff);
-		}
-		else one_vram_buffer_horz_repeat('$', 27, NTADR_A(3, (13 + (tmp1))));	
-	}	
-	//ppu_on_all();
-	tmp4 = 2;
-}	
 
 void update_covering_artists() {
-			__A__ = idx16_load_hi_NOC(xbgmtextsCoveringArtist1, tempsong);
+			__A__ = idx16_load_hi(xbgmtextsCoveringArtist1, tempsong);
 			if (__A__) draw_padded_text(xbgmtextsCoveringArtist1[tempsong], xbgmtextsCoveringArtist1Size[tempsong], 14, NTADR_A(9, 19));
 			else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 19));
-			__A__ = idx16_load_hi_NOC(xbgmtextsCoveringArtist2, tempsong);
+			__A__ = idx16_load_hi(xbgmtextsCoveringArtist2, tempsong);
 			if (__A__) draw_padded_text(xbgmtextsCoveringArtist2[tempsong], xbgmtextsCoveringArtist2Size[tempsong], 14, NTADR_A(9, 20));
 			else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 20));
-			__A__ = idx16_load_hi_NOC(xbgmtextsCoveringArtist3, tempsong);
+			__A__ = idx16_load_hi(xbgmtextsCoveringArtist3, tempsong);
 			if (__A__) draw_padded_text(xbgmtextsCoveringArtist3[tempsong], xbgmtextsCoveringArtist3Size[tempsong], 14, NTADR_A(9, 21));
 			else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 21));
-			__A__ = idx16_load_hi_NOC(xbgmtextsCoveringArtist4, tempsong);
+			__A__ = idx16_load_hi(xbgmtextsCoveringArtist4, tempsong);
 			if (__A__) draw_padded_text(xbgmtextsCoveringArtist4[tempsong], xbgmtextsCoveringArtist4Size[tempsong], 14, NTADR_A(9, 22));
 			else one_vram_buffer_horz_repeat('$', 15, NTADR_A(9, 22));
 			tmp5 = 0;
@@ -257,15 +244,15 @@ void update_covering_artists() {
 
 void text_stuff() {
 	tmp3 = music_queue[tmp1];
-	__A__ = idx16_load_hi_NOC(xbgmtextsUpper, tmp3);
+	__A__ = idx16_load_hi(xbgmtextsUpper, tmp3);
 	if (__A__) { 
-		multi_vram_buffer_horz(xbgmtextsUpper[tmp3 & 0x7F], xbgmtextsUpperSize[tmp3], NTADR_A(3, (13 + (tmp1))));
-		__A__ = idx16_load_hi_NOC(xbgmtextsLower, tmp3);
-		multi_vram_buffer_horz(xbgmtextsLower[tmp3 & 0x7F], xbgmtextsLowerSize[tmp3], NTADR_A((4 + xbgmtextsUpperSize[tmp3]), (13 + (tmp1))));
+		multi_vram_buffer_horz(xbgmtextsUpper[tmp3], xbgmtextsUpperSize[tmp3], NTADR_A(3, (13 + (tmp1))));
+		__A__ = idx16_load_hi(xbgmtextsLower, tmp3);
+		multi_vram_buffer_horz(xbgmtextsLower[tmp3], xbgmtextsLowerSize[tmp3], NTADR_A((4 + xbgmtextsUpperSize[tmp3]), (13 + (tmp1))));
 	}
 	else {
-		__A__ = idx16_load_hi_NOC(xbgmtextsLower, tmp3);
-		multi_vram_buffer_horz(xbgmtextsLower[tmp3 & 0x7F], xbgmtextsLowerSize[tmp3], NTADR_A(3, (13 + (tmp1))));
+		__A__ = idx16_load_hi(xbgmtextsLower, tmp3);
+		multi_vram_buffer_horz(xbgmtextsLower[tmp3], xbgmtextsLowerSize[tmp3], NTADR_A(3, (13 + (tmp1))));
 		one_vram_buffer_horz_repeat('$', 7, NTADR_A((3 + xbgmtextsLowerSize[tmp3]), (13 + (tmp1))));
 
 	}	
@@ -286,6 +273,19 @@ void set_fun_settings();
 #include "defines/charmap/bgm_charmap.h"
 
 
+void update_text2() {
+	if (music_queue[0] != 0xFF) one_vram_buffer(0x9F, NTADR_A(1, 13));
+	else one_vram_buffer(0xFF, NTADR_A(1, 13));
+	for (tmp1 = 0; tmp1 < 2; tmp1++) {			//limited to 5??
+		if (music_queue[tmp1] != 0xFF) {
+			one_vram_buffer_horz_repeat('$', 27, NTADR_A(3, (13 + (tmp1))));	
+			crossPRGBankJump0(text_stuff);
+		}
+		else one_vram_buffer_horz_repeat('$', 27, NTADR_A(3, (13 + (tmp1))));	
+	}	
+	//ppu_on_all();
+	tmp4 = 2;
+}	
 
 
 
@@ -372,7 +372,7 @@ void state_soundtest() {
 			crossPRGBankJump0(unrle_bgm2); 	   	
 			ppu_on_all();
 			queuemode = 1;
-			crossPRGBankJump0(update_text2);
+			update_text2();
 			crossPRGBankJump0(update_text3);
 		}
 	}
@@ -400,7 +400,7 @@ void state_soundtest() {
 				music_play(xbgmlookuptable[song]); 
 				music_queue[0] = song;
 				songplaying = 1;
-				crossPRGBankJump0(update_text2);
+				update_text2();
 			}
 			else {
 				for (tmp1 = 1; tmp1 < MAX_SONG_QUEUE_SIZE; tmp1++) {
@@ -409,7 +409,7 @@ void state_soundtest() {
 						break;
 					}
 				}
-				if (music_queue[10] == 0xFF) crossPRGBankJump0(update_text2);
+				if (music_queue[10] == 0xFF) update_text2();
 			}
 		}
 		if (joypad1.press_b || mouse.right_press) {
@@ -441,4 +441,112 @@ void state_soundtest() {
 
 
 			
+
+
+void decrement_was_on_slope() {
+	if (currplayer_was_on_slope_counter) {
+		currplayer_was_on_slope_counter--;
+		
+		if (!currplayer_was_on_slope_counter) {
+			if (gamemode == GAMEMODE_CUBE || gamemode == GAMEMODE_BALL) {
+				// Set carry to 1 if slope is upside down
+				__A__ = (currplayer_slope_type & SLOPE_UPSIDEDOWN) + (256 - SLOPE_UPSIDEDOWN);
+				__A__ = currplayer_table_idx & ~TBLIDX_GRAV;
+				__asm__ ("adc #0 \n tay");
+				// Thus, gravity in the table index is replaced with SLOPE_UPSIDEDOWN
+				switch (gamemode) {
+					case GAMEMODE_BALL:
+						switch (currplayer_slope_type) {
+							case SLOPE_22DEG_UP:
+							case SLOPE_22DEG_UP_UD:
+								currplayer_vel_y += EXIT_SLOPE_BALL_22(get_Y);
+								break;
+							case SLOPE_66DEG_UP:
+							case SLOPE_66DEG_UP_UD:
+								currplayer_vel_y += EXIT_SLOPE_BALL_66(get_Y);
+						}
+						break;
+					case GAMEMODE_CUBE:
+						switch (currplayer_slope_type) {
+							case SLOPE_22DEG_UP:
+							case SLOPE_22DEG_UP_UD:
+								currplayer_vel_y += EXIT_SLOPE_CUBE_22(get_Y);
+								break;
+						}
+						break;
+				}
+			}
+			currplayer_slope_type = 0;
+		}
+	} else {
+		currplayer_last_slope_type = 0;
+		currplayer_slope_type = 0;
+	}	
+}
+
+
+void check_practice_point_deletion() {
+	if (practicebuffer || (practice_point_count > 1 && (joypad1.press_select || (mouse.left && mouse.right_press)) && !(joypad1.hold & (PAD_UP | PAD_DOWN)))) {
+				curr_practice_point--;
+				practicebuffer = 0;
+				if (latest_practice_point) latest_practice_point--;
+				if (curr_practice_point >= practice_point_count)
+					curr_practice_point = practice_point_count - 1;
+	}
+}
+
+void end_level_debug() {
+				END_LEVEL_TIMER = 0;
+				kandokidshack4 = 0;
+				oam_clear();
+				gameState = STATE_LVLDONE;
+				//DEBUG_MODE = 0;
+				famistudio_music_stop();
+}				
+
+
+
+void set_completion_data() {
+	if (!DEBUG_MODE && !kandokidshack && !kandokidshack3 && !kandokidshack4) {
+		if (!practice_point_count) {
+			if (!invisblocks) {
+				LEVELCOMPLETE[level] = 1;
+				if (coins & COIN_1) coin1_obtained[level] = 1;
+				if (coins & COIN_2) coin2_obtained[level] = 1;
+				if (coins & COIN_3) coin3_obtained[level] = 1;
+				level_completeness_normal[level] = 100;
+			}
+			else {
+				invisible_LEVELCOMPLETE[level] = 1;
+				if (coins & COIN_1) invisible_coin1_obtained[level] = 1;
+				if (coins & COIN_2) invisible_coin2_obtained[level] = 1;
+				if (coins & COIN_3) invisible_coin3_obtained[level] = 1;
+				invisible_level_completeness_normal[level] = 100;
+			}			
+		} else {
+			if (!invisblocks) level_completeness_practice[level] = 100;
+			else invisible_level_completeness_practice[level] = 100;
+		}
+	}
+}
+
+void set_lvldone_palette() {
+	mmc3_set_1kb_chr_bank_0(LEVELCOMPLETEBANK);
+	mmc3_set_1kb_chr_bank_1(PRACTICECOMPLETEBANK);
+	mmc3_set_1kb_chr_bank_2(LEVELCOMPLETEBANK+2);
+	mmc3_set_1kb_chr_bank_3(LEVELCOMPLETEBANK+3);
+	mmc3_set_2kb_chr_bank_1(MOUSEBANK);
+
+	// Set palettes back to natural colors since we aren't fading back in
+	pal_bright(4);
+	pal_bg(paletteMenu);
+	pal_col(0x0A,0x2A);
+	pal_col(0x0B,0x21);
+	pal_set_update();
+    //pal_spr(paletteMenu);
+	pal_spr(paletteDefaultSP);
+}
+
 CODE_BANK_POP()
+
+

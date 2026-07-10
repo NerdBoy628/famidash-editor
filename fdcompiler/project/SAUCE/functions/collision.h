@@ -216,7 +216,7 @@ char bg_coll_spikes() {
 	tmp8
 */
 void bg_coll_floor_spikes() { // used for spike collision
-	if (currplayer_vel_y != 0) {
+	if (currplayer_vel_y) {
 		currplayer_direction = high_byte(currplayer_vel_y) & 0x80;
 	}
 
@@ -436,7 +436,7 @@ char bg_side_coll_common() {
 
 	bg_collision_sub();
 	if (collision) {
-		if (gamemode == gamemode == GAMEMODE_WAVE || gamemode == GAMEMODE_SNAKE) {
+		if (gamemode == GAMEMODE_WAVE || gamemode == GAMEMODE_SNAKE) {
 			if (bg_coll_slope()) {
 				if (!dblocked[currplayer]) {
 					idx8_store(cube_data, currplayer, cube_data[currplayer] | 1);
@@ -502,9 +502,6 @@ char bg_coll_U_D_checks() {
 	}
 
 	return 0;
-}
-void unstick() {
-	tmp8 = 4;
 }
 
 void clear_slope_vars() {
@@ -740,11 +737,11 @@ char bg_coll_slope() {
 
 				if (a_check_lookup[tmp4]) {
 					if (controllingplayer->hold & (PAD_A | PAD_UP)) {
-						unstick();
+						tmp8 = 4;
 					}
 				} else {
 					if (!(controllingplayer->hold & (PAD_A | PAD_UP))) {
-						unstick();
+						tmp8 = 4;
 					}
 				}	
 
@@ -914,11 +911,11 @@ char bg_coll_U() {
 	}
 
 	if (high_byte(currplayer_vel_y) & 0x80) {
-		temp_x = Generic.x + low_word(scroll_x) + (gamemode == GAMEMODE_WAVE || gamemode == GAMEMODE_SNAKE ? 10 : 0); // automatically only the low byte
+		temp_x = Generic.x + low_word(scroll_x) + (gamemode == GAMEMODE_WAVE || gamemode == GAMEMODE_SNAKE ? 4 : 0); // automatically only the low byte
 		
 		storeWordSeparately(
 			add_scroll_y(
-				Generic.y + (currplayer_mini ? byte(0x10 - Generic.height) >> 1 : 0) + 1,
+				Generic.y + ((currplayer_mini ? byte(0x10 - Generic.height) >> 1 : 0) + (gamemode == GAMEMODE_WAVE || gamemode == GAMEMODE_SNAKE ? 0 : 1)),
 				scroll_y
 			), temp_y, temp_room);
 		

@@ -2658,7 +2658,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             await micropip.install('json5');
             setProgress(1/4);
             let tmx = await save(true);
-            pyodide.FS.writeFile('/project/LEVELS/LEVEL DATA/lvlset_A/stereomadness.tmx',tmx);
+            pyodide.FS.writeFile('/project/LEVELS/LEVEL DATA/lvlset_HUGE/stereomadness.tmx',tmx);
             let metadata = saveMetadata(true);
             let fullMetadata = await (await fetch('fdcompiler/project/LEVELS/metadata/METADATA_TEMPLATE_A.json5', {cache: 'no-store'})).text();
             fullMetadata = fullMetadata.replace('--COMPILERPLACEHOLDER--',

@@ -76,9 +76,6 @@ void main(){
 				break;
 			}
 			case STATE_SAVEVALIDATE: {
-				#if !__VS_SYSTEM
-					music_play(song_scheming_weasel);
-				#endif
 				mmc3_set_prg_bank_1(GET_BANK(state_savefile_validate));
 				state_savefile_validate();
 				break;
@@ -216,28 +213,31 @@ void setdefaultoptions() {
 		LEVELCOMPLETE[tmp2] = 0;
 		level_completeness_normal[tmp2] = 0;
 		level_completeness_practice[tmp2] = 0;
+		invisible_coin1_obtained[tmp2] = 0;
+		invisible_coin2_obtained[tmp2] = 0;
+		invisible_coin3_obtained[tmp2] = 0;
+		invisible_LEVELCOMPLETE[tmp2] = 0;
+		invisible_level_completeness_normal[tmp2] = 0;
+		invisible_level_completeness_practice[tmp2] = 0;
 	} while (++tmp2 < (MAX_LEVEL_COMPLETE));
 	tmp2 = 0;
-	do {
-		achievements[tmp2] = 0;
-	} while (++tmp2 < (sizeof(achievements)));
 	invisible = 0;
-	color1 = 0x2A;
-	color2 = 0X2C;		
-	color3 = 0x0F;
+	invisblocks = 0;
 	discomode = 0;
 	icon = 0;
 	trails = 0;
 	retro_mode = 0;
 	//palette_cycle_mode = 0;
 	gameboy_mode = 0;
-	viseffects = 1;
-	invisblocks = 0;
 	cam_seesaw = 0;
 	menu_music = 0;
 	#if !__VS_SYSTEM
-	auto_practicepoints = 1;
 	practice_music_sync = 0;
+	auto_practicepoints = 1;
 	#endif
+	viseffects = 1;
+	color1 = 0x2A;
+	color2 = 0X2C;		
+	color3 = 0x0F;
 	return;
 }

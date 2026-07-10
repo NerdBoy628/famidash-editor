@@ -21,7 +21,7 @@ void state_savefile_validate(){
     
     // if poweroff check is not zero //
 
-    #if __VS_SYSTEM && __THE_ALBUM
+    #if !__VS_SYSTEM && !__THE_ALBUM
         mmc3_set_8kb_chr(MENUBANK);
         mmc3_set_2kb_chr_bank_0(0xFF);  
         mmc3_set_2kb_chr_bank_1(MOUSEBANK); 
@@ -33,21 +33,11 @@ void state_savefile_validate(){
 
         ppu_on_all();
 
-        pal_fade_in();
-
-
-        do {
-            ppu_wait_nmi();
-            oam_clear();
-            mouse_and_cursor();
-            newrand();
-            if (joypad1.press || mouse.left_press || mouse.right_press) break;
-            kandoframecnt++;
-            if (kandoframecnt & 1 && mouse_timer) mouse_timer--;    
-        } while (1);
     #else
         forceNoFadeOut = 0; // not really a state here lmoa
     #endif
+
+    forceNoFadeOut = 1;
 
     gameState = STATE_GAME;
     return;

@@ -210,8 +210,13 @@ char sprite_load_special_behavior(){
 
 	switch(type) {
 		#ifdef FLAG_KANDO_FUN_STUFF	
-			case DEATH_CHANCE: 
-				if ((newrand() & 63) == (newrand() & 63)) {
+			case DEATH_CHANCE:
+				// if ((newrand() & 63) == (newrand() & 63)), paraphrased
+				// attempts to use less tmp variables result in c stack operations
+				cc65_tmp1 = newrand();
+				cc65_tmp2 = newrand();
+				cc65_tmp2 = (cc65_tmp2 ^ cc65_tmp1) & 63;
+				if (cc65_tmp2 == 0) {
 					idx8_store(cube_data, currplayer, cube_data[currplayer] | 1);
 				}
 				triggers_hit[0]++;
@@ -306,8 +311,15 @@ char sprite_load_special_behavior(){
 			return 0x30;
 
 		case COIN1:
-			if (coin1_obtained[level]) {
-				activesprites_type[index] = COINGOTTEN1;
+			if (!invisblocks) {
+				if (coin1_obtained[level]) {
+					activesprites_type[index] = COINGOTTEN1;
+				}
+			}
+			else {
+				if (invisible_coin1_obtained[level]) {
+					activesprites_type[index] = COINGOTTEN1;
+				}
 			}
 		case COINGOTTEN1:
 			if (coin1_timer) {
@@ -316,10 +328,16 @@ char sprite_load_special_behavior(){
 			return 0x10;
 
 		case COIN2:
-			if (coin2_obtained[level]) {
-				activesprites_type[index] = COINGOTTEN2;
+			if (!invisblocks) {
+				if (coin2_obtained[level]) {
+					activesprites_type[index] = COINGOTTEN2;
+				}
 			}
-
+			else {
+				if (invisible_coin2_obtained[level]) {
+					activesprites_type[index] = COINGOTTEN2;
+				}
+			}
 		case COINGOTTEN2:
 			if (coin2_timer) {
 				animate_coin_2();
@@ -327,10 +345,16 @@ char sprite_load_special_behavior(){
 			return 0x10;
 
 		case COIN3:
-			if (coin3_obtained[level]) {
-				activesprites_type[index] = COINGOTTEN3;
+			if (!invisblocks) {
+				if (coin3_obtained[level]) {
+					activesprites_type[index] = COINGOTTEN3;
+				}
 			}
-
+			else {
+				if (invisible_coin3_obtained[level]) {
+					activesprites_type[index] = COINGOTTEN3;
+				}
+			}
 		case COINGOTTEN3:
 			#ifdef level_fingerdash
 				if (level == level_fingerdash && minicoins != 10) {
@@ -747,11 +771,13 @@ void sprite_collide_lookup() {
 		if ((gamemode == GAMEMODE_CUBE || gamemode == GAMEMODE_POGO || gamemode == GAMEMODE_BALL || gamemode == GAMEMODE_ROBOT || gamemode == GAMEMODE_NINJA || gamemode == GAMEMODE_SPIDER || gamemode >= GAMEMODE_SWING) && cube_data[currplayer] & 0x02) {
 			if (controllingplayer->hold & (PAD_A | PAD_UP)) {
 				currplayer_vel_y = 0;
+				idx8_store(cube_data,currplayer,cube_data[currplayer] & 0x01);
 				activesprites_activated[index] = 1;
 			}
 		} else {
 			if (controllingplayer->press & (PAD_A | PAD_UP)) {	
 				currplayer_vel_y = 0;
+				idx8_store(cube_data,currplayer,cube_data[currplayer] & 0x01);
 				activesprites_activated[index] = 1;
 			}
 		}
@@ -1146,7 +1172,7 @@ void sprite_collide(){
 		Generic.height = CUBE_HEIGHT[currplayer_mini]; 
 	} else {
 		Generic.width = WAVE_WIDTH;
-		Generic.height = WAVE_HEIGHT;	// Why not wave height?
+		Generic.height = WAVE_HEIGHT;
 	}
 
 	Generic.x = high_byte(currplayer_x) + 1;
@@ -1187,16 +1213,20 @@ void sprite_collide(){
 						pal_col(5, oneShadeDarker(color2)); 
 						lastgcolortype = tmp4;
 					}
-					else if (tmp4 >= 0xC0){
+					else if (tmp4 >= 0xC0 && !invisblocks){
 						pal_col(6, tmp2);
 						pal_col(5, oneShadeDarker(tmp2)); 
 						lastgcolortype = tmp4;
-					} else {
+					} else if (tmp4 < 0xC0) {
 						pal_col(0, tmp2);
 						pal_col(1, oneShadeDarker(tmp2)); 
 						pal_col(9, oneShadeDarker(tmp2)); 
 						pal_col(0x0D, oneShadeDarker(tmp2)); 
 						lastbgcolortype = tmp4;
+						if (invisblocks) {
+							pal_col(6, tmp2);
+							pal_col(5, oneShadeDarker(tmp2)); 
+						}
 					}
 					pal_set_update();
 					activesprites_type[index] = 0xFF;
@@ -1240,10 +1270,11 @@ void sprite_collide(){
 	} while (++index < max_loaded_sprites);
 	if (gamemode != GAMEMODE_WAVE) {
 		Generic.width = CUBE_WIDTH[currplayer_mini]; 
+		Generic.height = CUBE_HEIGHT[currplayer_mini];
 	} else {
 		Generic.width = WAVE_WIDTH;
+		Generic.height = WAVE_HEIGHT;
 	}
-	Generic.height = CUBE_HEIGHT[currplayer_mini];
 }
 
 

@@ -226,18 +226,27 @@ def export_bg(folder: pathlib.PurePath, levels: Iterable[dict], include_path : p
 			metadata.get('songID', 0),
 			f"({metadata.get('startingSpeed', 0)} << 4) | {metadata.get('startingGameMode', 0)}",
 			f"(${metadata.get('spawnYPositionHi', 0xB0):02X})",  # <- spawn position here
-			f"(${metadata.get('spawnYPositionLow', 0x00):02X})",  # <- spawn position here
-			f"(${metadata.get('scrollYPositionHi', 0x02):02X})",  # <- scroll position here
 			f"(${metadata.get('scrollYPositionLow', 0xEF):02X})",  # <- scroll position here
-			f"(${metadata.get('maxFallSpeed', 0x06):02X})",  # <- max fall speed here
 			" | ".join([
 				f"({int(bool(metadata.get(name)))} << {idx})"
 				for idx, name in enumerate(['forcePlatformer', 'parallaxDisable'])
 			]),  # <- bitfield separate line
-			f"_{metadata.get('decoType', 'NONE')}",
-			getPropFormatted(metadata, 'spikeSet', 'SPIKES', ('A', 'B', 'C'), "_"),
-			getPropFormatted(metadata, 'blockSet', 'BLOCKS', ('A', 'B', 'C', 'D'), "_"),
-			getPropFormatted(metadata, 'sawSet', 'SAWBLADES', ('A',), "_"),
+
+			" | ".join([
+				f"_{metadata.get('decoType', 'NONE')}",			
+				f"(${metadata.get('maxFallSpeed_is_7', 0x00):02X} << 7)",  # <- max fall speed here
+			]),  # <- bitfield separate line
+
+
+			" << 4) | ".join([
+				getPropFormatted(metadata, 'spikeSet', 'SPIKES', ('A', 'B', 'C'), "(_"),
+				getPropFormatted(metadata, 'blockSet', 'BLOCKS', ('A', 'B', 'C', 'D'), "_"),
+			]),  # <- bitfield separate line
+
+			#f"(${metadata.get('maxFallSpeed', 0x06):02X})",  # <- max fall speed here
+			#f"_{metadata.get('decoType', 'NONE')}",
+			#getPropFormatted(metadata, 'spikeSet', 'SPIKES', ('A', 'B', 'C'), "_"),
+			#getPropFormatted(metadata, 'blockSet', 'BLOCKS', ('A', 'B', 'C', 'D'), "_"),
 			f"${metadata.get('startingBackgroundColor', 0):02X}",
 			f"${metadata.get('startingGroundColor', 0):02X}",
 			str(len(lines)),
@@ -250,15 +259,10 @@ def export_bg(folder: pathlib.PurePath, levels: Iterable[dict], include_path : p
 			"Song ID",
 			"Starting game mode and speed",
 			"Spawn Y Position (high byte)",
-			"Spawn Y Position (low byte)",
-			"Y Scroll Position (high byte)",
 			"Y Scroll Position (low byte)",
-			"Max Fall Speed (high byte)",
 			", ".join(["Disable parallax", "Force platformer"][::-1]),
-			"Deco type",
-			"Spike set",
-			"Block set",
-			"Sawblade set",
+			", ".join(["Max Fall Speed is 7?", "Deco type"][::-1]),
+			", ".join(["Spike Set", "Block Set"][::-1]),
 			"Starting background color",
 			"Starting ground color",
 			"Level height"
