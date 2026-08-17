@@ -596,7 +596,8 @@
         let history = [];
         let historyIndex = -1;
         let openPopup = false;
-        let prefs = [1,1,1,1,0,0,1,1]; //autosave, gridlines, attempt, colorPreview, spritePreview, shadow, autodetect, pathline
+        let prefs = [1,1,1,1,0,0,1,1];
+        const prefNames = ['autosave','gridline','attempt','colorPreview','spritePreview','shadow','autoDetect','pathline'];
         let gridSize = [128,32];
         let bgColor = 146;
         let groundColor = 130;
@@ -638,7 +639,7 @@
         if (localStorage.getItem('famidash_editor_prefs')) prefs = JSON.parse(localStorage.getItem('famidash_editor_prefs'));
         while (prefs.length < 8) {prefs.push(1)};
         for (let i = 0; i < 8; i++) {
-            gid(['autosave','gridline','attempt','colorPreview','spritePreview','shadow','autoDetect','pathline'][i]+'Enable').checked = prefs[i];
+            gid(prefNames[i]+'Enable').checked = prefs[i];
         };
         if (localStorage.getItem('famidash_editor_autosave')&&prefs[0]) {
             let loaded = JSON.parse(localStorage.getItem('famidash_editor_autosave'));
@@ -990,14 +991,13 @@
         gid('saveMetadata').addEventListener('click', saveMetadata);
         gid('loadMetadata').addEventListener('click', ()=>{navigator.clipboard.readText().then((pastedText)=>{loadMetadata(pastedText)})});
         gid('editorSettingsButton').addEventListener('click', ()=>{gid('editorSettings').style.display = 'block'});
-        gid('autosaveEnable').addEventListener('click', (e)=>{prefs[0] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('gridlineEnable').addEventListener('click', (e)=>{prefs[1] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('attemptEnable').addEventListener('click', (e)=>{prefs[2] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('colorPreviewEnable').addEventListener('click', (e)=>{prefs[3] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('spritePreviewEnable').addEventListener('click', (e)=>{prefs[4] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('shadowEnable').addEventListener('click', (e)=>{prefs[5] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('autoDetectEnable').addEventListener('click', (e)=>{prefs[6] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
-        gid('pathlineEnable').addEventListener('click', (e)=>{prefs[7] = e.srcElement.checked?1:0; localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs))});
+        for (let i = 0; i < prefNames.length; i++) {
+            gid(`${prefNames[i]}Enable`).addEventListener('click', ()=>{prefsButton(i)})
+        };
+        function prefsButton(x) {
+            prefs[x] = gid(`${prefNames[x]}Enable`).checked?1:0;
+            localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
+        };
         window.addEventListener('resize', ()=>{
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight-240;
@@ -1059,7 +1059,7 @@
                 mouseState = 3;
             };
         }, {passive: false});
-        canvas.addEventListener('mouseup', ()=>{
+        document.addEventListener('mouseup', ()=>{
             if (mouseState==1) {
                 if (tool>0 && tool<5 && !selectionGrid) {drawShape(); draw()};
                 if (tool==5) {
@@ -1249,8 +1249,8 @@
                     [279,331,344,356,362,363,364,382] //parallax
                 ];
                 let container = document.createElement('div');
-                container.classList.add('tileContainer')
-                container.id = `tc${tab}`
+                container.classList.add('tileContainer');
+                container.id = `tc${tab}`;
                 for (let i of tiles) {
                     let btn = document.createElement('canvas');
                     btn.classList.add('tileButton');
@@ -1270,8 +1270,8 @@
                     //btnctx.fillRect(0,16,16,8)
                     //btnctx.fillStyle = '#000';
                     //btnctx.fillText(i,1,24);
-                    btn.addEventListener('click', (e)=>{selectTile(e.srcElement.idx)})
-                    container.appendChild(btn)
+                    btn.addEventListener('click', (e)=>{selectTile(e.srcElement.idx)});
+                    container.appendChild(btn);
                 }
                 let spacer = document.createElement('div');
                 spacer.classList.add('paletteSpacer');
@@ -1289,7 +1289,7 @@
                 newTabctx.imageSmoothingEnabled = false;
                 let [x,y] = [icon%16,Math.floor(icon/16)%16];
                 newTabctx.drawImage((icon<256?tileImg:spriteImg),-x*16,-y*16,256,256);
-                newTab.addEventListener('click', (e)=>{setTab(e.srcElement.idx)})
+                newTab.addEventListener('click', (e)=>{setTab(e.srcElement.idx)});
                 gcl('tabContainer').appendChild(newTab);
             }
             
@@ -1549,7 +1549,16 @@
                 drawShape(true)
             };
             ctx.fillStyle = '#FFF';
-            ctx.fillText(`${dispToGrid(mousepos[0],0)[0]},${dispToGrid(0,mousepos[1])[1]}`,10,15);
+            let cornerText = `${dispToGrid(mousepos[0],0)[0]},${dispToGrid(0,mousepos[1])[1]}  `;
+            if (!selectedArea) cornerText += `Selected ID: ${selectedTile}  `;
+            try {
+                const [x,y] = dispToGrid(mousepos[0],mousepos[1]);
+                if (x<gridSize[0] && x>=0 && y<gridSize[1] && y>=0) {
+                    cornerText += `Tile ID: ${tileGrid[y][x]}  `
+                    cornerText += `Sprite ID: ${spriteGrid[y][x]}`
+                };
+            } catch {};
+            ctx.fillText(cornerText,10,15);
             if (playtesting) {
                 ctx.save();
                 if (prefs[5]) {
@@ -2342,18 +2351,20 @@ ${spriteData.slice(1,-1)}
                     if ([24,76,89,101,107,108,109,127].includes(cell)) spritesetsFound[2] = true;
                     return cell==0?-1:cell%256-1;
                 }).slice(0,gridSize[0]));
-                if (tilesetsFound[0]) {
-                    if (tilesetsFound[1]) {
-                        updateJson(0,'B');
-                    } else {
-                        updateJson(0,'C');
+                if (prefs[6]) {
+                    if (tilesetsFound[0]) {
+                        if (tilesetsFound[1]) {
+                            updateJson(0,'B');
+                        } else {
+                            updateJson(0,'C');
+                        };
                     };
-                };
-                if (tilesetsFound[2] || spritesetsFound[2]) updateJson(2,true);
-                if (spritesetsFound[0] > spritesetsFound[1]) {
-                    updateJson(3,'DECO1');
-                } else if (spritesetsFound[0] > spritesetsFound[1]) {
-                    updateJson(3,'EXTRASPRITES');
+                    if (tilesetsFound[2] || spritesetsFound[2]) updateJson(2,true);
+                    if (spritesetsFound[0] > spritesetsFound[1]) {
+                        updateJson(3,'DECO1');
+                    } else if (spritesetsFound[0] > spritesetsFound[1]) {
+                        updateJson(3,'EXTRASPRITES');
+                    };
                 };
                 saveHistory();
             }
@@ -2378,7 +2389,7 @@ ${spriteData.slice(1,-1)}
 	decoType: "${options[3]}",
 	spikeSet: "${options[1]}",
 	blockSet: "${options[0]}",
-	sawSet: "A",
+    sawSet: "A",
 	difficulty: "${options[11]}",
 	stars: ${options[10]},
 	songID: "song_${(options[12]+' '+options[13]).toLowerCase().replace(/  +/g, ' ').trim().replaceAll(' ','_')}",
@@ -2386,7 +2397,7 @@ ${spriteData.slice(1,-1)}
 	startingSpeed: ${options[8]},
 	startingBackgroundColor: 0x${options[5].toString(16).padStart(2,'0')},
 	startingGroundColor: 0x${options[6].toString(16).padStart(2,'0')},
-	maxFallSpeed: 0x0${options[9]},
+	maxFallSpeed_is_7: 0x0${options[9]==7?1:0},
 	parallaxDisable: ${options[2]?'true':'false'},
 	forcePlatformer: ${options[4]},
 	spawnYPositionHi: 0x${options[15].toString(16).padStart(2,'0')},
