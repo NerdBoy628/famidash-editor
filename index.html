@@ -812,6 +812,7 @@
             if (currentState!=compiledState) {
                 compiledState = currentState;
                 await buildMain(true);
+                levelSong.pause();
             };
             const url = URL.createObjectURL(new Blob([nes.romData], { type: 'application/octet-stream' }));
             const a = document.createElement('a');
@@ -1581,6 +1582,10 @@
                 for (let i = 0; i < pathline.length; i++) {
                     ctx.moveTo(camera.x+(pathline[i][0]*2.5+20)*camera.z,camera.y+(pathline[i][1]*2.5-cellSize*(42.5-gridSize[1]))*camera.z);
                     ctx.lineTo(camera.x+(pathline[i+1]?.[0]*2.5+20)*camera.z,camera.y+(pathline[i+1]?.[1]*2.5-cellSize*(42.5-gridSize[1]))*camera.z);
+                    if (pathline[i][2]!==null && pathline[i+1]?.[2]!==null) {
+                        ctx.moveTo(camera.x+(pathline[i][0]*2.5+20)*camera.z,camera.y+(pathline[i][2]*2.5-cellSize*(42.5-gridSize[1]))*camera.z);
+                        ctx.lineTo(camera.x+(pathline[i+1]?.[0]*2.5+20)*camera.z,camera.y+(pathline[i+1]?.[2]*2.5-cellSize*(42.5-gridSize[1]))*camera.z);
+                    };
                 };
                 ctx.stroke();
             };
@@ -2863,6 +2868,8 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                                 y: nes.cpu.mem[0x04AD]+nes.cpu.mem[0x04AE]*240-224,
                                 playerX: nes.cpu.mem[0x0069], //relative
                                 playerY: nes.cpu.mem[0x006B], //relative
+                                player2Y: nes.cpu.mem[0x0444], //player 1 also exists at 0x0442
+                                dual: nes.cpu.mem[0x0096],
                                 parallaxScroll: nes.cpu.mem[0x04A4],
                                 bgColor: nes.ppu.vramMem[0x3F00]+128,
                                 objColor: nes.ppu.vramMem[0x3F03],
@@ -2888,7 +2895,9 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                                     if (Math.abs(levelSong.currentTime - songFrames/60) > .05) levelSong.currentTime = songFrames/60;
                                     songFrames++;
                                     if (playtestState.x+playtestState.playerX==0) pathline = [];
-                                    pathline.push([playtestState.x+playtestState.playerX, playtestState.y+playtestState.playerY]);
+                                    pathline.push([
+                                        playtestState.x+playtestState.playerX, playtestState.y+playtestState.playerY,
+                                        playtestState.dual?playtestState.y+playtestState.player2Y:null]);
                                 };
                             } else { //nes.cpu.mem[0x036D]==0x29
                                 levelSong.pause();
