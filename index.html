@@ -358,10 +358,11 @@
     <img id="redo" class="roundButtonImg" src="ui/redo.png" style="left: 141px; top: 21px">
     <img id="btn-1" class="roundButtonImg" src="ui/trash.png" style="left: 261px; top: 21px">
     <div id="saveContainer">
-        <button id="exportRom" class="smallButton grayButton saveButton" style="left: 0px; top: 7px; width: 140px; text-wrap:nowrap">Export ROM</button>
-        <button id="exportImage" class="smallButton grayButton saveButton" style="left: 0px; top: 47px; width: 140px; text-wrap:nowrap">Export PNG</button>
-        <button id="save" class="smallButton grayButton saveButton" style="left: 150px; top: 7px">Save TMX</button>
-        <button id="load" class="smallButton grayButton saveButton" style="left: 150px; top: 47px">Load TMX</button>
+        <button id="exportFdlvl" class="smallButton grayButton saveButton" style="left: 0px; top: 7px; width: 140px; text-wrap:nowrap">Save FDLVL</button>
+        <button id="exportRom" class="smallButton grayButton saveButton" style="left: 150px; top: 7px; width: 140px; text-wrap:nowrap">Export ROM</button>
+        <button id="exportImage" class="smallButton grayButton saveButton" style="left: 150px; top: 47px; width: 140px; text-wrap:nowrap">Export PNG</button>
+        <button id="save" class="smallButton grayButton saveButton" style="left: 300px; top: 7px">Save TMX</button>
+        <button id="load" class="smallButton grayButton saveButton" style="left: 300px; top: 47px">Load TMX</button>
     </div>
     <img id="saveIcon" class="roundButtonImg" src="ui/save.png" style="right: 139px; top: 21px">
     <img id="play" class="roundButtonImg" src="ui/play.png" style="left: 21px; top: 141px">
@@ -797,10 +798,10 @@
         gid('redo').addEventListener('click', redo);
         gid('saveIcon').addEventListener('click', ()=>{
             if (gid('saveContainer').style.width == '0px') {
-                gid('save').style.opacity = gid('load').style.opacity = gid('exportRom').style.opacity = gid('exportImage').style.opacity = '100%';
-                gid('saveContainer').style.width = '340px';
+                gid('save').style.opacity = gid('load').style.opacity = gid('exportRom').style.opacity = gid('exportImage').style.opacity = gid('exportFdlvl').style.opacity = '100%';
+                gid('saveContainer').style.width = '480px';
             } else {
-                gid('save').style.opacity = gid('load').style.opacity = gid('exportRom').style.opacity = gid('exportImage').style.opacity = '0%';
+                gid('save').style.opacity = gid('load').style.opacity = gid('exportRom').style.opacity = gid('exportImage').style.opacity = gid('exportFdlvl').style.opacity = '0%';
                 gid('saveContainer').style.width = '0px';
             }
         });
@@ -823,6 +824,7 @@
             URL.revokeObjectURL(url);
         });
         gid('exportImage').addEventListener('click', exportImage);
+        gid('exportFdlvl').addEventListener('click', saveFDLVL);
         gid('play').addEventListener('click', async ()=>{
             if (playtesting) {
                 playtesting = false;
@@ -923,8 +925,8 @@
                 spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
                 options = JSON.parse(JSON.stringify(optionsDefault));
                 bgColor = 146; groundColor = 130; objColor = 176;
-                saveHistory(); updateJson(14,[]);
                 fileHandle = undefined;
+                saveHistory(); updateJson(14,[]);
             };
         });
         gid('settingsButton').addEventListener('click', ()=>{gid('levelSettings').style.display = 'block'});
@@ -1229,6 +1231,7 @@
                 gid('metadataPopup').style.display = 'block';
                 gid('metadataSelect').input = input;
             };
+            if (droppedFile.name.endsWith('.fdlvl')) loadFDLVL(droppedFile);
             draw();
         });
         gid('metadataSelect').addEventListener('change', (e)=>{
@@ -2552,6 +2555,122 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                 gid('toggleSprites').textContent = layerShown[layer]?'Hide Sprites':'Show Sprites'
             } else {
                 gid('toggleTiles').textContent = layerShown[layer]?'Hide Tiles':'Show Tiles'
+            };
+        };
+
+        function saveFDLVL() {
+            /*
+            Byte: 000 000 0 0 - speed, gamemode, platformer, slopes
+            Byte: -- 000000   - bg
+            Byte: -- 000000   - ground
+            Byte: 00 00 00 -0 - block, spike, sprite, fallspeed
+            4 Bytes:          - spawn/scroll Y
+            Byte: 0000 -000   - stars, difficulty
+            Str: One byte for length, one byte per char - Upper
+            Str: One byte for length, one byte per char - Lower
+            Str: One byte for length, one byte per char - Song (excluding "song_")
+            Byte: -- 000000   - height
+            2 Bytes:          - width
+            1 Byte each:      - tiles
+            All remaining data is sprites:
+                ID (1 byte), x (2 bytes), y (1 byte), xOffset (1 byte signed), yOffset (1 byte signed)
+            Length of file: 15+lenUpper+lenLower+lenSong+#tiles+6*sprites
+            */
+            let binary = new Uint8Array(
+                15 + options[12].length + options[13].length + options[19].length + gridSize[0]*gridSize[1]
+                + spriteGrid.reduce((acc,sub)=>acc+sub.filter(i=>i!==-1).length, 0)*6
+            );
+            let pointer = 0;
+            function write(x) {
+                if (Array.isArray(x)) {
+                    binary.set(x,pointer); pointer += x.length;
+                } else {
+                    binary[pointer] = x; pointer++;
+                }
+            };
+            write((options[8]<<5) + (options[7]<<2) + (options[4]<<1) + (options[2]<<0));
+            write(options[5]);
+            write(options[6]);
+            write(('ABCD'.indexOf(options[0])<<6) + ('ABC'.indexOf(options[1])<<4) + 
+            (['DECO1','DECOCLOUD','EXTRASPRITES1'].indexOf(options[3])<<2) + (options[9]==7?1:0));
+            for (let i = 15; i < 19; i++) write(options[i]);
+            write((options[10]<<4) + Array.from(gid('setDifficulty').options).map(i=>i.value).indexOf(options[11]));
+            write(options[12].length);
+            write(options[12].split('').map(x=>x.charCodeAt(0)));
+            write(options[13].length);
+            write(options[13].split('').map(x=>x.charCodeAt(0)));
+            write(options[19].length);
+            write(options[19].split('').map(x=>x.charCodeAt(0)));
+            write(gridSize[1]);
+            write(gridSize[0]>>8);
+            write(gridSize[0]%256);
+            write(tileGrid.flat());
+            for (let y = 0; y < gridSize[1]; y++) {
+                for (let x = 0; x < gridSize[0]; x++) {
+                    if (spriteGrid[y][x] != -1) {
+                        write(spriteGrid[y][x]);
+                        write(x>>8); write(x%256);
+                        write(y);
+                        let shift;
+                        try {shift = options[14].find(i=>i[0]==JSON.stringify([x,y]))} catch {};
+                        if (shift) {shift = structuredClone(shift[1])} else {shift = [0,0]};
+                        write(shift[0]);
+                        write(shift[1]);
+                    };
+                };
+            };
+            const url = URL.createObjectURL(new Blob([binary], { 'application/octet-stream': ['.fdlvl'] }));
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'level.fdlvl';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        async function loadFDLVL(data) {
+            const arrayBuffer = await data.arrayBuffer();
+            const binary = new Uint8Array(arrayBuffer);
+            let pointer = 0;
+            updateJson(0, 'ABCD'[(binary[3] & 0b11000000)>>6]);
+            updateJson(1, 'ABC'[(binary[3] & 0b00110000)>>4]);
+            updateJson(2, (binary[0] & 0b00000001)==1);
+            updateJson(3, ['DECO1','DECOCLOUD','EXTRASPRITES1'][(binary[3] & 0b00001100)>>2]);
+            updateJson(4, ((binary[0] & 0b00000010)>>1)==1);
+            updateJson(5, binary[1]);
+            updateJson(6, binary[2]);
+            updateJson(7, (binary[0] & 0b00011100)>>2);
+            updateJson(8, (binary[0] & 0b11100000)>>5);
+            updateJson(9, (binary[3] & 0b00000001)?7:6);
+            updateJson(10, (binary[8] & 0b11110000)>>4);
+            updateJson(11, Array.from(gid('setDifficulty').options).map(i=>i.value)[binary[8] & 0b00001111]);
+            for (let i = 0; i < 4; i++) {updateJson(15+i, binary[4+i])};
+            pointer = 9;
+            updateJson(12, new TextDecoder().decode(binary.subarray(pointer+1, pointer+1+binary[pointer])));
+            pointer += binary[pointer]+1;
+            updateJson(13, new TextDecoder().decode(binary.subarray(pointer+1, pointer+1+binary[pointer])));
+            pointer += binary[pointer]+1;
+            updateJson(19, new TextDecoder().decode(binary.subarray(pointer+1, pointer+1+binary[pointer])));
+            pointer += binary[pointer]+1;
+            gridSize[1] = binary[pointer];
+            pointer++;
+            gridSize[0] = binary[pointer]*256+binary[pointer+1];
+            pointer += 2;
+            tileGrid = Array(gridSize[1]);
+            for (let y = 0; y < gridSize[1]; y++) {
+                tileGrid[y] = binary.slice(pointer, pointer+gridSize[0]);
+                pointer += gridSize[0];
+            };
+            spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
+            options[14] = [];
+            while (pointer < binary.length) {
+                let [x,y] = [binary[pointer+1]*256+binary[pointer+2], binary[pointer+3]];
+                spriteGrid[y][x] = binary[pointer];
+                let shift = [binary[pointer+4], binary[pointer+5]];
+                if (JSON.stringify(shift) != '[0,0]') {
+                    shift.push([JSON.stringify([x,y]), [(shift[0]<<24)>>24, (shift[1]<<24)>>24]])
+                };
+                pointer += 6;
             };
         };
 
