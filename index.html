@@ -1030,6 +1030,7 @@
         canvas.addEventListener('mousedown', (e)=>{
             e.preventDefault();
             if (gid('levelSettings').style.display != 'none') return;
+            if (playtesting) return;
             [drag[0],drag[1]] = mousepos;
             if (e.button == 0) {
                 mouseState = 1;
