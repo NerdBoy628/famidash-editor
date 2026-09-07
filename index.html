@@ -1176,8 +1176,10 @@
                     };
                 };
             };
-            mouseState = 0;
-            saveHistory();
+            if (mouseState != 0) {
+                mouseState = 0;
+                saveHistory();
+            };
         });
         canvas.addEventListener('touchstart', (e)=>{
             if (e.touches.length === 2) {
