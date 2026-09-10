@@ -37,7 +37,7 @@
             image-rendering: crisp-edges;
             -ms-interpolation-mode: nearest-neighbor;
         }
-        select {
+        select, input[type=number] {
             font-family: Pusab;
             color: white;
             font-size: 20px;
@@ -58,6 +58,7 @@
             border-bottom: 3px solid #222;
             border-radius: 10px;
         }
+        input[type=checkbox] { width: 30px; height: 30px }
         .rectButton {
             font-family: Pusab;
             color: white;
@@ -83,7 +84,6 @@
             image-rendering: initial;
             image-rendering: initial;
             -ms-interpolation-mode: initial;
-            touch-action: manipulation;
             width: 96px;
             transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
         }
@@ -276,6 +276,12 @@
             padding: 10px;
             width: 75vw;
             table-layout: fixed;
+        }
+        #editorSettings > table > tbody > tr > td > h2 {
+            display: flex;
+            align-items: center;
+            justify-content: right;
+            margin-top: 10px;
         }
         td { vertical-align: top; text-align: center }
         #editorSettings {
@@ -514,22 +520,15 @@
     <div id="editorSettings" class="menuPopup" style="display: none">
         <h1>Editor Settings</h1>
         <table class="settingsTable" style="width: 37vw"><tr><td style="padding-right: 8vw">
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Autosave:
-                <input id="autosaveEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Gridlines:
-                <input id="gridlineEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Attempt Counter:
-                <input id="attemptEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Color Preview:
-                <input id="colorPreviewEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Sprite Preview:
-                <input id="spritePreviewEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Playtest Shadow:
-                <input id="shadowEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Detect Set on Import:
-                <input id="autoDetectEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
-            <h2 style="display: flex; align-items: center; justify-content: right; margin-top: 10px">Pathline:
-                <input id="pathlineEnable" type="checkbox" style="width: 30px; height: 30px"></h2>
+            <h2>Autosave:<input id="autosaveEnable" type="checkbox"></h2>
+            <h2>Gridlines:<input id="gridlineEnable" type="checkbox"></h2>
+            <h2>Attempt Counter:<input id="attemptEnable" type="checkbox"></h2>
+            <h2>Color Preview:<input id="colorPreviewEnable" type="checkbox"></h2>
+            <h2>Sprite Preview:<input id="spritePreviewEnable" type="checkbox"></h2>
+            <h2>Playtest Shadow:<input id="shadowEnable" type="checkbox"></h2>
+            <h2>Detect Set on Import:<input id="autoDetectEnable" type="checkbox"></h2>
+            <h2>Pathline:<input id="pathlineEnable" type="checkbox"></h2>
+            <h2>Fix Song Drift:<input id="fixSongDriftEnable" type="checkbox"></h2>
             <button class="smallButton" style="width: 100px; height: 50px; margin-left: 10vw; font-size: 30px"
             onclick="gid('editorSettings').style.display = 'none'">OK</button>
         </td></tr></table>
@@ -597,8 +596,8 @@
         let history = [];
         let historyIndex = -1;
         let openPopup = false;
-        let prefs = [1,1,1,1,0,0,1,1];
-        const prefNames = ['autosave','gridline','attempt','colorPreview','spritePreview','shadow','autoDetect','pathline'];
+        let prefs = [1,1,1,1,0,0,1,1,1];
+        const prefNames = ['autosave','gridline','attempt','colorPreview','spritePreview','shadow','autoDetect','pathline','fixSongDrift'];
         let gridSize = [128,32];
         let bgColor = 146;
         let groundColor = 130;
@@ -638,8 +637,8 @@
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
         };
         if (localStorage.getItem('famidash_editor_prefs')) prefs = JSON.parse(localStorage.getItem('famidash_editor_prefs'));
-        while (prefs.length < 8) {prefs.push(1)};
-        for (let i = 0; i < 8; i++) {
+        while (prefs.length < 9) {prefs.push(1)};
+        for (let i = 0; i < 9; i++) {
             gid(prefNames[i]+'Enable').checked = prefs[i];
         };
         if (localStorage.getItem('famidash_editor_autosave')&&prefs[0]) {
@@ -981,10 +980,10 @@
         gid('setDifficulty').addEventListener('change', (e)=>{updateJson(11, e.srcElement.value)});
         gid('setUpperText').addEventListener('input', (e)=>{updateJson(12, e.srcElement.value)});
         gid('setLowerText').addEventListener('input', (e)=>{updateJson(13, e.srcElement.value)});
-        gid('setSpawnHi').addEventListener('input', (e)=>{updateJson(15, parseInt(e.srcElement.value,16))});
-        gid('setSpawnLo').addEventListener('input', (e)=>{updateJson(16, parseInt(e.srcElement.value,16))});
-        gid('setScrollHi').addEventListener('input', (e)=>{updateJson(17, parseInt(e.srcElement.value,16))});
-        gid('setScrollLo').addEventListener('input', (e)=>{updateJson(18, parseInt(e.srcElement.value,16))});
+        gid('setSpawnHi').addEventListener('change', (e)=>{updateJson(15, parseInt(0+e.srcElement.value,16))});
+        gid('setSpawnLo').addEventListener('change', (e)=>{updateJson(16, parseInt(0+e.srcElement.value,16))});
+        gid('setScrollHi').addEventListener('change', (e)=>{updateJson(17, parseInt(0+e.srcElement.value,16))});
+        gid('setScrollLo').addEventListener('change', (e)=>{updateJson(18, parseInt(0+e.srcElement.value,16))});
         updateJson(0,options[0]);
         gid('audioLoad').addEventListener('change', (e)=>{
             if (levelSong.src) URL.revokeObjectURL(levelSong.src);
@@ -3014,7 +3013,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                                         if (levelSong.src) levelSong.play();
                                         muteGame = true;
                                     };
-                                    if (Math.abs(levelSong.currentTime - songFrames/60) > .05) levelSong.currentTime = songFrames/60;
+                                    if (prefs[8] && Math.abs(levelSong.currentTime - songFrames/60) > .05) levelSong.currentTime = songFrames/60;
                                     songFrames++;
                                     if (playtestState.x+playtestState.playerX==0) pathline = [];
                                     pathline.push([
