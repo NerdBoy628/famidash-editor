@@ -2247,13 +2247,14 @@
             prevColors = [bgColor,groundColor,objColor];
 
             setBgCtx.drawImage(colorsImg,0,0,280,70);
+            let x,y;
             if ((options[5]+128)%16 == 0 || (options[5]+128)%16 == 15) {
                 [x,y] = [6,(options[5]+128)==143?12:Math.floor((options[5]+128)/16-7)*17+12]
             } else {
                 [x,y] = [(options[5]+128)%16*21.5+6,Math.floor((options[5]+128)/16-8)*23+14]
             };
             setBgCtx.lineCap = 'round'; 
-            for (style of [['white',3],['black',2]]) {
+            for (let style of [['white',3],['black',2]]) {
                 setBgCtx.strokeStyle = style[0];
                 setBgCtx.lineWidth = style[1];
                 setBgCtx.beginPath();
@@ -2269,7 +2270,7 @@
                 [x,y] = [(options[6]+128)%16*21.5+6,Math.floor((options[6]+128)/16-8)*23+14]
             };
             setGCtx.lineCap = "round"; 
-            for (style of [['white',3],['black',2]]) {
+            for (let style of [['white',3],['black',2]]) {
                 setGCtx.strokeStyle = style[0];
                 setGCtx.lineWidth = style[1];
                 setGCtx.beginPath();
