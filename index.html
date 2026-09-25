@@ -421,6 +421,8 @@
                     <option value=3>Delete Column</option>
                 </select>
             </div>
+            <button id="startPosTool" class="toolButton">Start Pos<br>
+                <input id="songOffset" type="number" class="grayButton" style="width: 50px" min=0 value=0></button>
             <button id="clearButton" class="toolButton">Clear<br>🔄</button>
         </div>
         <div class="vr" style="top: 0px; right: 250px"></div>
@@ -586,7 +588,7 @@
         let fileHandle, autosaveTimeout;
         let compiledState = false; //editor state from when game was last compiled, don't recompile if identical to current state
         let openTab = 0;
-        let tool = 0; //pen, line, rect, fill, move, slope, structure, insert
+        let tool = 0; //pen, line, rect, fill, move, slope, structure, insert, startpos
         let camera = {x: 40, y: -1650+window.innerHeight, z: 1.01};
         let selectedTile = 16;
         let selectionGrid = false;
@@ -609,6 +611,7 @@
         const levelSong = new Audio();
         let songFrames = -1;
         let muteGame = false; // replace ingame audio with uploaded audio
+        let startPos = [0,gridSize[1]-1];
         const cellSize = 40;
         const optionsDefault = [
             'A', //block set (0)
@@ -812,7 +815,7 @@
         gid('load').addEventListener('click', ()=>{gid('fileLoad').click()});
         gid('fileLoad').addEventListener('change', (e)=>{load(e.target.files[0])});
         gid('exportRom').addEventListener('click', async ()=>{
-            let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options]);
+            let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options,startPos]);
             if (currentState!=compiledState) {
                 compiledState = currentState;
                 await buildMain(true);
@@ -834,7 +837,7 @@
                 gid('play').src = 'ui/play.png';
                 levelSong.pause();
             } else {
-                let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options]);
+                let currentState = JSON.stringify([tileGrid,spriteGrid,gridSize,options,startPos]);
                 if (currentState==compiledState) {
                     nes.reloadROM();
                 } else {
@@ -878,9 +881,10 @@
         gid('moveTool').addEventListener('click', ()=>{toolButton(5)});
         gid('structureTool').addEventListener('click', ()=>{toolButton(6)});
         gid('insertTool').addEventListener('click', ()=>{toolButton(7)});
+        gid('startPosTool').addEventListener('click', ()=>{toolButton(8)});
         function toolButton(x) {
             tool = x;
-            const tools = ['pen','line','rect','fill','slope','move','structure','insert'];
+            const tools = ['pen','line','rect','fill','slope','move','structure','insert','startPos'];
             for (let i of tools) {gid(`${i}Tool`).classList.remove('cyanButton')};
             gid(`${tools[tool]}Tool`).classList.add('cyanButton');
         };
@@ -902,6 +906,7 @@
         });
         gid('heightInput').addEventListener('change', ()=>{
             camera.y += (gridSize[1] - gid('heightInput').value)*cellSize*camera.z;
+            startPos[1] += gid('heightInput').value-gridSize[1];
             for (let i = 0; i < options[14].length; i++) {
                 let temp = JSON.parse(options[14][i][0]);
                 temp[1] += heightInput.value - gridSize[1];
@@ -921,6 +926,7 @@
         gid('clearButton').addEventListener('click', ()=>{
             if (window.confirm('Are you sure you want to clear all tiles and sprites?')) {
                 gridSize = [128,32];
+                startPos = [0,gridSize[1]-1];
                 [widthInput.value, heightInput.value] = gridSize;
                 widthText.textContent = `Width: ${widthInput.value}`;
                 heightText.textContent = `Height: ${heightInput.value}`;
@@ -1055,6 +1061,12 @@
                             };
                         };
                     } else if (tool==6) structure();
+                    else if (tool==8) {
+                        let [x,y] = dispToGrid(drag[0],drag[1]);
+                        if (x>=0 && x<gridSize[0] && y>=0 && y<gridSize[1]) {
+                            startPos = [x,Math.max(y,gridSize[1]-16)];
+                        };
+                    }
                 };
                 draw();
             };
@@ -1523,6 +1535,13 @@
                         Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
                         Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
                     );
+                } else if (tool==8) {
+                    ctx.drawImage(
+                        startPosImg, 0, 0, 16, 16,
+                        Math.floor((mousepos[0]-camera.x)/camera.z/cellSize)*cellSize*camera.z+camera.x,
+                        Math.floor((mousepos[1]-camera.y)/camera.z/cellSize)*cellSize*camera.z+camera.y,
+                        cellSize*camera.z, cellSize*camera.z
+                    );
                 } else if (tool==6) { // do nothing
                 } else if (selectionGrid && (tool==0 || (tool==5 && mouseState==1))) {
                     for (let i = 0; i < 2; i++) {
@@ -1539,6 +1558,14 @@
                         };
                     };
                 };
+            };
+            if (tool==8) {
+                ctx.drawImage(
+                    startPosImg,
+                    startPos[0]*cellSize*camera.z + camera.x,
+                    (startPos[1])*cellSize*camera.z + camera.y,
+                    cellSize*camera.z, cellSize*camera.z
+                )
             };
             if (selectionGrid && !playtesting) {
                 ctx.globalAlpha = 0.3;
@@ -2287,11 +2314,11 @@
             let tileData = '';
             let spriteData = '';
             for (let y = 0; y < gridSize[1]; y++) {
-                tileData = `${tileData}\n${tileGrid[y].map((x)=>x+1).join(',')},`;
-                spriteData = `${spriteData}\n${spriteGrid[y].map((x)=>(x==-1)?0:x+257).join(',')},`;
+                tileData = `${tileData}\n${tileGrid[y].slice(getText?startPos[0]:0,gridSize[0]).map((x)=>x+1).join(',')},`;
+                spriteData = `${spriteData}\n${spriteGrid[y].slice(getText?startPos[0]:0,gridSize[0]).map((x)=>(x==-1)?0:x+257).join(',')},`;
             };
             let output = `<?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="${gridSize[0]}" height="${gridSize[1]}" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="${gridSize[0]-(getText?startPos[0]:0)}" height="${gridSize[1]}" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
  <editorsettings>
   <chunksize width="16" height="27"/>
   <export target="stereomadness.csv" format="csv"/>
@@ -2308,12 +2335,12 @@
  <imagelayer id="4" name="Image Layer 2" offsetx="0" offsety="${gridSize[1]*16}" repeatx="1">
   <image source="../../../GRAPHICS/ground.bmp" width="80" height="32"/>
  </imagelayer>
- <layer id="1" width="${gridSize[0]}" height="${gridSize[1]}">
+ <layer id="1" width="${gridSize[0]-(getText?startPos[0]:0)}" height="${gridSize[1]}">
   <data encoding="csv">
 ${tileData.slice(1,-1)}
 </data>
  </layer>
- <layer id="2" name="SP" width="${gridSize[0]}" height="${gridSize[1]}">
+ <layer id="2" name="SP" width="${gridSize[0]-(getText?startPos[0]:0)}" height="${gridSize[1]}">
 <data encoding="csv">
 ${spriteData.slice(1,-1)}
 </data>
@@ -2422,7 +2449,7 @@ ${spriteData.slice(1,-1)}
 	spawnYPositionHi: 0x${options[15].toString(16).padStart(2,'0')},
 	spawnYPositionLow: 0x${options[16].toString(16).padStart(2,'0')},
 	scrollYPositionHi: 0x${options[17].toString(16).padStart(2,'0')},
-	scrollYPositionLow: 0x${options[18].toString(16).padStart(2,'0')},
+	scrollYPositionLow: 0x${(255-(255-(options[18]-(gridSize[1]-startPos[1]-1)*16))%256).toString(16).padStart(2,'0')},
 	objectOffsets: ${objectOffsets}
 }`;
             if (getText==true) {
@@ -2994,7 +3021,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                             nes.ppu.palTable.makeTables();
                             nes.frame();
                             playtestState = {
-                                x: (nes.cpu.mem[0x04A6]+nes.cpu.mem[0x04A7]*256+nes.cpu.mem[0x04A8]* 2**16 +nes.cpu.mem[0x04A9]* 2**24) % 2**32,
+                                x: (nes.cpu.mem[0x04A6]+nes.cpu.mem[0x04A7]*256+nes.cpu.mem[0x04A8]* 2**16 +nes.cpu.mem[0x04A9]* 2**24) % 2**32 + startPos[0]*16,
                                 y: nes.cpu.mem[0x04AD]+nes.cpu.mem[0x04AE]*240-224,
                                 playerX: nes.cpu.mem[0x0069], //relative
                                 playerY: nes.cpu.mem[0x006B], //relative
@@ -3024,7 +3051,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                                     };
                                     if (prefs[8] && Math.abs(levelSong.currentTime - songFrames/60) > .05) levelSong.currentTime = songFrames/60;
                                     songFrames++;
-                                    if (playtestState.x+playtestState.playerX==0) pathline = [];
+                                    if (playtestState.x+playtestState.playerX-startPos[0]*16==0) pathline = [];
                                     pathline.push([
                                         playtestState.x+playtestState.playerX, playtestState.y+playtestState.playerY,
                                         playtestState.dual?playtestState.y+playtestState.player2Y:null]);
@@ -3032,7 +3059,7 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                             } else { //nes.cpu.mem[0x036D]==0x29
                                 levelSong.pause();
                                 muteGame = false;
-                                songFrames = -1;
+                                songFrames = -1+parseInt(gid('songOffset').value);
                             };
                             if (nes.cpu.mem[0x01FE]==0x46) {
                                 playtesting = false;
