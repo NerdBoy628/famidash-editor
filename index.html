@@ -722,25 +722,29 @@
         ];
         // PRELOAD IMAGES
         let imgPreload = [];
-        for (let i of ['parallax.bmp','noparallax.bmp']) {
-            const img = new Image();
-            img.src = i;
-            imgPreload.push(img);
+        preloadImages();
+        function preloadImages() {
+            imgPreload = [];
+            for (let i of ['parallax.bmp','noparallax.bmp']) {
+                const img = new Image();
+                img.src = i;
+                imgPreload.push(img);
+            };
+            for (let blocks of ['a','b','c','d']) {
+                for (let spikes of ['a','b','c']) {
+                    for (let slopes of ['a','none']) {
+                        const img = new Image();
+                        img.src = `tilesets/Blocks${blocks}Spikes${spikes}SawsaSlopes${slopes}.png`;
+                        imgPreload.push(img);
+                    }}};
+            for (let i = 0; i < 128; i++) {
+                if (spriteFrames[i]) {
+                    for (let j = 0; j < spriteFrames[i]; j++) {
+                        const img = new Image();
+                        img.src = `sprites/${i}_${j}.png`;
+                        imgPreload.push(img);
+                    }}};
         };
-        for (let blocks of ['a','b','c','d']) {
-            for (let spikes of ['a','b','c']) {
-                for (let slopes of ['a','none']) {
-                    const img = new Image();
-                    img.src = `tilesets/Blocks${blocks}Spikes${spikes}SawsaSlopes${slopes}.png`;
-                    imgPreload.push(img);
-                }}};
-        for (let i = 0; i < 128; i++) {
-            if (spriteFrames[i]) {
-                for (let j = 0; j < spriteFrames[i]; j++) {
-                    const img = new Image();
-                    img.src = `sprites/${i}_${j}.png`;
-                    imgPreload.push(img);
-                }}};
 
         let mousepos = [0,0];
         let drag = [0,0,0,0];
@@ -1359,6 +1363,7 @@
             };
         };
         function draw() {
+            if (imgPreload.length == 0) preloadImages();
             if (!prefs[3]) {bgColor = 146; groundColor = 130; objColor = 176};
             if (playtesting) {
                 [bgColor, groundColor, objColor] = [playtestState.bgColor, playtestState.groundColor, playtestState.objColor]
@@ -1452,6 +1457,10 @@
                                     (x+shift[0]/16)*cellSize*camera.z + camera.x, (y+shift[1]/16)*cellSize*camera.z + camera.y,
                                     cellSize*camera.z*previewSpriteImg.naturalWidth/16, cellSize*camera.z*previewSpriteImg.naturalHeight/16
                                 );
+                            };
+                            if (previewSpriteImg.naturalWidth == 0) {
+                                console.log('Image unloaded');
+                                imgPreload = [];
                             };
                         } else {
                             drawCell(
