@@ -647,6 +647,7 @@
         if (localStorage.getItem('famidash_editor_autosave')&&prefs[0]) {
             let loaded = JSON.parse(localStorage.getItem('famidash_editor_autosave'));
             [tileGrid,spriteGrid,gridSize,] = loaded;
+            startPos = [0,gridSize[1]-1];
             for (let i = 0; i < 20; i++) {
                 updateJson(i,loaded[3][i])
             };
@@ -1741,6 +1742,7 @@
                     };
                 };
             } else {
+                if (!layerShown[(selectedTile>255)?1:0]) return;
                 let [x,y] = dispToGrid(mousepos[0],mousepos[1]);
                 if (pos) [x,y] = pos;
                 if (x < 0 || y < 0 || x >= gridSize[0] || y >= gridSize[1]) return;
@@ -2379,6 +2381,7 @@ ${spriteData.slice(1,-1)}
             reader.onload = (e)=>{
                 data = e.target.result;
                 gridSize = [parseInt(data.split('width="')[1].split('"')[0]), parseInt(data.split('height="')[1].split('"')[0])];
+                startPos = [0,gridSize[1]-1];
                 [gid('widthInput').value, gid('heightInput').value] = gridSize;
                 gid('widthText').textContent = `Width: ${gid('widthInput').value}`;
                 gid('heightText').textContent = `Height: ${gid('heightInput').value}`;
@@ -2833,7 +2836,9 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
             log('Loading files...');
             if (firstRun) pyodidePromise = loadPyodide();
             pyodide = await pyodidePromise;
-            if (firstRun) await loadProjectInto(pyodide);
+            try {if (firstRun) await loadProjectInto(pyodide)} catch (e) {
+                console.warn('Error unpacking source code, probably means it was already unpacked')
+            };
             log('Compiling level...');
 
             setProgress(0);
