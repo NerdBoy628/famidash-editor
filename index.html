@@ -45,7 +45,7 @@
             border-radius: 10px;
             padding: 5px;
         }
-        input[type=text] {
+        input[type=text], #gmdOffsetX, #gmdOffsetY {
             font-family: Pusab;
             color: white;
             font-size: 20px;
@@ -284,7 +284,7 @@
             margin-top: 10px;
         }
         td { vertical-align: top; text-align: center }
-        #editorSettings {
+        #editorSettings, #gmdSettings {
             width: 40vw;
             height: 70vh;
             left: 30vw;
@@ -360,6 +360,7 @@
     <canvas hidden id="gameCanvas" width=256 height=240></canvas>
     <canvas hidden id="imageCanvas"></canvas>
     <canvas hidden id="webglCanvas"></canvas>
+    <canvas hidden id="gmdCanvas"></canvas>
     <img id="undo" class="roundButtonImg" src="ui/undo.png" style="left: 21px; top: 21px">
     <img id="redo" class="roundButtonImg" src="ui/redo.png" style="left: 141px; top: 21px">
     <img id="btn-1" class="roundButtonImg" src="ui/trash.png" style="left: 261px; top: 21px">
@@ -373,6 +374,7 @@
     <img id="saveIcon" class="roundButtonImg" src="ui/save.png" style="right: 139px; top: 21px">
     <img id="play" class="roundButtonImg" src="ui/play.png" style="left: 21px; top: 141px">
     <img id="settingsButton" class="roundButtonImg" src="ui/gear.png" style="right: 19px; top: 21px">
+    <img id="gmdButton" class="roundButtonImg" src="ui/movie.png" style="right: 19px; top: 141px">
     <div class="bottomContainer">
         <button id="buildButton" class="rectButton cyanButton" style="left: 30px; top: 30px; width: 180px; height: 80px">BUILD</button>
         <button id="toolsButton" class="rectButton" style="left: 30px; top: 140px; width: 180px; height: 80px">TOOLS</button>
@@ -535,6 +537,18 @@
             onclick="gid('editorSettings').style.display = 'none'">OK</button>
         </td></tr></table>
     </div>
+    <div id="gmdSettings" class="menuPopup" style="display: none">
+        <h1>GMD Overlay</h1>
+        <table class="settingsTable" style="width: 40vw"><tr><td>
+            <h2>Drop a GMD file on the editor,<br>or upload here:<input id="gmdLoad" type="file"></h2>
+            <h2>Horizontal offset:</h2><input type="number" id="gmdOffsetX" style="width: 100px" value=0>
+            <h2>Vertical offset:</h2><input type="number" id="gmdOffsetY" style="width: 100px" value=0>
+            <br><br><button class="smallButton grayButton" style="width: 150px; height: 30px"
+            onclick="gmd=null">Clear GMD</button>
+            <br><br><button class="smallButton" style="width: 100px; height: 50px; font-size: 30px"
+            onclick="gid('gmdSettings').style.display = 'none'">OK</button>
+        </td></tr></table>
+    </div>
     <div id="loadingPopup" class="menuPopup smallPopup" style="display: none">Loading...</div>
     <div id="metadataPopup" class="menuPopup smallPopup" style="display: none">
         Select Metadata to Load:
@@ -547,6 +561,7 @@
     <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
     <script src="https://unpkg.com/jsnes@2.0.0/dist/jsnes.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="module">import * as gdr from "./gdrweb/gdrweb.js"; window.gdr = gdr;</script>
     <script>
         function sleep(t) {return new Promise(resolve => setTimeout(resolve, t))};
         function gid(x) {return document.getElementById(x)};
@@ -556,7 +571,7 @@
         function pinchDist(a,b) {return Math.sqrt((a.clientX-b.clientX)**2 + (a.clientY-b.clientY)**2)};
 
         for (let el of [
-            'canvas', 'parallaxCanvas', 'groundCanvas', 'tilesetCanvas', 'attemptCanvas', 'setBg', 'setG', 'gameCanvas', 'imageCanvas'
+            'canvas', 'parallaxCanvas', 'groundCanvas', 'tilesetCanvas', 'attemptCanvas', 'setBg', 'setG', 'gameCanvas', 'imageCanvas', 'gmdCanvas'
         ]) {window[el] = gid(el)};
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight-240;
@@ -564,6 +579,8 @@
         setBg.height = setG.height = 70;
         gameCanvas.width = 256;
         gameCanvas.height = 240;
+        gmdCanvas.width = canvas.width;
+        gmdCanvas.height = canvas.height;
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
         const parallaxCtx = parallaxCanvas.getContext('2d');
@@ -612,6 +629,7 @@
         let songFrames = -1;
         let muteGame = false; // replace ingame audio with uploaded audio
         let startPos = [0,gridSize[1]-1];
+        let gmdRenderer, gmd;
         const cellSize = 40;
         const optionsDefault = [
             'A', //block set (0)
@@ -1004,6 +1022,8 @@
         gid('saveMetadata').addEventListener('click', saveMetadata);
         gid('loadMetadata').addEventListener('click', ()=>{navigator.clipboard.readText().then((pastedText)=>{loadMetadata(pastedText)})});
         gid('editorSettingsButton').addEventListener('click', ()=>{gid('editorSettings').style.display = 'block'});
+        gid('gmdButton').addEventListener('click', ()=>{gid('gmdSettings').style.display = 'block'});
+        gid('gmdLoad').addEventListener('change', (e)=>{loadGMD(e.srcElement.files[0])});
         for (let i = 0; i < prefNames.length; i++) {
             gid(`${prefNames[i]}Enable`).addEventListener('click', ()=>{prefsButton(i)})
         };
@@ -1012,8 +1032,8 @@
             localStorage.setItem('famidash_editor_prefs', JSON.stringify(prefs));
         };
         window.addEventListener('resize', ()=>{
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight-240;
+            canvas.width = gmdCanvas.width = window.innerWidth;
+            canvas.height = gmdCanvas.height = window.innerHeight-240;
             ctx.imageSmoothingEnabled = false;
             draw();
         });
@@ -1251,6 +1271,7 @@
                 gid('metadataSelect').input = input;
             };
             if (droppedFile.name.endsWith('.fdlvl')) loadFDLVL(droppedFile);
+            if (droppedFile.name.endsWith('.gmd')) loadGMD(droppedFile);
             draw();
         });
         gid('metadataSelect').addEventListener('change', (e)=>{
@@ -1367,7 +1388,7 @@
         };
 
         function drawCell(set, cx, cy, dx, dy, context=ctx) {
-            if (layerShown[set] || playtesting) {
+            if (layerShown[set] || (playtesting && !gmd)) {
                 context.drawImage(
                     set?spriteImg:tilesetCanvas,
                     cx, cy, 16, 16, dx, dy,
@@ -1400,6 +1421,14 @@
                 for (let y = parallaxOffset[1]; y <= canvas.height; y+= camera.z*cellSize*4.5) {
                     ctx.drawImage(parallaxCanvas, x, y, Math.ceil(camera.z*cellSize*9), Math.ceil(camera.z*cellSize*4.5));
                 };
+            };
+            if (gmd) {
+                let scaledZoom = camera.z*cellSize/30;
+                renderer.camera.x = (-camera.x+canvas.width/2-parseFloat(gid('gmdOffsetX').value)*30)/scaledZoom;
+                renderer.camera.y = ((camera.y)-canvas.height/2)/scaledZoom+(gridSize[1]-parseFloat(gid('gmdOffsetY').value))*30;
+                renderer.camera.zoom = scaledZoom;
+                renderer.render(gmd)
+                ctx.drawImage(gmdCanvas, 0, 0, canvas.width, canvas.height);
             };
             for (let x = Math.max(-mod(-camera.x,(camera.z*4*cellSize)),camera.x); x<=Math.min(canvas.width,camera.x+cellSize*(gridSize[0]-.5)*camera.z); x+=camera.z*4*cellSize) {
                 ctx.drawImage(groundCanvas, x, camera.y+cellSize*gridSize[1]*camera.z, camera.z*4*cellSize, camera.z*8*cellSize);
@@ -2714,6 +2743,30 @@ options[13] = '';   if (input.lowerText) updateJson(13, input.lowerText);
                 };
                 pointer += 6;
             };
+        };
+        async function loadGMD(data) {
+            if (!gmdRenderer) {
+                await gdr.Renderer.initTextureInfo(
+                    "gdrweb/GJ_GameSheet-hd.plist",
+                    "gdrweb/GJ_GameSheet02-hd.plist"
+                );
+                renderer = new gdr.Renderer(
+                    new gdr.WebGLContext(gid('gmdCanvas')),
+                    "gdrweb/GJ_GameSheet-hd.png",
+                    "gdrweb/GJ_GameSheet02-hd.png"
+                );
+            };
+            let text = await data.text();
+            text = text.split('<k>k4</k>	<s>')[1].split('</s>')[0];
+            
+            const base64 = text.replace(/-/g, '+').replace(/_/g, '/')
+                .padEnd(text.length + (4 - text.length % 4) % 4, '=');
+            const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+            const stream = new Blob([bytes])
+                .stream().pipeThrough(new DecompressionStream("gzip"));
+            const decompressed = await new Response(stream).arrayBuffer();
+            text = new TextDecoder("utf-8").decode(decompressed);
+            gmd = await gdr.Level.parse(text);
         };
 
         // COMPILER SCRIPTS
