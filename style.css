@@ -1,0 +1,347 @@
+@font-face { font-family: 'Pusab'; src: url('pusab.otf') format('opentype') }
+body {
+    background-color: #38f;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+h1, h2 {
+    font-family: Pusab;
+    font-size: 45px;
+    text-align: center;
+    background: linear-gradient(to bottom, #ffa508, #ffe146);
+    -webkit-text-stroke: 0.9px black;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+h1  { margin-bottom: 5px }
+h2 { font-size: 30px; margin-bottom: 5px }
+canvas {image-rendering: pixelated; image-rendering: crisp-edges}
+#canvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100vw;
+    height: calc(100vh - 240px);
+}
+img {
+    -webkit-user-drag: none;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+select, input[type=number] {
+    font-family: Pusab;
+    color: white;
+    font-size: 20px;
+    text-shadow: 0 0 2px black;
+    border-radius: 10px;
+    padding: 5px;
+}
+input[type=text], #gmdOffsetX, #gmdOffsetY {
+    font-family: Pusab;
+    color: white;
+    font-size: 20px;
+    text-shadow: 0 0 2px black;
+    padding: 5px;
+    background-color: #555;
+    border-left: 3px solid #999;
+    border-top: 3px solid #999;
+    border-right: 3px solid #222;
+    border-bottom: 3px solid #222;
+    border-radius: 10px;
+}
+input[type=checkbox] { width: 30px; height: 30px }
+.rectButton {
+    font-family: Pusab;
+    color: white;
+    font-size: 40px;
+    text-shadow: 0 0 2px black;
+    position: absolute;
+    width: 75px;
+    height: 75px;
+    font-size: 30px;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background-color: #78dc2e;
+    border-left: 5px solid #c3f047;
+    border-top: 5px solid #c3f047;
+    border-right: 5px solid #498519;
+    border-bottom: 5px solid #498519;
+    box-shadow: 0 0 0 5px black, 0 0 0 9px white, 5px 5px 5px #000b;
+    transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
+}
+.roundButtonImg {
+    position: absolute;
+    image-rendering: initial;
+    image-rendering: initial;
+    -ms-interpolation-mode: initial;
+    width: 96px;
+    transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
+}
+.roundButtonImg:active, .rectButton:active, .toolButton:active, .smallButton:active { transform: scale(1.08) }
+.smallButton {
+    font-family: Pusab;
+    color: white;
+    font-size: 20px;
+    text-shadow: 0 0 2px black;
+    width: 30px;
+    height: 25px;
+    margin: 5px;
+    vertical-align: top;
+    background-color: #78dc2e;
+    border-left: 2px solid #c3f047;
+    border-top: 2px solid #c3f047;
+    border-right: 2px solid #498519;
+    border-bottom: 2px solid #498519;
+    box-shadow: 0 0 0 2px black, 0 0 0 4px white, 3px 3px 4px #000b;
+    border-radius: 5px;
+    transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
+}
+.grayButton {
+    background-color: #969696;
+    border-left: 3px solid #c4c4c4;
+    border-top: 3px solid #c4c4c4;
+    border-right: 3px solid #5a5a5a;
+    border-bottom: 3px solid #5a5a5a;
+}
+.bottomContainer {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: 100vw;
+    height: 240px;
+    background-color: black;
+    box-shadow: 0px -4px 2px #46505a;
+}
+.vr {
+    position: absolute;
+    height: 230px; /* 240 - 10 */
+    border-width: 5px; 
+    border-style: solid;
+    border-image: linear-gradient(to bottom, black, white, black) 1;
+}
+.tabContainer {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    left: 0px;
+    bottom: 240px;
+    width: 100vw;
+    height: 45px;
+}
+.tileTab {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    padding-left: min(15px, calc((100vw / 30) - 25px));
+    padding-right: min(15px, calc((100vw / 30) - 25px));
+    background-color: #373737;
+    border-radius: 10px 10px 0px 0px;
+    border-left: 5px solid #696969;
+    border-top: 5px solid #696969;
+    border-right: 5px solid #1e1e1e;
+}
+.selectedTab {
+    background-color: #555;
+}
+.tileButton {
+    display: inline-block;
+    width: 43px;
+    height: 43px;
+    margin: 8px;
+    padding: 2px;
+    background-color: #969696;
+    border-left: 3px solid #c4c4c4;
+    border-top: 3px solid #c4c4c4;
+    border-right: 3px solid #5a5a5a;
+    border-bottom: 3px solid #5a5a5a;
+    box-shadow: 0 0 0 2px black, 0 0 0 4px white;
+    border-radius: 5px;
+}
+.selectedTileButton {
+    background-color: #4b4b4b;
+    border-left: 3px solid #5f5f5f;
+    border-top: 3px solid #5f5f5f;
+    border-right: 3px solid #2d2d2d;
+    border-bottom: 3px solid #2d2d2d;
+    box-shadow: 0 0 0 2px black, 0 0 0 4px #7d7d7d;
+}
+.invalidTileButton {
+    box-shadow: 0 0 0 2px #500, 0 0 0 4px #f55;
+}
+.tileContainer {
+    position: absolute;
+    display: none;
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    left: 320px;
+    bottom: 0px;
+    width: calc(100vw - 665px);
+    height: 220px; /* 240 - 10 */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    background-color: black;
+}
+.paletteSpacer {
+    display: inline-block;
+    width: 1px;
+    height: 1px;
+    transform: translateY(151px);
+}
+#triangleLeft, #triangleRight {
+    position: absolute;
+    top: 95px; /* 240/2 - 25 */
+    width: 40px;
+    height: 50px;
+    background-image: linear-gradient(45deg, #08acb2, #47ffdd);
+    transition: 0.3s cubic-bezier(.47,2.64,.41,-.1);
+}
+#triangleLeft {
+    left: 280px;
+    clip-path: polygon(100% 0%, 100% 100%, 0% 50%);
+}
+#triangleRight {
+    right: 280px;
+    clip-path: polygon(0% 0%, 0% 100%, 100% 50%);
+}
+#triangleLeft:active, #triangleRight:active { transform: scale(1.1) }
+#toolsContainer {
+    display: none;
+    position: absolute;
+    left: 250px;
+    top: 0px;
+    width: calc(100vw - 500px);
+    height: 210px;
+    padding-left: 30px;
+    padding-top: 30px;
+}
+.toolButton {
+    display: inline-block;
+    vertical-align: top;
+    width: 80px;
+    height: 80px;
+    margin-left: 20px;
+    font-family: Pusab;
+    color: white;
+    font-size: 18px;
+    text-shadow: 0 0 2px black;
+    background-color: #78dc2e;
+    border-left: 5px solid #c3f047;
+    border-top: 5px solid #c3f047;
+    border-right: 5px solid #498519;
+    border-bottom: 5px solid #498519;
+    box-shadow: 0 0 0 5px black, 0 0 0 9px white, 5px 5px 5px #000b;
+    border-radius: 5px;
+    transition: transform 0.3s cubic-bezier(1,2.95,0,-0.4);
+}
+.cyanButton {
+    background-color: #0dd;
+    border-left: 5px solid #5fe;
+    border-top: 5px solid #5fe;
+    border-right: 5px solid #0aa;
+    border-bottom: 5px solid #0aa;
+}
+.menuPopup {
+    position: absolute;
+    overflow: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;  
+    width: 80vw;
+    height: 90vh;
+    left: 10vw;
+    top: 5vh;
+    background-color: #965532;
+    border-left: 5px solid #965532;
+    border-top: 5px solid #fa5;
+    border-right: 5px solid #965532;
+    border-bottom: 5px solid #55320f;
+    box-shadow: 0 0 0 4px black, 0 0 0 7px white, 0 0 0 20vw #0008;
+    border-radius: 10px;
+}
+.settingsTable {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    padding: 10px;
+    width: 75vw;
+    table-layout: fixed;
+}
+#editorSettings > table > tbody > tr > td > h2 {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    margin-top: 10px;
+}
+td { vertical-align: top; text-align: center }
+#editorSettings, #gmdSettings {
+    width: 40vw;
+    height: 70vh;
+    left: 30vw;
+    top: 15vh;
+    box-shadow: 0 0 0 4px black, 0 0 0 7px white, 0 0 0 30vw #0008;
+}
+#audioLoadButton {
+    font-family: Pusab;
+    color: white;
+    font-size: 20px;
+    text-shadow: 0 0 2px black;
+    border-radius: 10px;
+    padding: 5px;
+}
+.smallPopup {
+    width: 20vw;
+    height: 10vh;
+    left: 40vw;
+    top: 30vh;
+    box-shadow: 0 0 0 4px black, 0 0 0 7px white;
+    font-family: Pusab;
+    text-align: center;
+    font-size: 30px;
+    color: white;
+    align-items: center;
+    justify-content: center;
+}
+#metadataPopup {
+    top: calc(35vh - 80px);
+    left: calc(50vw - 150px);
+    width: 300px;
+    height: 80px;
+    padding-top: 10px;
+}
+#saveContainer {
+    position: absolute;
+    overflow: hidden;
+    display: grid;
+    align-content: center;
+    right: 188px;
+    top: 21px;
+    width: 0px;
+    height: 94px;
+    transition: width .5s ease;
+}
+.saveButton {
+    width: 120px;
+    height: 30px;
+    position: absolute;
+    text-wrap: nowrap;
+    opacity: 0%;
+    transition: all .5s ease;
+}
+#transformContainer {
+    transform: none;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    padding: -10px;
+    right: 30px;
+    top: 140px;
+    width: 180px;
+    height: 80px;
+}
