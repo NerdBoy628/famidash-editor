@@ -1,0 +1,499 @@
+<!DOCTYPE html><html lang="en"><head>
+    <title>GD2FD</title>
+    <link rel="icon" type="image/png" href="../icon/cube.png">
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            font-size: 35px;
+            text-align: center;
+            text-shadow: 0px 4px 15px #000;
+        }
+        p { text-align: center }
+        .main::-webkit-scrollbar, .main::-webkit-scrollbar { display: none }
+    </style>
+</head>
+<body>
+    <br><h1>Geometry Dash to Famidash Level Converter</h1>
+    <hr>
+    <p>Drop GMD file anywhere to convert to TMX</p>
+    <hr>
+    <!--<textarea id="customMap"></textarea>-->
+    <pre id="log" hidden></pre>
+    <a id="downloader" hidden></a>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        function gid(x) {return document.getElementById(x)};
+        function range(from,to) {return Array.from({length: to-from+1},(_,i)=>from+i)};
+        const log = document.getElementById('log');
+        const gmdUpload = document.getElementById('gmdUpload');
+        const a = document.getElementById('downloader');
+
+        function logLine(s = '') { log.textContent += s + '\n'; console.log(s)};
+        function setProgress(x) {
+            fileLoadProgress = x;
+        };
+
+        let pyodide;
+        let pyodidePromise = loadPyodide();
+
+        let gmd = null;
+
+        document.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            let droppedFile = e.dataTransfer.files[0];
+            if (droppedFile.name.endsWith('.gmd')) {
+                gmd = droppedFile
+                await buildMain();
+            };
+        });
+
+        async function buildMain() {
+            async function save() {
+                let tileData = '';
+                let spriteData = '';
+                for (let y = 0; y < gridSize[1]; y++) {
+                    tileData = `${tileData}\n${tileGrid[y].map((x)=>x+1).join(',')},`;
+                    spriteData = `${spriteData}\n${spriteGrid[y].map((x)=>(x==-1)?0:x+257).join(',')},`;
+                };
+                let output = `<?xml version="1.0" encoding="UTF-8"?>
+    <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="${gridSize[0]}" height="${gridSize[1]}" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+    <editorsettings>
+    <chunksize width="16" height="27"/>
+    <export target="stereomadness.csv" format="csv"/>
+    </editorsettings>
+    <tileset firstgid="1" name="famidash" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+    <image source="../../../GRAPHICS/famidash.bmp" width="256" height="256"/>
+    </tileset>
+    <tileset firstgid="257" name="sprites" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+    <image source="../../../GRAPHICS/sprites.png" width="256" height="256"/>
+    </tileset>
+    <imagelayer id="3" name="Image Layer 1" parallaxx="0.9" parallaxy="0.9" repeatx="1" repeaty="1">
+    <image source="../../../GRAPHICS/Old/parallax Blue.bmp" width="192" height="72"/>
+    </imagelayer>
+    <imagelayer id="4" name="Image Layer 2" offsetx="0" offsety="${gridSize[1]*16}" repeatx="1">
+    <image source="../../../GRAPHICS/ground.bmp" width="80" height="32"/>
+    </imagelayer>
+    <layer id="1" width="${gridSize[0]}" height="${gridSize[1]}">
+    <data encoding="csv">
+    ${tileData.slice(1,-1)}
+    </data>
+    </layer>
+    <layer id="2" name="SP" width="${gridSize[0]}" height="${gridSize[1]}">
+    <data encoding="csv">
+    ${spriteData.slice(1,-1)}
+    </data>
+    </layer>
+    </map>`;
+            
+                const url = URL.createObjectURL(new Blob([output], { 'text/xml': ['.tmx'] }));
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'level.tmx';
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+
+
+            setProgress(0);
+            logLine('Loading pyodide...');
+            pyodide = await pyodidePromise;
+            logLine('Exporting level...');
+            await pyodide.loadPackage('micropip');
+            const micropip = await pyodide.pyimport('micropip');
+            await micropip.install('binpacking');
+            await micropip.install('json5');
+            await micropip.install('gdparse');
+            setProgress(1/4);
+            let reader = new FileReader();
+            await new Promise((resolve, reject) => {
+                reader.onload = (e) => {
+                    pyodide.FS.writeFile("/level.gmd", e.target.result);
+                    resolve();
+                };
+                reader.onerror = reject;
+                reader.readAsText(gmd);
+            });
+            pyodide.runPython(`import xml.etree.ElementTree as ET
+import gzip, base64, time
+
+root = ET.parse('/level.gmd').getroot()
+values = {}
+children = list(root)
+for i in range(0, len(children), 2):
+    key = children[i].text
+    value = children[i + 1].text
+    values[key] = value
+levelData = gzip.decompress(base64.urlsafe_b64decode(values["k4"])).decode("utf-8")
+print(levelData)
+output = []
+for i in levelData.split(';'):
+    try:
+        parts = i.split(",")
+        object = dict(zip(map(int, parts[::2]), parts[1::2]))
+        output.append(object)
+    except Exception as e:
+        print(e)`);
+            let levelData = pyodide.globals.get('output').toJs();
+            let gridSize = [1024,57];
+            let tileGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(0));
+            let spriteGrid = Array.from({length: gridSize[1]},()=>Array(gridSize[0]).fill(-1));
+            class Structure { constructor(data) { this.data = data } }; // [ [[Xoffset, Yoffset], ID], ... ]
+            function spr(x) {
+                if (typeof x == 'number') return x+256;
+                if (x instanceof Structure) return new Structure(x.data.map(i=>[i[0],i[1]+256]));
+                return x.map(i=>{
+                    if (i instanceof Structure) return new Structure(i.data.map(j=>[j[0],j[1]+256]));
+                    if (typeof i == 'number') return i+256;
+                    return null;
+                });
+            }; //add 256 to put on the sprite layer
+            let map = { // [orig, 90º, 180º, 270º, Hflip, H90º, H180º, H270º] only include last 4 if not horiz. symetr.
+                1: 16, //block
+                2: [33, 34, 35, 36], // side piece
+                3: [37, 38, 39, 40, 38, 39, 40, 37], // corner piece
+                4: [41, 42, 43, 44, 42, 43, 44, 41], // inside corner piece
+                5: 47, // inside piece
+                6: [48, 49, 50, 51], // peninsula piece
+                7: [45, 46, 45, 46], // = piece
+                8: [17, 26, 27, 28], //spike
+                9: [24, 95, 23, 94], //pit
+                10: spr([
+                    new Structure([[[0,-1],8]]),new Structure([[[-1,0],17]]),
+                    new Structure([[[0,-1],8]]),new Structure([[[-1,0],16]]),
+                    new Structure([[[0,-1],8]]),new Structure([[[-1,0],16]]),
+                    new Structure([[[0,-1],8]]),new Structure([[[-1,0],17]]),
+                ]), //down gravity portal
+                11: spr([
+                    new Structure([[[0,-1],9]]),new Structure([[[-1,0],19]]),
+                    new Structure([[[0,-1],9]]),new Structure([[[-1,0],18]]),
+                    new Structure([[[0,-1],9]]),new Structure([[[-1,0],18]]),
+                    new Structure([[[0,-1],9]]),new Structure([[[-1,0],19]]),
+                ]), //down gravity portal
+                12: spr(new Structure([[[0,-1],0]])), //cube portal
+                13: spr(new Structure([[[0,-1],1]])), //ship portal
+                15: spr([42, 42, 58, 42]), //rod1
+                16: spr([43, 63, 59, 62]), //rod2
+                17: spr([44, 57, 60, 56]), //rod3
+                18: spr([ // green spike things
+                    new Structure([[[-1,0],46],[[0,0],48],[[1,0],46]]), null,
+                    new Structure([[[-1,0],47],[[0,0],49],[[1,0],47]]), null]),
+                19: spr([
+                    new Structure([[[-1,0],46],[[0,0],48],[[1,0],48]]), null,
+                    new Structure([[[-1,0],47],[[0,0],49],[[1,0],49]]), null]),
+                20: spr(46),
+                21: spr(48),
+                22: 0, // ???
+                23: 0, // ???
+                24: 0, // ???
+                25: 0, // ???
+                26: 0, // ???
+                27: 0, // ??? color ???
+                28: 0, // ???
+                29: 0, // ??? color ???
+                30: 0, // ??? color ???
+                32: spr(242), //enable player trail
+                33: spr(243), //disable player trail
+                35: spr([10, 10, 12, 10]), //yellow pad
+                36: spr(11), //yellow orb
+                39: [18, 29, 30, 31], //small spike
+                40: [25, 25, 3, 25], //slab
+                41: spr([ //chain
+                    new Structure([[[0,1],45]]),new Structure([[[0,1],45]]),
+                    new Structure([[[0,-1],61]]),new Structure([[[0,1],45]])]),
+                45: 0, //mirror portal
+                46: 0, //unmirror portal
+                47: spr(new Structure([[[0,-1],2]])), //ball portal
+                48: new Structure([[[-1,0],134],[[0,0],12],[[1,0],132],[[0,-1],128]]), //cloud1
+                49: new Structure([[[0,0],12],[[1,0],132],[[0,-1],128]]), //cloud2
+                48: [ //cloud1
+                    new Structure([[[-1,0],134],[[0,0],12],[[1,0],132],[[0,-1],128]]), null,
+                    new Structure([[[1,0],133],[[0,0],13],[[-1,0],135],[[0,1],129]]), null],
+                49: [ //cloud2
+                    new Structure([[[0,0],12],[[1,0],132],[[0,-1],128]]), null,
+                    new Structure([[[0,0],13],[[-1,0],135],[[0,1],129]]), null],
+                50: spr(73), //dot
+                51: spr(73), //donut
+                52: spr(54), //heart
+                53: spr(50), //diamond
+                54: spr(54), //star
+                56: 0, // ???
+                57: 0, // ???
+                58: 0, // ??? color ???
+                59: 0, // ??? color ???
+                60: spr(74), //music note
+                61: [92, 92, 93, 92], //wavy pit
+                62: [85, 85, 89, 85], //wavy slab middle
+                65: [86, 86, 90, 86], //wavy slab end
+                66: [84, 84, 88, 84], //wavy slab start
+                67: spr([13, 13, 14, 13]), //blue pad
+                68: 3, //slab i think ???
+                69: 64, //☒ square piece
+                70: [65, 66, 67, 68], //☒ side piece
+                71: [69, 70, 71, 72, 70, 71, 72, 69], //☒ corner piece
+                72: [73, 74, 75, 76, 74, 75, 76, 73], //☒ inside corner piece
+                73: 79, //☒ inside piece
+                74: [80, 81, 82, 83], //☒ peninsula piece
+                75: [77, 78, 77, 78], //☒ = piece
+                76: 126, //weird block thing side piece
+                77: 126, //weird block thing corner piece
+                78: 126, //weird block thing inside corner piece
+                80: 126, //weird block thing inside piece
+                81: 126, //weird block thing peninsula piece
+                82: 126, //weird block thing = piece
+                83: 32, //square piece
+                84: spr(5), //blue orb
+                85: 0, 86: 0, 87: 0, //cogs
+                88: new Structure([ //big saw
+                    [[-1,-1],116],[[0,-1],117],[[1,-1],118],
+                    [[-1,0],119],[[0,0],120],[[1,0],121],
+                    [[-1,1],122],[[0,1],123],[[1,1],124]]),
+                89: new Structure([[[0,0],8],[[1,0],9],[[0,1],10],[[1,1],11]]), //medium saw
+                90: 96, //black square piece
+                91: [97, 98, 99, 100], //black side piece
+                92: [101, 102, 103, 104, 102, 103, 104, 101], //black corner piece
+                93: [105, 106, 107, 108, 106, 107, 108, 105], //black inside corner piece
+                94: 111, //black inside piece
+                95: [112, 113, 114, 115], //black peninsula piece
+                96: [109, 110, 109, 110], //black = piece
+                97: 0, //other cog
+                98: 125, // small saw
+                99: spr(new Structure([[[0,-1],25]])), //big portal
+                101: spr(new Structure([[[0,-1],24]])), //small portal
+                103: [18, 29, 30, 31], //other small spike
+                105: 0, // ??? color ??
+                106: spr([ //other chain
+                    new Structure([[[0,1],45]]),new Structure([[[0,1],45]]),
+                    new Structure([[[0,-1],61]]),new Structure([[[0,1],45]])]),
+                107: spr([ //other chain
+                    new Structure([[[0,1],45]]),new Structure([[[0,1],45]]),
+                    new Structure([[[0,-1],61]]),new Structure([[[0,1],45]])]),
+                110: 0, //supposedly other chain???
+                111: spr(3), //ufo portal
+                113: spr(46), 114: spr(46), 115: spr(48), //blocky spike deco things
+                116: 32, // brick square piece
+                117: [33, 34, 35, 36], // brick side piece
+                118: [37, 38, 39, 40, 38, 39, 40, 37], // brick corner piece
+                119: [41, 42, 43, 44, 42, 43, 44, 41], // brick inside corner piece
+                120: 47, // brick inside piece
+                121: [48, 49, 50, 51], // brick peninsula piece
+                122: [45, 46, 45, 46], // brick = piece
+                123: 0, 124: 0, 125: 0, 126: 0, 127: 0, 128: 0, //brambly things
+                129: spr(50), 130: spr(50), 131: spr(73), //clouds
+                132: spr(51), //arrow
+                133: spr(53), // !
+                134: 0, //some kind of deco
+                135: 0, //brambly things
+                136: spr(52), // ?
+                137: 0, 138: 0, 139: 0, //other cogs
+                140: spr([37,37,38,37]), //pink pad
+                141: spr(6), //pink orb
+                143: 47, //breakable brick
+                144: [197, 0, 198, 0], //fake spike
+                145: [203, 0, 204, 0], //small fake spike
+                146: 96, //invisible square
+                148: spr(73), //dot
+                150: spr(55), // X
+                151: spr([43, 63, 59, 62]), //spike deco thing
+                152: spr([43, 63, 59, 62]), //spike deco thing
+                153: spr([44, 57, 60, 56]), //small spike deco thing
+                154: 0, 155: 0, 156: 0, //spike wheel
+                157: 0, 158: 0, 159: 0, //wave deco
+                161: [33, 34, 35, 36], // side piece
+                162: [37, 38, 39, 40, 38, 39, 40, 37], // corner piece
+                163: [41, 42, 43, 44, 42, 43, 44, 41], // inside corner piece
+                164: 47, //fake side piece  [33, 34, 35, 36], // side piece
+                165: [48, 49, 50, 51], // peninsula piece
+                166: [45, 46, 45, 46], // = piece
+                167: 47, //double inside corner piece
+                169: 64, //checkered block
+                170: [201, 34, 202, 36], 171: [201, 34, 202, 36], //slab with bg
+                173: [37, 38, 39, 40, 38, 39, 40, 37], // corner piece
+                174: [41, 42, 43, 44, 42, 43, 44, 41], // inside corner piece
+                175: 16, //block
+                176: [33, 34, 35, 36], // side piece
+                177: [17, 26, 27, 28], //spike
+                178: [18, 29, 30, 31], //small spike
+                179: [18, 29, 30, 31], //small spike
+                180: 0, 181: 0, 182: 0, //other cogs
+                183: new Structure([[[0,0],8],[[1,0],9],[[0,1],10],[[1,1],11]]), //medium saw
+                184: 125, //small saw
+                185: 125, //small saw
+                186: new Structure([ //big saw
+                    [[-1,-1],116],[[0,-1],117],[[1,-1],118],
+                    [[-1,0],119],[[0,0],120],[[1,0],121],
+                    [[-1,1],122],[[0,1],123],[[1,1],124]]),
+                187: new Structure([[[0,0],8],[[1,0],9],[[0,1],10],[[1,1],11]]), //medium saw
+                188: 125, //small saw
+                190: spr([ //other chain
+                    new Structure([[[0,1],45]]),new Structure([[[0,1],45]]),
+                    new Structure([[[0,-1],61]]),new Structure([[[0,1],45]])]),
+                191: [197, 0, 198, 0], //fake spike
+                192: [25, 25, 3, 25], //slab
+                193: 111, //black inside piece
+                194: [41, 42, 43, 44, 42, 43, 44, 41], // inside corner piece
+                197: [201, 34, 202, 36], //slab with bg
+                198: [203, 0, 204, 0], //small fake spike
+                199: [203, 0, 204, 0], //small fake spike
+                202: [33, 34, 35, 36], // side piece
+                '202!': spr(22), //2x speed portal
+                '203!': spr(32), //3x speed portal
+                205: [18, 29, 30, 31], //transparent small spike
+                206: 176, //lil block
+                207: 96, //black square piece
+                208: [97, 98, 99, 100], //black side piece
+                209: [101, 102, 103, 104, 102, 103, 104, 101], //black corner piece
+                210: [105, 106, 107, 108, 106, 107, 108, 105], //black inside corner piece
+                211: 111, //black inside piece
+                212: [112, 113, 114, 115], //black peninsula piece
+                213: [109, 110, 109, 110], //black = piece
+                216: [17, 26, 27, 28], //spike
+                217: [18, 29, 30, 31], //small spike
+                218: [18, 29, 30, 31], //small spike
+                222: 0, 223: 0, //round cloud deco
+                224: spr(73), //flower thing
+                225: 0, 226: 0, //squiggly lines
+                227: 0, 228: 0, 229: 0, 230: 0, 231: 0, //hexagons
+                233: 47, 234: 47, 235: 47, //bricks
+                236: 0, //big circle
+                237: 0, 238: 0, 239: 0, 240: 0, 241: 0, //lines
+                242: 0, //hexagons
+                243: [92, 92, 93, 92], //end of wavy pit
+                244: [92, 92, 93, 92], //end of wavy pit
+                246: 47, //inside piece
+                247: 47, 248: 47, 249: 47, 250: 47, 252: 47, 253: 47, 254: 47, //bricks
+                256: [65, 66, 67, 68], //☒ side piece
+                257: [69, 70, 71, 72, 70, 71, 72, 69], //☒ corner piece
+                258: [73, 74, 75, 76, 74, 75, 76, 73], //☒ inside corner piece
+                259: 79, //☒ inside piece
+                260: [80, 81, 82, 83], //☒ peninsula piece
+                261: [77, 78, 77, 78], //☒ = piece
+                263: 126, 264: 126, 265: 126, 266: 126, 267: 126, 268: 126, //weird block thing
+                269: 47, 270: 47, 271: 47, 272: 47, 274: 47, 275: 47, //bricks
+                279: 126, 280: 126, 281: 126, 282: 126, //weird block thing
+                469: 6,
+                899: 0, // ??? color ???
+                915: 0, // ???
+                1329: spr(7), //coin
+            };
+            //map = {...map, ...Object.fromEntries(JSON.parse(gid('customMap').value))};
+            let unassigned = [];
+            let coins = 0;
+            let highestY = 0;
+            function getBlock(x,y,layer) { return (layer?spriteGrid:tileGrid)[y][x] };
+            function setBlock(x,y,id) {
+                if (x<0 || y<0 || y>56) return;
+                if (id>255) {
+                    if (getBlock(x,y,1)!=-1) {
+                        if (spr([...range(42,63),73,74]).includes(id)) return; //low priority/deco sprites
+                    };
+                    const triggers = [ //shift these 10 to the right
+                        15, 95,96,97,98,99, 111,112,113,114,115,116, ...range(127,245)
+                    ];
+                    if (triggers.includes(id-256)) x+=10;
+                    const portals = spr([
+                        0,1,2,3,4,8,9,16,17,18,19,23,24,25,36,75,78,79,88,95,96,97,98,99,100,102,103,104,105,106
+                    ]);
+                    while (portals.includes(getBlock(x,y,1)) && portals.includes(id)) x++; //make sure all portals are preserved
+                    spriteGrid[y][x] = id;
+                } else {
+                    const replacements = { //multiple objects on same tile
+                        '24,25':22,
+                        '84,92':60,
+                        '85,92':61,
+                        '86,92':62,
+                        '84,88':56,
+                        '85,89':57,
+                        '86,90':58,
+                        '18,29':196,
+                        '29,30':194,
+                        '30,31':193,
+                        '18,31':195,
+                    };
+                    if (getBlock(x,y,0)!=0) {
+                        const prev = getBlock(x,y,0);
+                        const string = prev>id?`${id},${prev}`:`${prev},${id}`;
+                        const priority = [0, 128, 23,24,92,93,94,95, 12,13,14,15, 132,133,134,135];
+                        if (replacements[string]!=undefined) {id = replacements[string]}
+                        else if (priority.includes(id)) {
+                            if (priority.includes(prev)) { if (priority.indexOf(prev) > priority.indexOf(id)) return
+                            } else { return }
+                        };
+                        if (Math.random()<0.5) return;
+                    };
+                    tileGrid[y][x] = id;
+                };
+            };
+            prev = 0;
+            for (const object of levelData) {
+                //console.log(object);
+                let block = parseInt(object[1]);
+                if (object[13] && Object.keys(map).includes(`${block}!`)) block += '!';
+                if (Object.keys(map).includes(`${block}`)) {
+                    block = map[`${block}`];
+                    if (Array.isArray(block)) {
+                        let offset = 0;
+                        if (object[6]) offset = parseInt(object[6]);
+                        if (offset < 0) offset += 360;
+                        offset = Math.floor(offset/90);
+                        let hflip = false;
+                        if (object[4]) hflip = !hflip;
+                        if (object[5]) {offset += 2; hflip = !hflip};
+                        offset %= 4;
+                        if (hflip && block.length>4) offset += 4;
+                        block = block[offset];
+                    };
+                } else {
+                    unassigned.push([block,object[2],Math.floor(object[2]/30)]);
+                    block = [...new Set(unassigned.map(i=>i[0]))].length
+                };
+                const [x,y] = [Math.floor(object[2]/30), gridSize[1]-1-Math.floor(object[3]/30)];
+                if (x>gridSize[0]) { //make level longer
+                    gridSize[0] = x;
+                    tileGrid = tileGrid.map(row => {
+                        let newRow = row.slice(0, gridSize[0]);
+                        while (newRow.length < gridSize[0]) newRow.push(0);
+                        return newRow;
+                    });
+                    spriteGrid = spriteGrid.map(row => {
+                        let newRow = row.slice(0, gridSize[0]);
+                        while (newRow.length < gridSize[0]) newRow.push(-1);
+                        return newRow;
+                    });
+                };
+                if (block instanceof Structure) {
+                    block = block.data;
+                    for (const [offset, id] of block) {
+                        setBlock(x+offset[0],y+offset[1],id)
+                    };
+                } else {
+                    if (block==256+7) { //check which coin it is
+                        block = 256+[7,26,27][coins];
+                        coins = Math.min(coins+1,2);
+                    };
+                    highestY = Math.max(highestY, Math.floor(object[3]/30));
+                    setBlock(x,y,block%512);
+                    if (block%512 == 469) console.log(object)
+                };
+            };
+            if (highestY < gridSize[1]) {
+                gridSize[1] = Math.max(highestY, 27);
+                tileGrid = tileGrid.slice(-gridSize[1]);
+                spriteGrid = spriteGrid.slice(-gridSize[1]);
+            };
+            console.log(unassigned);
+            console.log([...new Set(unassigned.map(i=>i[0]))])
+            await save();
+        };
+    </script>
+</body></html>
