@@ -131,17 +131,22 @@
                 reader.readAsText(gmd);
             });
             pyodide.runPython(`import xml.etree.ElementTree as ET
-import gzip, base64, time
+import gzip, base64, time, zlib
 
 root = ET.parse('/level.gmd').getroot()
 values = {}
 children = list(root)
-for i in range(0, len(children), 2):
-    key = children[i].text
-    value = children[i + 1].text
-    values[key] = value
-levelData = gzip.decompress(base64.urlsafe_b64decode(values["k4"])).decode("utf-8")
+elements = list(root.find("dict"))
+for i, element in enumerate(elements):
+    if element.tag == "k" and element.text == "k4":
+        value = elements[i + 1].text
+        break
+try:
+    levelData = zlib.decompress(base64.urlsafe_b64decode(value)).decode('utf-8')
+except zlib.error:
+    levelData = gzip.decompress(base64.urlsafe_b64decode(value)).decode('utf-8')
 print(levelData)
+
 output = []
 for i in levelData.split(';'):
     try:
@@ -435,7 +440,7 @@ for i in levelData.split(';'):
                             if (priority.includes(prev)) { if (priority.indexOf(prev) > priority.indexOf(id)) return
                             } else { return }
                         };
-                        if (Math.random()<0.5) return;
+                        //if (Math.random()<0.5) return;
                     };
                     tileGrid[y][x] = id;
                 };
