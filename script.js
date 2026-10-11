@@ -206,7 +206,7 @@ function preloadImages() {
 let mousepos = [0,0];
 let drag = [0,0,0,0];
 let mouseState = 0; // 0=none, 1=left, 2=right
-const isMobile = window.matchMedia("(pointer: coarse)").matches;
+const isMobile = window.matchMedia('(pointer: coarse)').matches;
 let swiping = false;
 let initZoom, prevZoomDistance;
 document.addEventListener('mousemove', (e)=>{
@@ -859,8 +859,8 @@ function draw() {
     };
     if (gmd) {
         let scaledZoom = camera.z*cellSize/30;
-        renderer.camera.x = (-camera.x+canvas.width/2-parseFloat(gid('gmdOffsetX').value)*30)/scaledZoom;
-        renderer.camera.y = ((camera.y)-canvas.height/2)/scaledZoom+(gridSize[1]-parseFloat(gid('gmdOffsetY').value))*30;
+        renderer.camera.x = (-camera.x+canvas.width/2)/scaledZoom-parseFloat(gid('gmdOffsetX').value)*30;
+        renderer.camera.y = (camera.y-canvas.height/2)/scaledZoom+(gridSize[1]-parseFloat(gid('gmdOffsetY').value))*30;
         renderer.camera.zoom = scaledZoom;
         renderer.render(gmd)
         ctx.drawImage(gmdCanvas, 0, 0, canvas.width, canvas.height);
@@ -1735,7 +1735,7 @@ function setColor(forceUpdate=false) {
     } else {
         [x,y] = [(options[6]+128)%16*21.5+6,Math.floor((options[6]+128)/16-8)*23+14]
     };
-    setGCtx.lineCap = "round"; 
+    setGCtx.lineCap = 'round'; 
     for (let style of [['white',3],['black',2]]) {
         setGCtx.strokeStyle = style[0];
         setGCtx.lineWidth = style[1];
@@ -2180,15 +2180,17 @@ async function loadFDLVL(data) {
     };
 };
 async function loadGMD(data) {
+    gid('loadingPopup').textContent = 'Loading GMD...'
+    gid('loadingPopup').style.display = 'flex';
     if (!gmdRenderer) {
         await gdr.Renderer.initTextureInfo(
-            "gdrweb/GJ_GameSheet-hd.plist",
-            "gdrweb/GJ_GameSheet02-hd.plist"
+            'gdrweb/GJ_GameSheet-hd.plist',
+            'gdrweb/GJ_GameSheet02-hd.plist'
         );
         renderer = new gdr.Renderer(
             new gdr.WebGLContext(gid('gmdCanvas')),
-            "gdrweb/GJ_GameSheet-hd.png",
-            "gdrweb/GJ_GameSheet02-hd.png"
+            'gdrweb/GJ_GameSheet-hd.png',
+            'gdrweb/GJ_GameSheet02-hd.png'
         );
     };
     let text = await data.text();
@@ -2198,10 +2200,11 @@ async function loadGMD(data) {
         .padEnd(text.length + (4 - text.length % 4) % 4, '=');
     const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
     const stream = new Blob([bytes])
-        .stream().pipeThrough(new DecompressionStream("gzip"));
+        .stream().pipeThrough(new DecompressionStream('gzip'));
     const decompressed = await new Response(stream).arrayBuffer();
-    text = new TextDecoder("utf-8").decode(decompressed);
+    text = new TextDecoder('utf-8').decode(decompressed);
     gmd = await gdr.Level.parse(text);
+    gid('loadingPopup').style.display = 'none';
 };
 
 // COMPILER SCRIPTS
